@@ -2,7 +2,7 @@
 #include "EWEngine/GUI/MenuEnums.h"
 
 enum MenuClickReturn : uint16_t {
-	MCR_swapToMelonJam = EWE::MCR_engine_size,
+	MCR_swapToCharmington = EWE::MCR_engine_size,
 	MCR_swapToMainMenu,
 	MCR_app_size,
 };

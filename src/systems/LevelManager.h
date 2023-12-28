@@ -10,15 +10,16 @@
 #include "EWEngine/systems/RigidRendering/RigidRenderSystem.h"
 #include "EWEngine/graphics/EWE_FrameInfo.h"
 
+#include "Level.h"
+#include "../Levels/FirstLevel.h"
+
 
 namespace EWE {
 	class LevelManager {
 	public:
-		LevelManager(EWEDevice& device, uint8_t maxFIF, SkinRenderSystem& skinnedRS);
+		LevelManager(EWEDevice& device);
 
-		~LevelManager() {
-
-		}
+		~LevelManager();
 
 		void loadStage();
 
@@ -28,15 +29,15 @@ namespace EWE {
 
 		bool updatePipes();
 
+		void initLevel(EWEDevice& device);
 
 		void swapNextStage();
 		//void writeToBuffer(std::vector<std::unique_ptr<EWEBuffer>>* bufferVector, uint8_t frameIndex);
 		void destroyStage(bool returningToMain);
 
-		void drawLevel(FrameInfo& frameInfo);
+		void renderLevel(FrameInfo& frameInfo);
 
-
-		LevelValues levelValues;
+		//LevelValues levelValues;
 		EWEGameObject background;
 		std::vector<EWEGameObject> accessoryBackground;
 		bool drawingBackground = false;
@@ -50,8 +51,13 @@ namespace EWE {
 		}
 
 	protected:
+		LevelID currentLevel = 0;
+
+		std::unordered_map<LevelID, std::unique_ptr<Level>> levels{};
 
 		EWEDevice& device;
+
+		void populateLevels();
 	};
 
 }

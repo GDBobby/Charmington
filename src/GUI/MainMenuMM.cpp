@@ -14,7 +14,7 @@ namespace EWE {
 		clickText.emplace_back("Audio Settings", 0.f, 680.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
 
 		clickText.emplace_back("Exit", 0.f, 860.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
-		clickText.emplace_back("Shader Generation", 0.f, 520.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
+		clickText.emplace_back("Charmington", 0.f, 520.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
 		//clickText.emplace_back("Level Builder", 0.f, 760.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
 		
 	}
@@ -43,8 +43,8 @@ namespace EWE {
 				break;
 			}
 			case 3: {
-				printf("should not be able to enter LB mode, probably a crash \n");
-				clickReturns.push(MCR_swapToMelonJam);
+				//printf("should not be able to enter LB mode, probably a crash \n");
+				clickReturns.push(MCR_swapToCharmington);
 				break;
 			}
 			

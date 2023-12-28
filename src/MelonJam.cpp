@@ -1,7 +1,6 @@
 #include "MelonJam.h"
 
 #include "GUI/MainMenuMM.h"
-#include "GUI/ShaderGenerationMM.h"
 //#include "GUI/ControlsMM.h"
 #include <EWEngine/systems/StaticRendering/StaticRenderingSystem.h>
 
@@ -26,9 +25,11 @@ namespace EWE {
 		soundEngine->loadSoundMap(effectsMap, SoundEngine::SoundType::Effect);
 
 		addModulesToMenuManager(screenWidth, screenHeight);
+		addPipelinesToSystem();
 		loadGlobalObjects();
 		currentScene = scene_mainmenu;
 		scenes.emplace(scene_mainmenu, std::make_unique<MainMenuScene>(ewEngine));
+		scenes.emplace(scene_Charmington, std::make_unique<CharmingtonScene>(ewEngine));
 		//scenes.emplace(scene_)
 		currentScenePtr = scenes.at(currentScene).get();
 		currentScenePtr->load();
@@ -76,6 +77,7 @@ namespace EWE {
 				EWETexture::clearSceneTextures();
 				//loading entry?
 				if (currentScene != scene_exitting) {
+
 					currentScenePtr = scenes.at(currentScene).get();
 					currentScenePtr->load();
 					currentScenePtr->entry();
@@ -157,7 +159,6 @@ namespace EWE {
 		menuManager.menuModules.at(menu_main)->labels[1].string = "1.0.0";
 		//
 		//menuManager.menuModules.emplace(menu_ShaderGen, std::make_unique<ShaderGenerationMM>(windowPtr, screenWidth, screenHeight));
-		Shader::InputBox::giveGLFWCallbacks(MenuManager::staticMouseCallback, MenuManager::staticKeyCallback);
 	}
 
 	bool MelonJam::processClick() {
@@ -230,8 +231,9 @@ namespace EWE {
 				}
 				break;
 			}
-			case MCR_swapToMelonJam: {
-				currentScene = scene_MelonJam;
+			case MCR_swapToCharmington: {
+				printf("swapping to charmington \n");
+				currentScene = scene_Charmington;
 				wantsToChangeScene = true;
 				break;
 			}
@@ -251,5 +253,9 @@ namespace EWE {
 			}
 		}
 		return wantsToChangeScene;
+	}
+
+	void MelonJam::addPipelinesToSystem() {
+		PipelineSystem::emplace(Pipe_background, new BackgroundPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
 	}
 }

@@ -4,6 +4,10 @@
 
 #include "Scenes/SceneEnum.h"
 #include "Scenes/MainMenuScene.h"
+#include "Scenes/CharmingtonScene.h"
+
+#include "pipelines/BackgroundPipe.h"
+#include "pipelines/PipelineEnum.h"
 
 //#include "Scenes/FreeCameraScene.h"
 #include <functional>
@@ -34,5 +38,10 @@ namespace EWE {
 		
 		void loadGlobalObjects();
 		bool processClick();
+
+		void addPipelinesToSystem();
+
+
+
 	};
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include <EWEngine/EightWindsEngine.h>
 #include <EWEngine/Scene.h>
+#include "../systems/LevelManager.h"
+#include "../Characters/Charmer.h"
 
 namespace EWE {
 	class CharmingtonScene : public Scene {
@@ -18,5 +20,11 @@ namespace EWE {
 		bool render(double dt) override;
 
 	protected:
+		LevelManager levelManager;
+		Charmer charmer;
+
+		bool logicActive = false;
+		void logicThreadFunction();
+		std::unique_ptr<std::thread> logicThread;
 	};
 }
