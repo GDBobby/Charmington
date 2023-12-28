@@ -19,9 +19,13 @@ namespace EWE {
 		void exit() override;
 		bool render(double dt) override;
 
+		void giveCharmerFocus() {
+			charmer.giveInputFocus();
+		}
+
 	protected:
-		LevelManager levelManager;
 		Charmer charmer;
+		LevelManager levelManager;
 
 		bool logicActive = false;
 		void logicThreadFunction();

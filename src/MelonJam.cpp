@@ -242,6 +242,15 @@ namespace EWE {
 				wantsToChangeScene = true;
 				break;
 			}
+			case MCR_EscapePressed: {
+				printf("MCR escape pressed \n");
+				if (currentScene == scene_Charmington) {
+					printf("returning input t charmer? \n");
+					menuManager.closeMenu();
+					((CharmingtonScene*)currentScenePtr)->giveCharmerFocus();
+				}
+				break;
+			}
 			case MCR_none: {
 				printf("returned MCR_Return \n");
 				throw std::runtime_error("this should nto be returned");

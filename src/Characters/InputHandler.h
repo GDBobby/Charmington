@@ -22,6 +22,9 @@ namespace EWE {
 	struct CharmerKeys {
 		std::pair<double, double> clickPosition = { -1.0, -1.0 };
 
+		bool actionPressed[4] = { false, false, false, false };
+		bool actionReleased[4] = { false, false, false, false };
+
 		bool forwardPressed = false;
 		bool backwardPressed = false;
 		bool leftPressed = false;
@@ -31,13 +34,15 @@ namespace EWE {
 
 	class CharmerInput {
 	protected:
+		static CharmerInput* inputPtr;
 	public:
 
 		CharmerInput(GLFWwindow* wnd) : window{ wnd } {
 			glfwGetCursorPos(wnd, &mousePosX, &mousePosY);
+			inputPtr = this;
 		}
 		~CharmerInput() {
-			//printf("input handler deconstruciton \n");
+			inputPtr = nullptr;
 		}
 		/*
 		void init(GLFWwindow* wnd) {
@@ -48,6 +53,15 @@ namespace EWE {
 		*/
 
 		//static InputHandler* inputPointer;
+		static void giveCallbackReturns(GLFWmousebuttonfun mousecallback, GLFWkeyfun keycallback) {
+			mousecallbackReturn = mousecallback;
+			keycallbackReturn = keycallback;
+		}
+		static void returnCallbacks() {
+			glfwSetKeyCallback(inputPtr->window, keycallbackReturn);
+			glfwSetMouseButtonCallback(inputPtr->window, mousecallbackReturn);
+		}
+
 		static void staticKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void staticMouseCallback(GLFWwindow* window, int button, int action, int mods);
 
@@ -57,7 +71,7 @@ namespace EWE {
 
 		void returnFocus() {
 			//glfwFocusWindow(window);
-			printf("player man input menu active to false \n");
+			//printf("player man input menu active to false \n");
 			menuActive = false;
 			glfwGetCursorPos(window, &mousePosX, &mousePosY);
 			glfwSetKeyCallback(window, staticKeyCallback);
@@ -75,6 +89,9 @@ namespace EWE {
 		void Reset() {
 			liveActions = CharmerKeys{};
 		}
+	protected:
+		static GLFWmousebuttonfun mousecallbackReturn;
+		static GLFWkeyfun keycallbackReturn;
 
 	};
 }

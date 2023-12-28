@@ -12,12 +12,13 @@
 
 #include "Level.h"
 #include "../Levels/FirstLevel.h"
+#include "../Characters/Charmer.h"
 
 
 namespace EWE {
 	class LevelManager {
 	public:
-		LevelManager(EWEDevice& device);
+		LevelManager(EWEDevice& device, Charmer& charmer);
 
 		~LevelManager();
 
@@ -31,7 +32,7 @@ namespace EWE {
 
 		void initLevel(EWEDevice& device);
 
-		void swapNextStage();
+		void swapNextStage(LevelID levelID);
 		//void writeToBuffer(std::vector<std::unique_ptr<EWEBuffer>>* bufferVector, uint8_t frameIndex);
 		void destroyStage(bool returningToMain);
 
@@ -49,15 +50,19 @@ namespace EWE {
 		void reset() {
 			printf("~~~~~~~~~~~~~~~~~ RESETTING LEVEL MANAGER ~~~~~~~~~~~~~~~~~~~~~~~ \n");
 		}
+		void logicUpdate();
 
 	protected:
-		LevelID currentLevel = 0;
+		Charmer& charmer;
+
+		Level* currentLevel = 0;
 
 		std::unordered_map<LevelID, std::unique_ptr<Level>> levels{};
 
 		EWEDevice& device;
 
 		void populateLevels();
+
 	};
 
 }

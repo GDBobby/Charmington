@@ -6,6 +6,8 @@
 
 #include "CharmerSkeleton.h"
 #include "InputHandler.h"
+#include "../systems/Level.h"
+
 //#include <skeleton>
 
 namespace EWE {
@@ -15,19 +17,39 @@ namespace EWE {
 	public:
 		//std::unique_ptr<CharmerSkeleton> skeleton;
 		//std::shared_ptr<EweObject> tool; //if wielding a tool?
-		Charmer(GLFWwindow* wnd, EWECamera& camera);
+		Charmer(EWEDevice& device, GLFWwindow* wnd, EWECamera& camera, std::shared_ptr<EWEDescriptorPool> globalPool);
+		~Charmer();
 
+		void giveInputFocus() {
+			inputHandler.returnFocus();
+		}
+		bool wantsMenu() {
+			if (inputHandler.menuActive) {
+				inputHandler.menuActive = false;
+				return true;
+			}
+			return false;
+		}
+
+		void logicUpdate();
+		void renderUpdate();
+		glm::vec3 const& getTranslation() {
+			return transform.translation;
+		}
+
+		Level* currentLevel;
+	protected:
 		CharmerInput inputHandler;
 
 		SkinBufferHandler* bufferPointer{ nullptr };
 		//AnimationData animationData{};
 
-		PlayerPushConstantData pushData;
-		TransformComponent transform;
+		PlayerPushConstantData pushData{};
+		TransformComponent transform{};
 		EWECamera& camera;
 
-		void logicUpdate();
-		void renderUpdate();
+		uint32_t animFrame = 0;
+		CharmerSkeleton::Charmer_Animations animState = CharmerSkeleton::Anim_idle;
 	};
 }
 

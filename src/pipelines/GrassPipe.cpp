@@ -1,16 +1,16 @@
-#include "BackgroundPipe.h"
+#include "GrassPipe.h"
 
 namespace EWE {
-	BackgroundPipe::BackgroundPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	GrassPipe::GrassPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
 		//createPipeline();
 
 		createPipeLayout(device);
 		createPipeline(device, pipeRenderInfo);
 	}
 
-	void BackgroundPipe::createPipeLayout(EWEDevice& device) {
+	void GrassPipe::createPipeLayout(EWEDevice& device) {
 		pushStageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		pushSize = sizeof(ModelPushData);
+		pushSize = sizeof(UVScrollingPushData);
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -24,7 +24,7 @@ namespace EWE {
 		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
 
-		std::vector<VkDescriptorSetLayout>* tempDSL = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
+		std::vector<VkDescriptorSetLayout>* tempDSL = DescriptorHandler::getPipeDescSetLayout(PDSL_grass, device);
 		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL->size());
 		pipelineLayoutInfo.pSetLayouts = tempDSL->data();
 
@@ -33,17 +33,17 @@ namespace EWE {
 			throw std::runtime_error("Failed to create pipe layout \n");
 		}
 	}
-	void BackgroundPipe::createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	void GrassPipe::createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
 		EWEPipeline::PipelineConfigInfo pipelineConfig{};
 		EWEPipeline::defaultPipelineConfigInfo(pipelineConfig);
 		pipelineConfig.pipelineRenderingInfo = pipeRenderInfo;
 
 		pipelineConfig.pipelineLayout = pipeLayout;
 		//pipelineConfig.bindingDescriptions = EffectVertex::getBindingDescriptions();
-		pipelineConfig.bindingDescriptions = EWEModel::getBindingDescriptions<EffectVertex>();
-		pipelineConfig.attributeDescriptions = EffectVertex::getAttributeDescriptions();
-		std::string vertString = "visualEffect.vert.spv";
-		std::string fragString = "visualEffect.frag.spv";
+		pipelineConfig.bindingDescriptions = GrassVertex::getBindingDescriptions();
+		pipelineConfig.attributeDescriptions = GrassVertex::getAttributeDescriptions();
+		std::string vertString = "grassField.vert.spv";
+		std::string fragString = "grassField.frag.spv";
 
 		pipe = std::make_unique<EWEPipeline>(device, vertString, fragString, pipelineConfig);
 	}

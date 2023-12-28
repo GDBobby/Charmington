@@ -10,19 +10,12 @@ namespace EWE {
 	private:
 	public:
 		enum Charmer_Animations {
-			Anim_attack,
-			Anim_dead,
-			Anim_stun,
-			Anim_walking,
-
 
 			Anim_idle,
 		};
 
 
-		CharmerSkeleton(EWEDevice& device) : SkeletonBase{ CHARMER_IMPORT_PATH, device, CHARMER_TEXTURE_PATH } {
-
-		}
+		CharmerSkeleton(EWEDevice& device);
 
 		void* getFinalBones(uint8_t animState, uint16_t animFrames) override;
 	};

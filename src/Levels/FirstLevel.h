@@ -4,13 +4,11 @@
 namespace EWE {
 	class FirstLevel : public Level {
 	public:
-		FirstLevel(EWEDevice& device) : Level{ } {
-			floorTransform.scale.x = 100.f;
-			floorTransform.scale.z = 100.f;
+		FirstLevel(EWEDevice& device) : Level{TileSet::TS_First} {
+			floorTransform.scale.x = 50.f;
+			floorTransform.scale.z = 50.f;
 		}
-		void enterLevel(EWEDevice& device) override {
-			floorTextureID = EWETexture::addSceneTexture(device, "map.png");
-		}
+		void enterLevel(EWEDevice& device) override;
 
 
 	};
