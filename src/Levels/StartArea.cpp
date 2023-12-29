@@ -6,5 +6,9 @@ namespace EWE {
 		std::string tileMapLocation{ "models/startArea.tmx" };
 
 		enterLevelP(device, textureLocation, tileMapLocation);
+
+
+		rock.reset(new EweObject("rock", device, false));
+		rock->transform.translation.z = -11.f;
 	}
 }

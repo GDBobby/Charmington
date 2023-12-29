@@ -7,6 +7,5 @@ namespace EWE {
 
 		enterLevelP(device, textureLocation, tileMapLocation);
 
-		rock.reset(new EweObject("rock", device, false));
 	}
 }

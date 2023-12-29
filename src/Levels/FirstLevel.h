@@ -17,17 +17,8 @@ namespace EWE {
 
 		}
 		void enterLevel(EWEDevice& device) override;
-		void exitLevel() override {
-			//auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
-			//for (auto iter = rock->ownedTextureIDs.begin(); iter != rock->ownedTextureIDs.end(); iter++) {
-			//	materialHandler->removeByTransform(*iter, &rock->transform);
-			//}
-			rock.reset();
-			
 
-		}
 
 	protected:
-		std::unique_ptr<EweObject> rock;
 	};
 }
