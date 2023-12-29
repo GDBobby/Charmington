@@ -36,20 +36,7 @@ namespace EWE {
 	}
 
 	void Level::render(FrameInfo& frameInfo) {
-		{
-			auto pipe = PipelineSystem::at(Pipe_background);
 
-			pipe->bindPipeline();
-			pipe->bindModel(floor.get());
-			pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
-			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(floorTextureID, frameInfo.cmdIndexPair.second));
-
-			ModelPushData push;
-			push.modelMatrix = floorTransform.mat4();
-			//push.normalMatrix = floorTransform.normalMatrix();
-
-			pipe->pushAndDraw(&push);
-		}
 		//pipe->drawInstanced(floor.get());
 		{
 			auto pipe = PipelineSystem::at(Pipe_grass2);
@@ -66,14 +53,22 @@ namespace EWE {
 				pipe->drawInstanced(grassField[i].get());
 			}
 		}
+		{
+			auto pipe = PipelineSystem::at(Pipe_background);
 
+			pipe->bindPipeline();
+			pipe->bindModel(floor.get());
+			pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
+			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(floorTextureID, frameInfo.cmdIndexPair.second));
+
+			ModelPushData push;
+			push.modelMatrix = floorTransform.mat4();
+			//push.normalMatrix = floorTransform.normalMatrix();
+
+			pipe->pushAndDraw(&push);
+		}
 
 		return;
-
-
-		for (int i = 0; i < terrainObjects.size(); i++) {
-			terrainObjects[i].render(frameInfo);
-		}
 	}
 	/*
 	TileFlag Level::tileFlagAt(float x, float y) {
@@ -94,7 +89,7 @@ namespace EWE {
 
 		//printf("x ? %d \n", static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2);
 		//printf("y ? %d \n", static_cast<int>(std::floor(y * 2.f)) * mapHeight + (mapWidth * mapHeight / 2));
-
+		
 		return tiles.at(static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2 + static_cast<int>(std::floor(y * 2.f)) * mapWidth + (mapWidth * mapHeight / 2));
 	}
 
@@ -237,8 +232,6 @@ namespace EWE {
 			//instanceData[currentTile].transform = transform.mat4();
 			//tileSet.setUVOffset(tileID, uvOffset);
 			tiles.emplace_back((TileFlag)tileBuffer);
-			//instanceData.emplace_back(transform.mat4(), uvOffset);
-			//currentTile++;
 		}
 
 		loadGrass(device);

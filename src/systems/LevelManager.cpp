@@ -10,6 +10,7 @@ namespace EWE {
 	}
 
 	void LevelManager::initLevel(EWEDevice& device) {
+
 		currentLevel->enterLevel(device, ewEngine.advancedRS.globalPool);
 		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
 		charmer.currentLevel = currentLevel;
@@ -114,6 +115,8 @@ namespace EWE {
 
 		levels.emplace(Level::Level_Start, std::make_unique<StartLevel>(device));
 		levels.emplace(Level::Level_First, std::make_unique<FirstLevel>(device));
+		levels.emplace(Level::Level_Connector, std::make_unique<ConnectorLevel>(device));
+		levels.emplace(Level::Level_WoodChop, std::make_unique<ForestLevel>(device));
 		printf("after loading levels : %d\n", SaveJSON::saveData.currentMap);
 		currentLevel = levels.at(SaveJSON::saveData.currentMap).get();
 		currentLevelID = SaveJSON::saveData.currentMap;

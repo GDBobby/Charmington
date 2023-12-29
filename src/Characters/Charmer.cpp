@@ -130,6 +130,8 @@ namespace EWE {
 			}
 		}
 		TileFlag tileFlag = currentLevel->tileAt(transform.translation.x, transform.translation.z);
+		//printf("tileFlag : %d \n", tileFlag);
+
 		//printf("translation: %.2f:%.2f:%.2f \n", transform.translation.x, transform.translation.y, transform.translation.z);
 		if ((uint16_t)tileFlag >= (uint16_t)TileFlag_exit1) {
 			changeLevel = tileFlag - TileFlag_exit1;

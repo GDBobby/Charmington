@@ -10,11 +10,13 @@
 #include "EWEngine/systems/RigidRendering/RigidRenderSystem.h"
 #include <EWEngine/EightWindsEngine.h>
 #include "EWEngine/graphics/EWE_FrameInfo.h"
+#include "../Characters/Charmer.h"
 
 #include "Level.h"
 #include "../Levels/FirstLevel.h"
 #include "../Levels/StartArea.h"
-#include "../Characters/Charmer.h"
+#include "../Levels/ConnectorLevel.h"
+#include "../Levels/ForestLevel.h"
 
 
 namespace EWE {

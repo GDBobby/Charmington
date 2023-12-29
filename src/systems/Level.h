@@ -40,8 +40,8 @@ namespace EWE {
 		enum Level_Enum : LevelID {
 			Level_Start,
 			Level_First, //encounter with Carrot
-			Level_Second,
-			Level_Third,
+			Level_Connector,
+			Level_WoodChop,
 			Level_Fourth,
 		};
 
@@ -58,15 +58,15 @@ namespace EWE {
 		virtual void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) = 0;
 		virtual void exitLevel() {
 			floor.reset();
-			terrainObjects.clear();
 			for (int i = 0; i < grassField.size(); i++) {
 				grassField[i].reset();
 			}
+			tiles.clear();
 		}
 
 		std::vector<LevelID> exits{};
 
-		std::vector<Terrain_Object> terrainObjects{};
+		//std::vector<Terrain_Object> terrainObjects{};
 
 		TransformComponent floorTransform{};
 		TextureID floorTextureID;
@@ -77,7 +77,7 @@ namespace EWE {
 
 		void loadGrass(EWEDevice& device);
 
-		TileFlag tileAt(float x, float y);
+		virtual TileFlag tileAt(float x, float y);
 
 		TransformComponent const& getEntryTransform(LevelID fromLevel) {
 			return entryPoints.at(fromLevel);
