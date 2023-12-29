@@ -7,6 +7,7 @@
 #include "Scenes/CharmingtonScene.h"
 
 #include "pipelines/BackgroundPipe.h"
+#include "pipelines/GrassPipe.h"
 #include "pipelines/PipelineEnum.h"
 
 //#include "Scenes/FreeCameraScene.h"

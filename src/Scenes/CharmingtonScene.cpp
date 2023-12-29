@@ -6,7 +6,7 @@ namespace EWE {
 		menuManager{ ewEngine.menuManager },
 		soundEngine{ SoundEngine::getSoundEngineInstance() },
 		charmer{ ewEngine.eweDevice, ewEngine.mainWindow.getGLFWwindow(), ewEngine.camera, ewEngine.advancedRS.globalPool },
-		levelManager{ewEngine.eweDevice, charmer}
+		levelManager{ewEngine, ewEngine.eweDevice, charmer}
 	{
 		CharmerInput::giveCallbackReturns(ewEngine.menuManager.staticMouseCallback, ewEngine.menuManager.staticKeyCallback);
 	}
@@ -19,7 +19,7 @@ namespace EWE {
 
 
 
-		ewEngine.advancedRS.updatePipelines(ewEngine.objectManager, ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
 		printf("after updating pipelines load menu objects, returning \n");
 	}
 	void CharmingtonScene::entry() {
@@ -35,6 +35,15 @@ namespace EWE {
 			ewEngine.camera.bindUBO(i);
 		}
 		*/
+		LightBufferObject lbo;
+		lbo.ambientColor = glm::vec4(0.1f, 0.1f, 0.1f, 1.f);
+		lbo.sunlightDirection = { 1.f, 3.f, 1.f, 0.f };
+		lbo.sunlightColor = glm::vec4{ 1.f, 1.f, 1.f, 1.f };
+		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+			ewEngine.bufferMap[Buff_gpu][i]->writeToBuffer(&lbo);
+			ewEngine.bufferMap[Buff_gpu][i]->flush();
+		}
+
 		//new camera method
 		levelManager.initLevel(ewEngine.eweDevice);
 		charmer.giveInputFocus();

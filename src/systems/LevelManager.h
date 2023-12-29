@@ -8,17 +8,19 @@
 
 #include "EWEngine/systems/SkinRendering/SkinRenderSystem.h"
 #include "EWEngine/systems/RigidRendering/RigidRenderSystem.h"
+#include <EWEngine/EightWindsEngine.h>
 #include "EWEngine/graphics/EWE_FrameInfo.h"
 
 #include "Level.h"
 #include "../Levels/FirstLevel.h"
+#include "../Levels/StartArea.h"
 #include "../Characters/Charmer.h"
 
 
 namespace EWE {
 	class LevelManager {
 	public:
-		LevelManager(EWEDevice& device, Charmer& charmer);
+		LevelManager(EightWindsEngine& ewEngine, EWEDevice& device, Charmer& charmer);
 
 		~LevelManager();
 
@@ -60,6 +62,7 @@ namespace EWE {
 		std::unordered_map<LevelID, std::unique_ptr<Level>> levels{};
 
 		EWEDevice& device;
+		EightWindsEngine& ewEngine;
 
 		void populateLevels();
 

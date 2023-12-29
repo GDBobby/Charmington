@@ -42,6 +42,38 @@ namespace EWE {
 				//rotation = glm::half_pi<float>();
 				break;
 			}
+			case 2147484152: {
+				tileID = 495;
+				break;
+			}
+			case 1610613228: {
+				tileID = 495;
+				break;
+			}
+			case 1610613206: {
+				tileID = 495;
+				break;
+			}
+			case 3221225942: {
+				tileID = 495;
+				break;
+			}
+			case 536871382: {
+				tileID = 495;
+				break;
+			}
+			case 2684355030: {
+				tileID = 495;
+				break;
+			}
+			case 3221225964: {
+				tileID = 495;
+				break;
+			}
+			case 2684355052: {
+				tileID = 495;
+				break;
+			}
 			case 493: {
 				tileID = 499;
 				break;
@@ -67,7 +99,7 @@ namespace EWE {
 		}
 		
 		if (tileID > (width * height)) {
-			printf("invalid tile, probably a rotated tile. need to add support \n");
+			printf("invalid tile, probably a rotated tile. need to add support : %lu \n", tileID);
 			throw std::runtime_error("invalid tile");
 		}
 	}

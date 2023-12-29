@@ -16,7 +16,7 @@ namespace EWE {
 
 		
 
-		ewEngine.advancedRS.updatePipelines(ewEngine.objectManager, ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
 		printf("after updating pipelines load menu objects, returning \n");
 	}
 	void MainMenuScene::entry() {

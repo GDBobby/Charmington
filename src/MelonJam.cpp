@@ -152,7 +152,7 @@ namespace EWE {
 			ewEngine.objectManager.pointLights[i].transform.translation.z *= 5.f;
 			ewEngine.objectManager.pointLights[i].transform.translation.y += 1.f;
 		}
-		ewEngine.advancedRS.updatePipelines(ewEngine.objectManager, ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
 	}
 	void MelonJam::addModulesToMenuManager(float screenWidth, float screenHeight) {
 		menuManager.menuModules.emplace(menu_main, std::make_unique<MainMenuMM>(screenWidth, screenHeight));
@@ -186,6 +186,9 @@ namespace EWE {
 				if (currentScene == scene_mainmenu) {
 					printf("pre main menu change menu state \n");
 					menuManager.changeMenuState(menu_main);
+				}
+				else if (currentScene == scene_Charmington) {
+					menuManager.changeMenuState(menu_Charmington);
 				}
 				else {
 					printf("game state in discard returrn? : %d \n", currentScene);
@@ -221,6 +224,10 @@ namespace EWE {
 				if (currentScene == scene_mainmenu) {
 					menuManager.changeMenuState(menu_main);
 				}
+				else if (currentScene == scene_Charmington) {
+					menuManager.changeMenuState(menu_Charmington);
+				}
+				
 	#if 0
 				else if (currentScene == scene_other) {
 					//if you'd like multiple return destionations from the graphics menu, set them up here
@@ -266,5 +273,6 @@ namespace EWE {
 
 	void MelonJam::addPipelinesToSystem() {
 		PipelineSystem::emplace(Pipe_background, new BackgroundPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
+		PipelineSystem::emplace(Pipe_grass2, new GrassPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
 	}
 }

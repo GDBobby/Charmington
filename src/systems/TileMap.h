@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-typedef uint32_t TileID;
+typedef uint64_t TileID;
 enum class TileFlag {
 	none,
 	solid,
@@ -19,6 +19,7 @@ namespace EWE {
 	struct TileSet {
 		enum TileSet_Enum {
 			TS_First,
+			//TS_Start,
 		};
 
 		TileSet_Enum setID;

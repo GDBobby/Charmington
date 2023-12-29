@@ -23,6 +23,7 @@ namespace EWE {
 	}
 	Charmer::~Charmer() {
 		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);
+		skeleton.reset();
 	}
 
 	void Charmer::logicUpdate() {
@@ -127,7 +128,7 @@ namespace EWE {
 		//update tool position
 		//update pet position
 		//update animation
-		glm::vec3 cameraPos = transform.translation + glm::vec3{ 0.f, 10.f, 5.f };
+		glm::vec3 cameraPos = transform.translation + glm::vec3{ 0.f, 6.f, 3.f };
 		glm::vec3 target = transform.translation;
 		camera.updateViewData(cameraPos, target);
 

@@ -2,7 +2,7 @@
 #include <EWEngine/graphics/model/EWE_Basic_Model.h>
 
 namespace EWE {
-	LevelManager::LevelManager(EWEDevice& device, Charmer& charmer) : device{ device }, soundEngine{ SoundEngine::getSoundEngineInstance() }, charmer{ charmer } {
+	LevelManager::LevelManager(EightWindsEngine& ewEngine, EWEDevice& device, Charmer& charmer) : device{ device }, soundEngine{ SoundEngine::getSoundEngineInstance() }, charmer{ charmer }, ewEngine{ewEngine} {
 
 		populateLevels();
 	}
@@ -11,6 +11,7 @@ namespace EWE {
 
 	void LevelManager::initLevel(EWEDevice& device) {
 		currentLevel->enterLevel(device);
+		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
 		charmer.currentLevel = currentLevel;
 	}
 	void LevelManager::logicUpdate() {
@@ -30,6 +31,7 @@ namespace EWE {
 	void LevelManager::populateLevels() {
 
 		levels.emplace(0, std::make_unique<FirstLevel>(device));
-		currentLevel = levels.at(0).get();
+		levels.emplace(1, std::make_unique<StartLevel>(device));
+		currentLevel = levels.at(1).get();
 	}
 }

@@ -1,13 +1,13 @@
 #pragma once
+
 #include <EWEngine/graphics/EWE_Object.h>
 
 #include "../systems/Level.h"
 
-
 namespace EWE {
-	class FirstLevel : public Level {
+	class StartLevel : public Level {
 	public:
-		FirstLevel(EWEDevice& device) : Level{TileSet::TS_First} {
+		StartLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
 		}
 		void enterLevel(EWEDevice& device) override;
 

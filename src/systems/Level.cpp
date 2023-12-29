@@ -36,19 +36,38 @@ namespace EWE {
 	}
 
 	void Level::render(FrameInfo& frameInfo) {
-		auto pipe = PipelineSystem::at(Pipe_background);
+		{
+			auto pipe = PipelineSystem::at(Pipe_background);
 
-		pipe->bindPipeline();
-		pipe->bindModel(floor.get());
-		pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
-		pipe->bindDescriptor(1, EWETexture::getDescriptorSets(floorTextureID, frameInfo.cmdIndexPair.second));
+			pipe->bindPipeline();
+			pipe->bindModel(floor.get());
+			pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
+			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(floorTextureID, frameInfo.cmdIndexPair.second));
 
-		ModelPushData push;
-		push.modelMatrix = floorTransform.mat4();
-		//push.normalMatrix = floorTransform.normalMatrix();
+			ModelPushData push;
+			push.modelMatrix = floorTransform.mat4();
+			//push.normalMatrix = floorTransform.normalMatrix();
 
-		pipe->pushAndDraw(&push);
+			pipe->pushAndDraw(&push);
+		}
 		//pipe->drawInstanced(floor.get());
+		{
+			auto pipe = PipelineSystem::at(Pipe_grass2);
+			pipe->bindPipeline();
+			
+			pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
+			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(grassTextureID, frameInfo.cmdIndexPair.second));
+			grassTime += frameInfo.time;
+			UVScrollingPushData push{ glm::vec2{glm::mod(grassTime / 6.f, 1.f), glm::mod(grassTime / 9.f, 1.f)} };
+			//printf("uv scroll : %.5f:%.5f \n", push.uvScroll.x, push.uvScroll.y);
+			pipe->push(&push);
+
+			for (int i = 0; i < grassField.size(); i++) {
+				pipe->drawInstanced(grassField[i].get());
+			}
+		}
+
+
 		return;
 
 
@@ -81,7 +100,7 @@ namespace EWE {
 		//LARGE_INTEGER queryStart;
 		//QueryPerformanceCounter(&queryStart);
 
-		grassTextureID = EWETexture::addSceneTexture(device, "redWind.png", EWETexture::tType_simpleVert);
+		grassTextureID = EWETexture::addSceneTexture(device, "noise.ppm", EWETexture::tType_simpleVert);
 		printf("redwind value - %d \n", grassTextureID);
 
 		std::string grassNames[5] = {
@@ -95,8 +114,9 @@ namespace EWE {
 		//objectManager.grassField.resize(5, EWEGameObject::createGameObject());
 		//printf("about to load model for grass field \n");
 
+		
 		for (int i = 0; i < 5; i++) {
-			grassField[i].model = EWEModel::createGrassModelFromFile(device, grassNames[i]);
+			grassField[i] = EWEModel::createGrassModelFromFile(device, grassNames[i]);
 		}
 
 		std::array<std::vector<GrassInstance>, 5> instanceTranslation;
@@ -118,6 +138,7 @@ namespace EWE {
 		for (int i = 0; i < instanceTranslation.size(); i++) {
 			instanceTranslation[i].reserve(grassPatchCount); // grassFieldWidth squared / 5
 		}
+
 		int counter = 0;
 		int rowCounter = 0;
 		int rotationCounter[5] = { 0,0,0,0,0 };
@@ -129,8 +150,8 @@ namespace EWE {
 					//transform.translation.x = 0.5f * (static_cast<float>(currentTile % mapWidth) - (static_cast<float>(mapWidth) / 2.f));
 					//transform.translation.z = static_cast<float>(0.5 * (std::floor(static_cast<double>(currentTile) / static_cast<double>(mapWidth)) - (static_cast<double>(mapHeight) / 2.0)));
 
-					instanceTransform.translation.x = 0.5f * (static_cast<float>(i) - (static_cast<float>(mapWidth) / 2.f));
-					instanceTransform.translation.z = 0.5f * (static_cast<float>(j) - (static_cast<float>(mapHeight) / 2.f));
+					instanceTransform.translation.x = 0.5f * (static_cast<float>(i) - (static_cast<float>(mapWidth) / 2.f)) + 0.25f;
+					instanceTransform.translation.z = 0.5f * (static_cast<float>(j) - (static_cast<float>(mapHeight) / 2.f)) + 0.25f;
 
 					instanceTransform.rotation = instanceRotations[rotationCounter[counter]];
 					instanceTranslation[counter].emplace_back(instanceTransform.mat4());
@@ -144,11 +165,72 @@ namespace EWE {
 			}
 			rowCounter = (rowCounter + 2) % 5;
 		}
+
 		//uint32_t totalPatchCount = 0;
-		for (uint8_t i = 0; i < 5; i++) {
+		for (uint8_t i = 0; i < grassField.size(); i++) {
 			//totalPatchCount += static_cast<uint32_t>(instanceTranslation[i].size());
 			//printf("size of instancing buffer[%d] : %d \n", i, instanceTranslation[i].size() * sizeof(EWEModel::GrassInstance));
-			grassField[i].model->AddInstancing(static_cast<uint32_t>(instanceTranslation[i].size()), sizeof(GrassInstance), instanceTranslation[i].data());
+			grassField[i]->AddInstancing(static_cast<uint32_t>(instanceTranslation[i].size()), sizeof(GrassInstance), instanceTranslation[i].data());
 		}
+	}
+
+	void Level::enterLevelP(EWEDevice& device, std::string textureLocation, std::string tileMapLocation) {
+		floorTextureID = EWETexture::addSceneTexture(device, textureLocation);
+		tileSize = 32;
+
+		std::ifstream inStream{ tileMapLocation };
+		if (!inStream.is_open()) {
+			if (!std::filesystem::exists(tileMapLocation)) {
+				printf("loaded map doesn't exist : %s \n", tileMapLocation.c_str());
+				throw std::runtime_error("inexistant file \n");
+			}
+			inStream.open(tileMapLocation);
+			if (!inStream.is_open()) {
+				printf("failed to load map twice : %s \n", tileMapLocation.c_str());
+				throw std::runtime_error("failed to loadm ap twice");
+			}
+		}
+		inStream >> mapWidth;
+		inStream >> mapHeight;
+
+		floor = Basic_Model::generateSimple3DQuad(device);
+		floorTransform.scale.x = static_cast<float>(mapWidth) / 2.f;
+		floorTransform.scale.z = -static_cast<float>(mapHeight) / 2.f;
+
+		uint32_t tileCount = mapWidth * mapHeight;
+		tiles.reserve(tileCount);
+		//std::vector<TileInstance> instanceData;
+		//instanceData.reserve(tileCount);
+		//TransformComponent transform{};
+		//transform.scale = { 0.505f, 0.5f, 0.505f };
+		//glm::vec2 uvOffset;
+		//uint32_t currentTile = 0;
+		TileID tileID;
+		while (!inStream.eof()) {
+			//printf("reading from file : %d \n", currentTile);
+			//transform.rotation.y = 0.f;
+			//std::string tileString;
+			//inStream >> tileString;
+			//printf("tileString : %s \n", tileString.c_str());
+			//continue;
+
+			inStream >> tileID;
+			//if (tileID > tileSet.width * tileSet.height) {
+			//	printf("tileID : %lu \n", tileID);
+			//}
+
+			tileSet.interpretTileID(tileID);// , transform.rotation.y);
+
+			//transform.translation.x = 0.5f * (static_cast<float>(currentTile % mapWidth) - (static_cast<float>(mapWidth) / 2.f));
+			//transform.translation.z = static_cast<float>(0.5 * (std::floor(static_cast<double>(currentTile) / static_cast<double>(mapWidth)) - (static_cast<double>(mapHeight) / 2.0)));
+
+			//instanceData[currentTile].transform = transform.mat4();
+			//tileSet.setUVOffset(tileID, uvOffset);
+			tiles.emplace_back(tileID);
+			//instanceData.emplace_back(transform.mat4(), uvOffset);
+			//currentTile++;
+		}
+
+		loadGrass(device);
 	}
 }

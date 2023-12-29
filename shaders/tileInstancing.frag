@@ -1,6 +1,6 @@
 #version 450
 
-layout(location = 0) in ivec2 tileUV;
+layout(location = 0) in vec2 tileUV;
 
 layout (location = 0) out vec4 outColor;
 
@@ -17,16 +17,6 @@ layout(set = 0, binding = 0) uniform GlobalUbo{
 } ubo;
 
 layout(set = 1, binding = 0) uniform sampler2D texSampler;
-
-layout(set = 2, binding = 0) uniform mapTiles {
-	ivec2 tileIDs[1024];
-};
-
-layout(push_constant) uniform Push{
-	mat4 transform;
-	ivec2 mapDims;
-} push;
-
 
 void main(){
 	

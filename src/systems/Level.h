@@ -52,7 +52,9 @@ namespace EWE {
 		virtual void exitLevel() {
 			floor.reset();
 			terrainObjects.clear();
-
+			for (int i = 0; i < grassField.size(); i++) {
+				grassField[i].reset();
+			}
 		}
 
 		std::vector<Level_Exit> exits;
@@ -77,14 +79,12 @@ namespace EWE {
 		uint32_t tileSize;
 
 		TextureID grassTextureID;
+		float grassTime = 0.f;
 
-		struct GrassPatch {
-			TransformComponent transform;
-			std::unique_ptr<EWEModel> model;
-		};
-
-		std::array<GrassPatch, 5> grassField;
+		std::array<std::unique_ptr<EWEModel>, 5> grassField;
 
 		TileID tileAt(float x, float y);
+
+		void enterLevelP(EWEDevice& device, std::string textureLocation, std::string tileMapLocation);
 	};
 }

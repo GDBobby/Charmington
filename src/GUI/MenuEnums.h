@@ -7,7 +7,7 @@ enum MenuClickReturn : uint16_t {
 	MCR_app_size,
 };
 enum MenuStates : uint16_t {
-	menu_ShaderGen = EWE::menu_engine_size,
+	menu_Charmington = EWE::menu_engine_size,
 
 	menu_app_size,
 };
