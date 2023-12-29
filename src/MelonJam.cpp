@@ -16,13 +16,11 @@ namespace EWE {
 		soundEngine{SoundEngine::getSoundEngineInstance()},
 		windowPtr{ewEngine.mainWindow.getGLFWwindow()}
  {
+		SaveJSON::initializeSettings();
 		float screenWidth = ewEngine.uiHandler.getScreenWidth();
 		float screenHeight = ewEngine.uiHandler.getScreenHeight();
 
-		std::unordered_map<uint16_t, std::string> effectsMap{};
-		effectsMap.emplace(0, "sounds/effects/click.mp3");
-		printf("loading effects \n");
-		soundEngine->loadSoundMap(effectsMap, SoundEngine::SoundType::Effect);
+		addSound();
 
 		addModulesToMenuManager(screenWidth, screenHeight);
 		addPipelinesToSystem();
@@ -274,5 +272,19 @@ namespace EWE {
 	void MelonJam::addPipelinesToSystem() {
 		PipelineSystem::emplace(Pipe_background, new BackgroundPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
 		PipelineSystem::emplace(Pipe_grass2, new GrassPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
+	}
+	void MelonJam::addSound() {
+
+
+		std::unordered_map<uint16_t, std::string> effectsMap{};
+		effectsMap.emplace(0, "sounds/effects/click.mp3");
+		printf("loading effects \n");
+		soundEngine->loadSoundMap(effectsMap, SoundEngine::SoundType::Effect);
+
+		std::unordered_map<uint16_t, std::string> musicMap{};
+		musicMap.emplace(Music_menu, "sounds/music/Melon_main_theme.mp3");
+		musicMap.emplace(Music_spookyForest, "sounds/music/Spooky_forrest_lol.mp3");
+
+		soundEngine->loadSoundMap(musicMap, SoundEngine::SoundType::Music);
 	}
 }

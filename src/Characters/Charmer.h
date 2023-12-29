@@ -4,6 +4,12 @@
 #include <EWEngine/graphics/PushConstants.h>
 #include <EWEngine/graphics/EWE_Camera.h>
 
+#define RENDER_TRANSLATION true
+#if RENDER_TRANSLATION
+#include <EWEngine/graphics/TextOverlay.h>
+#include <format>
+#endif
+
 #include "CharmerSkeleton.h"
 #include "InputHandler.h"
 #include "../systems/Level.h"
@@ -49,11 +55,28 @@ namespace EWE {
 		void setTransform(TransformComponent const& transform) {
 			this->transform = transform;
 		}
+		void tamedCarrot(EWEDevice& device, std::shared_ptr<CarrotSkeleton> carrotSkele) {
+			carrotPet = std::make_unique<CarrotPet>(device, carrotSkele);
+		}
+		glm::vec3* getTranslationPtr() {
+			return &transform.translation;
+		}
+#if RENDER_TRANSLATION
+		void drawTranslation() {
+			constexpr const char* formatString = "Translation : {:.2f}:{:.2f}:{:.2f}";
+			translationRender.string = std::format(formatString, transform.translation.x, transform.translation.y, transform.translation.z);
+
+			TextOverlay::staticAddText(translationRender);
+		}
+#endif
 
 	protected:
+#if RENDER_TRANSLATION
+		TextStruct translationRender{ "translation : ", 1920, 1000, TA_right, 1.f };
+#endif
 		int32_t changeLevel = -1;
 		CharmerInput inputHandler;
-		std::unique_ptr<CarrotPet> carrotPet;
+		std::unique_ptr<CarrotPet> carrotPet{nullptr};
 
 		SkinBufferHandler* bufferPointer{ nullptr };
 		//AnimationData animationData{};
@@ -64,6 +87,8 @@ namespace EWE {
 
 		uint32_t animFrame = 0;
 		CharmerSkeleton::Charmer_Animations animState = CharmerSkeleton::Anim_idle;
+
+		glm::vec2 forwardDir{1.f, 0.f};
 	};
 }
 

@@ -24,8 +24,17 @@ typedef uint16_t LevelID;
 
 class SaveJSON {
 public:
+	enum PetFlags : uint64_t {
+		PF_Carrot = 1,
+		PF_Cat = 1 << 1,
+		PF_Dog = 1 << 2,
+	};
+
 	struct SaveData {
-		LevelID currentMap = 0;
+		int version = 10;
+		int currentMap = 0;
+		int currentEntrance = 0;
+
 		uint64_t petFlags = 0;
 		uint64_t obstacleFlags = 0;
 	};

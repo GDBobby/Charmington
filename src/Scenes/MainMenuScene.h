@@ -2,6 +2,8 @@
 #include <EWEngine/EightWindsEngine.h>
 #include <EWEngine/Scene.h>
 
+#include "../MusicEnum.h"
+
 namespace EWE {
 	class MainMenuScene : public Scene {
 		EightWindsEngine& ewEngine;

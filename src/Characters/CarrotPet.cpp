@@ -1,18 +1,25 @@
 #include "CarrotPet.h"
 
 namespace EWE {
-	std::shared_ptr<CarrotSkeleton> CarrotPet::skeleton{ nullptr };
 
 	CarrotPet::CarrotPet(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
-
-		if (skeleton.get() == nullptr) {
-
-			skeleton = std::make_shared<CarrotSkeleton>(device);
-		}
+		skeleton = std::make_shared<CarrotSkeleton>(device);
 
 		SkinRenderSystem::setPushData(skeleton->getSkeletonID(), &pushData, static_cast<uint8_t>(sizeof(pushData)));
 		bufferPointer = SkinRenderSystem::getSkinBuffer(skeleton->getSkeletonID());
 		bufferPointer->changeMaxActorCount(device, 1, globalPool); // if issues, set this up first
+
+		transform.scale = glm::vec3{ 0.5f };
+	}
+	CarrotPet::~CarrotPet() {
+		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);
+	}
+
+	CarrotPet::CarrotPet(EWEDevice& device, std::shared_ptr<CarrotSkeleton> carrotSkele) {
+		skeleton = carrotSkele;
+		transform.scale = glm::vec3{ 0.5f };
+		SkinRenderSystem::setPushData(skeleton->getSkeletonID(), &pushData, static_cast<uint8_t>(sizeof(pushData)));
+		bufferPointer = SkinRenderSystem::getSkinBuffer(skeleton->getSkeletonID());
 	}
 
 

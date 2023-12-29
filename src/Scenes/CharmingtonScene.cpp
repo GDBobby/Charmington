@@ -6,8 +6,7 @@ namespace EWE {
 		menuManager{ ewEngine.menuManager },
 		soundEngine{ SoundEngine::getSoundEngineInstance() },
 		charmer{ ewEngine.eweDevice, ewEngine.mainWindow.getGLFWwindow(), ewEngine.camera, ewEngine.advancedRS.globalPool },
-		levelManager{ewEngine, ewEngine.eweDevice, charmer},
-		carrot{ ewEngine.eweDevice, ewEngine.advancedRS.globalPool}
+		levelManager{ewEngine, ewEngine.eweDevice, charmer}
 	{
 		CharmerInput::giveCallbackReturns(ewEngine.menuManager.staticMouseCallback, ewEngine.menuManager.staticKeyCallback);
 	}
@@ -24,7 +23,9 @@ namespace EWE {
 		printf("after updating pipelines load menu objects, returning \n");
 	}
 	void CharmingtonScene::entry() {
-		soundEngine->stopMusic();
+		//soundEngine->stopMusic();
+
+
 		//soundEngine->playMusic(Music_Menu);
 
 		//menuManager.changeMenuState(menu_main, 0);
@@ -92,7 +93,7 @@ namespace EWE {
 			levelManager.waitingForRender = false;
 			while (levelManager.waitingForLogic) {
 				printf("waiting for logic thread \n");
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			}
 		}
 
@@ -108,9 +109,20 @@ namespace EWE {
 			frameInfo.cmdIndexPair = cmdBufFrameIndex;
 			frameInfo.time = static_cast<float>(dt);
 			charmer.renderUpdate();
-			carrot.renderUpdate();
 			levelManager.renderLevel(frameInfo);
+#if RENDER_TRANSLATION
+			ewEngine.uiHandler.beginTextRender();
+			if (ewEngine.displayingRenderInfo) {
+				charmer.drawTranslation();
+				ewEngine.uiHandler.Benchmarking(dt, ewEngine.peakRenderTime, ewEngine.averageRenderTime, ewEngine.highestRenderTime, ewEngine.averageLogicTime, BENCHMARKING_GPU, ewEngine.elapsedGPUMS, ewEngine.averageElapsedGPUMS);
+			}
+			ewEngine.uiHandler.drawOverlayText(cmdBufFrameIndex.first, ewEngine.displayingRenderInfo);
+			menuManager.drawText();
+			ewEngine.uiHandler.endTextRender(cmdBufFrameIndex.first);
+#else
+
 			ewEngine.drawText(cmdBufFrameIndex, dt);
+#endif
 			//printf("after displaying render info \n");
 			ewEngine.endRender(cmdBufFrameIndex);
 			//std::cout << "after ending render \n";

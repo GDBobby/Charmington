@@ -1,7 +1,7 @@
 #include "StartArea.h"
 
 namespace EWE {
-	void StartLevel::enterLevel(EWEDevice& device) {
+	void StartLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
 		std::string textureLocation{ "startArea.png" };
 		std::string tileMapLocation{ "models/startArea.tmx" };
 

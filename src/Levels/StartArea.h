@@ -12,6 +12,9 @@ namespace EWE {
 			exits.push_back(Level_Second);
 
 			TransformComponent entryTransform{};
+			entryTransform.rotation.y = -glm::half_pi<float>();
+			entryPoints.emplace(Level::Level_Start, entryTransform);
+
 			entryTransform.translation.x = -10.f;
 			entryTransform.translation.y = 0.f;
 			entryTransform.translation.z = -0.5f;
@@ -20,7 +23,7 @@ namespace EWE {
 
 			entryPoints.emplace(Level::Level_First, entryTransform);
 		}
-		void enterLevel(EWEDevice& device) override;
+		void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) override;
 		void exitLevel() override {
 			//auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
 			//for (auto iter = rock->ownedTextureIDs.begin(); iter != rock->ownedTextureIDs.end(); iter++) {

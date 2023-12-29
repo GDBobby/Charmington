@@ -55,7 +55,7 @@ namespace EWE {
 			}
 		};
 
-		virtual void enterLevel(EWEDevice& device) = 0;
+		virtual void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) = 0;
 		virtual void exitLevel() {
 			floor.reset();
 			terrainObjects.clear();
@@ -73,7 +73,7 @@ namespace EWE {
 
 		//TileFlag tileFlagAt(float x, float y);
 
-		void render(FrameInfo& frameInfo);
+		virtual void render(FrameInfo& frameInfo);
 
 		void loadGrass(EWEDevice& device);
 

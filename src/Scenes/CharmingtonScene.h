@@ -26,7 +26,6 @@ namespace EWE {
 
 	protected:
 		Charmer charmer;
-		Carrot carrot;
 		LevelManager levelManager;
 
 		bool logicActive = false;

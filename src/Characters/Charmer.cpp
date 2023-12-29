@@ -20,6 +20,11 @@ namespace EWE {
 		bufferPointer->changeMaxActorCount(device, 1, globalPool); // if issues, set this up first
 
 		transform.rotation.y = -glm::half_pi<float>();
+
+		if (SaveJSON::saveData.petFlags & SaveJSON::PetFlags::PF_Carrot) {
+			carrotPet = std::make_unique<CarrotPet>(device, globalPool);
+		}
+
 	}
 	Charmer::~Charmer() {
 		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);
@@ -32,11 +37,14 @@ namespace EWE {
 		int horizontalMovement = polledKeys.leftPressed - polledKeys.rightPressed;
 		int lateralMovement = polledKeys.backwardPressed - polledKeys.forwardPressed;
 		glm::vec2 horizontalVelocity = glm::vec2{ 2.f / 250.f * horizontalMovement, 2.f / 250.f * lateralMovement };
-
+		if ((horizontalMovement != 0) || (lateralMovement != 0)) {
+			forwardDir = horizontalVelocity;
+		}
 
 		if ((horizontalMovement != 0) && (lateralMovement != 0)) {
 			horizontalVelocity.x /= 1.41421356f;
 			horizontalVelocity.y /= 1.41421356f;
+			forwardDir /= 1.41421356f;
 
 			//right forward
 			if (horizontalMovement == -1) {
@@ -122,7 +130,7 @@ namespace EWE {
 			}
 		}
 		TileFlag tileFlag = currentLevel->tileAt(transform.translation.x, transform.translation.z);
-		printf("translation: %.2f:%.2f:%.2f \n", transform.translation.x, transform.translation.y, transform.translation.z);
+		//printf("translation: %.2f:%.2f:%.2f \n", transform.translation.x, transform.translation.y, transform.translation.z);
 		if ((uint16_t)tileFlag >= (uint16_t)TileFlag_exit1) {
 			changeLevel = tileFlag - TileFlag_exit1;
 			printf("setting changeLevel : %d \n", changeLevel);
@@ -143,6 +151,17 @@ namespace EWE {
 		bufferPointer->writeData(skeleton->getFinalBones((uint8_t)animState, animFrame));
 		bufferPointer->flush();
 		animFrame = (animFrame + 1) % 80;
+
+		if (carrotPet.get() != nullptr) {
+			carrotPet->transform.translation = transform.translation;
+			//printf("forward dir : %.2f:%.2f \n", forwardDir.x, forwardDir.y);
+
+			carrotPet->transform.translation.x += (forwardDir.x * 50.f);
+			carrotPet->transform.translation.z += (forwardDir.y * 50.f);
+			carrotPet->transform.rotation = transform.rotation;
+			carrotPet->transform.rotation.y += glm::half_pi<float>();
+			carrotPet->renderUpdate();
+		}
 
 	}
 }

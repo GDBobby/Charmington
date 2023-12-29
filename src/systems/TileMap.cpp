@@ -7,7 +7,6 @@ namespace EWE {
 			tileSize = 32;
 			width = 64;
 			height = 19;
-			//fileLocation = "textures/tileSet.png";
 			break;
 		}
 		default: {

@@ -9,6 +9,7 @@
 #include "pipelines/BackgroundPipe.h"
 #include "pipelines/GrassPipe.h"
 #include "pipelines/PipelineEnum.h"
+#include "MusicEnum.h"
 
 //#include "Scenes/FreeCameraScene.h"
 #include <functional>
@@ -41,6 +42,7 @@ namespace EWE {
 		bool processClick();
 
 		void addPipelinesToSystem();
+		void addSound();
 
 
 
