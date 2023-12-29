@@ -6,7 +6,8 @@ namespace EWE {
 		menuManager{ ewEngine.menuManager },
 		soundEngine{ SoundEngine::getSoundEngineInstance() },
 		charmer{ ewEngine.eweDevice, ewEngine.mainWindow.getGLFWwindow(), ewEngine.camera, ewEngine.advancedRS.globalPool },
-		levelManager{ewEngine, ewEngine.eweDevice, charmer}
+		levelManager{ewEngine, ewEngine.eweDevice, charmer},
+		carrot{ ewEngine.eweDevice, ewEngine.advancedRS.globalPool}
 	{
 		CharmerInput::giveCallbackReturns(ewEngine.menuManager.staticMouseCallback, ewEngine.menuManager.staticKeyCallback);
 	}
@@ -74,7 +75,7 @@ namespace EWE {
 
 			if (logicThreadTimeTracker >= logicUpdateRate) {
 				logicThreadTimeTracker -= logicUpdateRate;
-				charmer.logicUpdate();
+				levelManager.logicUpdate();
 			}
 		}
 	}
@@ -83,6 +84,16 @@ namespace EWE {
 		//printf("render main menu scene \n");
 		if (charmer.wantsMenu()) {
 			menuManager.giveMenuFocus();
+		}
+
+		if (levelManager.waitingForRender) {
+			printf("waiting for idle queue \n");
+			vkQueueWaitIdle(ewEngine.eweDevice.graphicsQueue());
+			levelManager.waitingForRender = false;
+			while (levelManager.waitingForLogic) {
+				printf("waiting for logic thread \n");
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			}
 		}
 
 		auto cmdBufFrameIndex = ewEngine.beginRender();
@@ -97,6 +108,7 @@ namespace EWE {
 			frameInfo.cmdIndexPair = cmdBufFrameIndex;
 			frameInfo.time = static_cast<float>(dt);
 			charmer.renderUpdate();
+			carrot.renderUpdate();
 			levelManager.renderLevel(frameInfo);
 			ewEngine.drawText(cmdBufFrameIndex, dt);
 			//printf("after displaying render info \n");

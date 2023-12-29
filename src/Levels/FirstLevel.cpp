@@ -7,6 +7,6 @@ namespace EWE {
 
 		enterLevelP(device, textureLocation, tileMapLocation);
 
-		rock = std::make_unique<EweObject>("rock", device, false);
+		rock.reset(new EweObject("rock", device, false));
 	}
 }

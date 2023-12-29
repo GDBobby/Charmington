@@ -3,6 +3,7 @@
 #include <EWEngine/Scene.h>
 #include "../systems/LevelManager.h"
 #include "../Characters/Charmer.h"
+#include "../Characters/Carrot.h"
 
 namespace EWE {
 	class CharmingtonScene : public Scene {
@@ -25,6 +26,7 @@ namespace EWE {
 
 	protected:
 		Charmer charmer;
+		Carrot carrot;
 		LevelManager levelManager;
 
 		bool logicActive = false;

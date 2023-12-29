@@ -8,8 +8,20 @@ namespace EWE {
 	class StartLevel : public Level {
 	public:
 		StartLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
+			exits.push_back(Level_First);
+			exits.push_back(Level_Second);
+
+			TransformComponent entryTransform{};
+			entryTransform.translation.x = -10.f;
+			entryTransform.translation.y = 0.f;
+			entryTransform.translation.z = -0.5f;
+
+			entryTransform.rotation.y = 0.f;
+
+			entryPoints.emplace(Level::Level_First, entryTransform);
 		}
 		void enterLevel(EWEDevice& device) override;
+
 
 	protected:
 		std::unique_ptr<EweObject> rock;

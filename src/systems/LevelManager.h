@@ -54,10 +54,14 @@ namespace EWE {
 		}
 		void logicUpdate();
 
+		bool waitingForRender = false;
+		bool waitingForLogic = false;
+
 	protected:
 		Charmer& charmer;
 
 		Level* currentLevel = 0;
+		LevelID currentLevelID = Level::Level_Start;
 
 		std::unordered_map<LevelID, std::unique_ptr<Level>> levels{};
 

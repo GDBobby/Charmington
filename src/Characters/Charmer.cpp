@@ -80,12 +80,13 @@ namespace EWE {
 		//back left, back right
 		//left, right, forward, back
 
-		if (currentLevel->tileFlagAt(transform.translation.x + horizontalVelocity.x, transform.translation.z + horizontalVelocity.y) == TileFlag::none) {
+
+		if (currentLevel->tileAt(transform.translation.x + horizontalVelocity.x, transform.translation.z + horizontalVelocity.y) != TileFlag_solid) {
 			transform.translation.x += horizontalVelocity.x;
 			transform.translation.z += horizontalVelocity.y;
 		}
 		else {
-			if (currentLevel->tileFlagAt(transform.translation.x + horizontalVelocity.x, transform.translation.z) == TileFlag::none) {
+			if (currentLevel->tileAt(transform.translation.x + horizontalVelocity.x, transform.translation.z) != TileFlag_solid) {
 				transform.translation.x += horizontalVelocity.x;
 				if (horizontalVelocity.y > 0.f) {
 					printf("pos hori clamp \n");
@@ -96,7 +97,7 @@ namespace EWE {
 					clampFloor(transform.translation.z);
 				}
 			}
-			else if (currentLevel->tileFlagAt(transform.translation.x, transform.translation.z + horizontalVelocity.y) == TileFlag::none) {
+			else if (currentLevel->tileAt(transform.translation.x, transform.translation.z + horizontalVelocity.y) != TileFlag_solid) {
 				transform.translation.z += horizontalVelocity.y;
 				if (horizontalVelocity.x > 0.f) {
 					clampCeil(transform.translation.x);
@@ -120,7 +121,12 @@ namespace EWE {
 				}
 			}
 		}
-
+		TileFlag tileFlag = currentLevel->tileAt(transform.translation.x, transform.translation.z);
+		printf("translation: %.2f:%.2f:%.2f \n", transform.translation.x, transform.translation.y, transform.translation.z);
+		if ((uint16_t)tileFlag >= (uint16_t)TileFlag_exit1) {
+			changeLevel = tileFlag - TileFlag_exit1;
+			printf("setting changeLevel : %d \n", changeLevel);
+		}
 
 	}
 

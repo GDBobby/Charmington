@@ -75,6 +75,7 @@ namespace EWE {
 			terrainObjects[i].render(frameInfo);
 		}
 	}
+	/*
 	TileFlag Level::tileFlagAt(float x, float y) {
 #ifdef _DEBUG
 		TileID tileID = tileAt(x, y);
@@ -88,7 +89,8 @@ namespace EWE {
 		return tileSet.getTileFlag(tileAt(x, y));
 #endif
 	}
-	TileID Level::tileAt(float x, float y) {
+	*/
+	TileFlag Level::tileAt(float x, float y) {
 
 		//printf("x ? %d \n", static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2);
 		//printf("y ? %d \n", static_cast<int>(std::floor(y * 2.f)) * mapHeight + (mapWidth * mapHeight / 2));
@@ -146,7 +148,7 @@ namespace EWE {
 		for (int i = 0; i < mapWidth; i++) {
 			counter = rowCounter;
 			for (int j = 0; j < mapHeight; j++) {
-				if (tiles.at(i + j * mapWidth) == 477) {
+				if (tiles.at(i + j * mapWidth) == 1) {
 					//transform.translation.x = 0.5f * (static_cast<float>(currentTile % mapWidth) - (static_cast<float>(mapWidth) / 2.f));
 					//transform.translation.z = static_cast<float>(0.5 * (std::floor(static_cast<double>(currentTile) / static_cast<double>(mapWidth)) - (static_cast<double>(mapHeight) / 2.0)));
 
@@ -170,6 +172,11 @@ namespace EWE {
 		for (uint8_t i = 0; i < grassField.size(); i++) {
 			//totalPatchCount += static_cast<uint32_t>(instanceTranslation[i].size());
 			//printf("size of instancing buffer[%d] : %d \n", i, instanceTranslation[i].size() * sizeof(EWEModel::GrassInstance));
+			if (instanceTranslation[i].size() == 0) {
+				printf("no grass, not supported \n");
+				throw std::runtime_error("no grass");
+			}
+
 			grassField[i]->AddInstancing(static_cast<uint32_t>(instanceTranslation[i].size()), sizeof(GrassInstance), instanceTranslation[i].data());
 		}
 	}
@@ -205,7 +212,8 @@ namespace EWE {
 		//transform.scale = { 0.505f, 0.5f, 0.505f };
 		//glm::vec2 uvOffset;
 		//uint32_t currentTile = 0;
-		TileID tileID;
+		//TileFlag tileFlag;
+		uint16_t tileBuffer;
 		while (!inStream.eof()) {
 			//printf("reading from file : %d \n", currentTile);
 			//transform.rotation.y = 0.f;
@@ -214,19 +222,21 @@ namespace EWE {
 			//printf("tileString : %s \n", tileString.c_str());
 			//continue;
 
-			inStream >> tileID;
+			inStream >> tileBuffer;
+			//inStream >> tileFlag;
+			
 			//if (tileID > tileSet.width * tileSet.height) {
 			//	printf("tileID : %lu \n", tileID);
 			//}
 
-			tileSet.interpretTileID(tileID);// , transform.rotation.y);
+			//tileSet.interpretTileID(tileID);// , transform.rotation.y);
 
 			//transform.translation.x = 0.5f * (static_cast<float>(currentTile % mapWidth) - (static_cast<float>(mapWidth) / 2.f));
 			//transform.translation.z = static_cast<float>(0.5 * (std::floor(static_cast<double>(currentTile) / static_cast<double>(mapWidth)) - (static_cast<double>(mapHeight) / 2.0)));
 
 			//instanceData[currentTile].transform = transform.mat4();
 			//tileSet.setUVOffset(tileID, uvOffset);
-			tiles.emplace_back(tileID);
+			tiles.emplace_back((TileFlag)tileBuffer);
 			//instanceData.emplace_back(transform.mat4(), uvOffset);
 			//currentTile++;
 		}

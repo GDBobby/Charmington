@@ -113,13 +113,13 @@ namespace EWE {
 	TileFlag TileSet::getTileFlag(TileID tileID) {
 		switch (tileID) {
 		case 477: {
-			return TileFlag::solid;
+			return TileFlag_solid;
 		}
 		case 86:{
-			return TileFlag::exit;
+			return TileFlag_exit1;
 		}
 		default: {
-			return TileFlag::none;
+			return TileFlag_none;
 		}
 		}
 	}

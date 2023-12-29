@@ -8,11 +8,16 @@
 #include <vector>
 
 typedef uint64_t TileID;
-enum class TileFlag {
-	none,
-	solid,
-	slow,
-	exit,
+enum TileFlag : uint16_t {
+	TileFlag_none,
+	TileFlag_solid,
+	TileFlag_slow,
+	TileFlag_exit1,
+	TileFlag_exit2,
+	TileFlag_exit3,
+	TileFlag_exit4,
+	TileFlag_exit5,
+	TileFlag_exit6,
 };
 
 namespace EWE {

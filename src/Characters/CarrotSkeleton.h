@@ -2,17 +2,22 @@
 
 #include <EWEngine/SkeletonHandlerBase.h>
 
+#define CHARMER_IMPORT_PATH "a"
+#define CHARMER_TEXTURE_PATH "b"
+
 namespace EWE {
-	class CharmerSkeleton : public SkeletonBase {
+	class CarrotSkeleton : public SkeletonBase {
 	private:
 	public:
 		enum Charmer_Animations {
 
+			Anim_chop,
 			Anim_idle,
+			Anim_walk,
 		};
 
 
-		CharmerSkeleton(EWEDevice& device);
+		CarrotSkeleton(EWEDevice& device);
 
 		void* getFinalBones(uint8_t animState, uint16_t animFrames) override;
 	};

@@ -8,12 +8,11 @@
 
 #include "../pipelines/PipelineEnum.h"
 #include "TileMap.h"
+#include "SaveData.h"
 
 #include <vector>
 #include <memory>
 
-
-typedef uint16_t LevelID;
 
 namespace EWE {
 	struct Terrain_Object {
@@ -38,6 +37,14 @@ namespace EWE {
 
 	class Level {
 	public:
+		enum Level_Enum : LevelID {
+			Level_Start,
+			Level_First, //encounter with Carrot
+			Level_Second,
+			Level_Third,
+			Level_Fourth,
+		};
+
 		Level(TileSet::TileSet_Enum tsEnum) : tileSet{tsEnum} {}
 
 		struct Level_Exit {
@@ -57,23 +64,31 @@ namespace EWE {
 			}
 		}
 
-		std::vector<Level_Exit> exits;
+		std::vector<LevelID> exits{};
 
 		std::vector<Terrain_Object> terrainObjects{};
 
 		TransformComponent floorTransform{};
 		TextureID floorTextureID;
 
-		TileFlag tileFlagAt(float x, float y);
+		//TileFlag tileFlagAt(float x, float y);
 
 		void render(FrameInfo& frameInfo);
 
 		void loadGrass(EWEDevice& device);
 
+		TileFlag tileAt(float x, float y);
+
+		TransformComponent const& getEntryTransform(LevelID fromLevel) {
+			return entryPoints.at(fromLevel);
+		}
+
 	protected:
+		std::unordered_map<LevelID, TransformComponent> entryPoints{};
+
 		TileSet tileSet;
 		std::unique_ptr<EWEModel> floor;
-		std::vector<TileID> tiles;
+		std::vector<TileFlag> tiles;
 		int32_t mapWidth;
 		int32_t mapHeight;
 		uint32_t tileSize;
@@ -83,7 +98,7 @@ namespace EWE {
 
 		std::array<std::unique_ptr<EWEModel>, 5> grassField;
 
-		TileID tileAt(float x, float y);
+		
 
 		void enterLevelP(EWEDevice& device, std::string textureLocation, std::string tileMapLocation);
 	};

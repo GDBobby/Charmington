@@ -7,6 +7,7 @@
 #include "CharmerSkeleton.h"
 #include "InputHandler.h"
 #include "../systems/Level.h"
+#include "CarrotPet.h"
 
 //#include <skeleton>
 
@@ -33,13 +34,26 @@ namespace EWE {
 
 		void logicUpdate();
 		void renderUpdate();
-		glm::vec3 const& getTranslation() {
-			return transform.translation;
-		}
 
 		Level* currentLevel;
+
+		int32_t getLevelChange() {
+			if (changeLevel >= 0) {
+				int32_t retBuffer = changeLevel;
+				changeLevel = -1;
+				return retBuffer;
+			}
+			return changeLevel;
+		}
+
+		void setTransform(TransformComponent const& transform) {
+			this->transform = transform;
+		}
+
 	protected:
+		int32_t changeLevel = -1;
 		CharmerInput inputHandler;
+		std::unique_ptr<CarrotPet> carrotPet;
 
 		SkinBufferHandler* bufferPointer{ nullptr };
 		//AnimationData animationData{};
