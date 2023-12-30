@@ -14,7 +14,6 @@ namespace EWE {
 		bool chopTree(glm::vec2 position, glm::vec2 direction);
 
 	protected:
-		//std::unique_ptr<EweObject> rock;
 		std::vector<EweObject> stumps{};
 		std::vector<glm::vec2> stumpPositions = {
 			glm::vec2{1.f, -11.f},

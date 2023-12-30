@@ -45,6 +45,7 @@ namespace EWE {
 			case 3: {
 				//printf("should not be able to enter LB mode, probably a crash \n");
 				clickReturns.push(MCR_swapToCharmington);
+				changeMenuState(menu_Charmington);
 				break;
 			}
 			

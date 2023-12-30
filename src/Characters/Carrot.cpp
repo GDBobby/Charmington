@@ -49,8 +49,8 @@ namespace EWE {
 					}
 				}
 				if (animFrame >= 249) {
-					animState = CarrotSkeleton::Anim_walk;
 					animFrame = 0;
+					animState = CarrotSkeleton::Anim_walk;
 				}
 				return;
 				break;
@@ -65,8 +65,8 @@ namespace EWE {
 				if (animState != CarrotSkeleton::Anim_walk) {
 					SoundEngine::getSoundEngineInstance()->stopEfect(FX_steppage);
 					SoundEngine::getSoundEngineInstance()->playEffect(FX_steppage, true);
-					animState = CarrotSkeleton::Anim_walk;
 					animFrame = 0;
+					animState = CarrotSkeleton::Anim_walk;
 				}
 
 				printf("apple locations size? : %lu \n", appleLocations.size());
@@ -86,8 +86,8 @@ namespace EWE {
 				}
 				if (shortestDist < 0.25f) {
 					//eat the apple
-					animState = CarrotSkeleton::Anim_eat;
 					animFrame = 0;
+					animState = CarrotSkeleton::Anim_eat;
 				}
 				else {
 
@@ -107,8 +107,8 @@ namespace EWE {
 				float charmerDistanceSquared = charmerDirection.x * charmerDirection.x + charmerDirection.y * charmerDirection.y;
 				if (charmerDistanceSquared < 1.f) {
 					SoundEngine::getSoundEngineInstance()->stopEfect(FX_steppage);
-					animState = CarrotSkeleton::Anim_chop;
 					animFrame = 0;
+					animState = CarrotSkeleton::Anim_chop;
 				}
 				else if (charmerDistanceSquared < 25.f) {
 					charmerDirection = glm::normalize(charmerDirection);
@@ -122,8 +122,8 @@ namespace EWE {
 					if (animState != CarrotSkeleton::Anim_walk) {
 						SoundEngine::getSoundEngineInstance()->stopEfect(FX_steppage);
 						SoundEngine::getSoundEngineInstance()->playEffect(FX_steppage, true);
-						animState = CarrotSkeleton::Anim_walk;
 						animFrame = 0;
+						animState = CarrotSkeleton::Anim_walk;
 					}
 
 				}
@@ -163,8 +163,8 @@ namespace EWE {
 				}
 			}
 			else if (animFrame == 250) {
-				animState = CarrotSkeleton::Anim_idle;
 				animFrame = 0;
+				animState = CarrotSkeleton::Anim_idle;
 			}
 		}
 

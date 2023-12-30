@@ -34,12 +34,12 @@ namespace EWE {
 				visibleStick = true;
 			}
 			if (visibleStick) {
-				animState = ZeroSkeleton::Anim_walk;
 				animFrame = 0;
+				animState = ZeroSkeleton::Anim_walk;
 			}
 			if (charmerDistSqd > 9.f) {
-				animState = ZeroSkeleton::Anim_walk;
 				animFrame = 0;
+				animState = ZeroSkeleton::Anim_walk;
 				SoundEngine::getSoundEngineInstance()->playEffect(FX_atten);
 			}
 
@@ -52,9 +52,9 @@ namespace EWE {
 			}
 			if (sticks->size() == 0){
 				if (charmerDistSqd < 4.f) {
+					animFrame = 0;
 					animState = ZeroSkeleton::Anim_idle;
 					transform.rotation.y = 0.f;
-					animFrame = 0;
 				}
 				else {
 					charmerDiff = glm::normalize(charmerDiff);
@@ -86,9 +86,9 @@ namespace EWE {
 				}
 				if (!visibleStick) {
 					if (charmerDistSqd < 4.f) {
+						animFrame = 0;
 						animState = ZeroSkeleton::Anim_idle;
 						transform.rotation.y = 0.f;
-						animFrame = 0;
 					}
 					else {
 						charmerDiff = glm::normalize(charmerDiff);

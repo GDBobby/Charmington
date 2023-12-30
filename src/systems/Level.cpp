@@ -143,7 +143,7 @@ namespace EWE {
 		for (int i = 0; i < mapWidth; i++) {
 			counter = rowCounter;
 			for (int j = 0; j < mapHeight; j++) {
-				if (tiles.at(i + j * mapWidth) == 1) {
+				if (tiles.at(i + j * mapWidth) == TileFlag::TileFlag_solid) {
 					//transform.translation.x = 0.5f * (static_cast<float>(currentTile % mapWidth) - (static_cast<float>(mapWidth) / 2.f));
 					//transform.translation.z = static_cast<float>(0.5 * (std::floor(static_cast<double>(currentTile) / static_cast<double>(mapWidth)) - (static_cast<double>(mapHeight) / 2.0)));
 
@@ -155,6 +155,9 @@ namespace EWE {
 
 					rotationCounter[counter] = (rotationCounter[counter] + 1) % 4;
 					//printf("counter value? : %d \n", counter);
+				}
+				else if (tiles.at(i + j * mapWidth) == TileFlag::TileFlag_solidNonGrass) {
+					tiles.at(i + j * mapWidth) = TileFlag::TileFlag_solid;
 				}
 				counter = (counter + 1) % 5;
 

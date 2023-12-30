@@ -12,6 +12,9 @@
 #include "pipelines/PipelineEnum.h"
 #include "MusicEnum.h"
 
+#include "GUI/MenuEndMM.h"
+#include "GUI/GameMenuMM.h"
+
 //#include "Scenes/FreeCameraScene.h"
 #include <functional>
 

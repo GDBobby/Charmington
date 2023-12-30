@@ -17,6 +17,7 @@
 #include "../Levels/StartArea.h"
 #include "../Levels/ForestLevel.h"
 #include "../Levels/ConnectorLevel.h"
+#include "../Levels/SpookyForest.h"
 
 
 #include "CarrotPet.h"

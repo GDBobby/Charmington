@@ -5,7 +5,6 @@ namespace EWE {
 		FX_click,
 		FX_bark,
 		FX_steppage,
-		FX_step,
 		FX_hya,
 		FX_chop,
 		FX_atten,

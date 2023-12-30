@@ -32,6 +32,7 @@ namespace EWE {
 		zero.reset();
 		logs.clear();
 		sticks.clear();
+		
 	}
 
 	void ForestLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {

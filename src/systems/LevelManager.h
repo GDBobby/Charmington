@@ -62,6 +62,9 @@ namespace EWE {
 		bool waitingForRender = false;
 		bool waitingForLogic = false;
 		std::shared_ptr<CharmerOverlay> charmerOverlay{ nullptr };
+
+		void exitScene();
+		bool paused = false;
 	protected:
 		Charmer& charmer;
 
@@ -74,7 +77,6 @@ namespace EWE {
 		EightWindsEngine& ewEngine;
 
 		void populateLevels();
-
 
 	};
 

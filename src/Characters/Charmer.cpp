@@ -93,7 +93,7 @@ namespace EWE {
 			carrotPet->transform.translation.x += (forwardDir.x * 50.f);
 			carrotPet->transform.translation.z += (forwardDir.y * 50.f);
 			carrotPet->transform.rotation = transform.rotation;
-			carrotPet->transform.rotation.y += glm::half_pi<float>();
+			//carrotPet->transform.rotation.y += glm::quarter_pi<float>();
 			carrotPet->renderUpdate();
 		}
 		if (zeroPet.get() != nullptr) {
@@ -113,23 +113,27 @@ namespace EWE {
 			}
 			if (carrotPet.get() != nullptr) {
 				if (carrotPet->animState != CarrotSkeleton::Anim_walk) {
-					carrotPet->animState = CarrotSkeleton::Anim_walk;
 					carrotPet->animFrame = 0;
+					carrotPet->animState = CarrotSkeleton::Anim_walk;
 				}
 			}
 			
 			if (animState != CharmerSkeleton::Anim_walk) {
-				animState = CharmerSkeleton::Anim_walk;
 				animFrame = 0;
+				animState = CharmerSkeleton::Anim_walk;
 			}
 			
 		}
 		else {
 			if (carrotPet.get() != nullptr) {
 				if (carrotPet->animState == CarrotSkeleton::Anim_walk) {
-					carrotPet->animState = CarrotSkeleton::Anim_idle;
 					carrotPet->animFrame = 0;
+					carrotPet->animState = CarrotSkeleton::Anim_idle;
 				}
+			}
+			if (animState == CharmerSkeleton::Anim_walk) {
+				animFrame = 0;
+				animState = CharmerSkeleton::Anim_idle;
 			}
 		}
 
@@ -141,38 +145,38 @@ namespace EWE {
 			//right forward
 			if (horizontalMovement == -1) {
 				if (lateralMovement == -1) {
-					transform.rotation.y = glm::quarter_pi<float>() * 3.f;
+					transform.rotation.y = -glm::quarter_pi<float>() * 3.f;
 				}
 				else if (lateralMovement == 1) {
-					transform.rotation.y = glm::quarter_pi<float>() * -3.f;
+					transform.rotation.y = -glm::quarter_pi<float>();
 				}
 			}
 			else if (horizontalMovement == 1) {
 				//left
 				if (lateralMovement == -1) {
 					//forward
-					transform.rotation.y = glm::quarter_pi<float>();
+					transform.rotation.y = glm::quarter_pi<float>() * 3.f;
 				}
 				else if (lateralMovement == 1) {
-					transform.rotation.y = -glm::quarter_pi<float>();
+					transform.rotation.y = glm::quarter_pi<float>();
 				}
 			}
 		}
 		else {
 			if (lateralMovement == 1) {
 				//going down
-				transform.rotation.y = -glm::half_pi<float>();
+				transform.rotation.y = 0.f;
 			}
 			else if (lateralMovement == -1) {
-				transform.rotation.y = glm::half_pi<float>();
+				transform.rotation.y = glm::pi<float>();
 				//forward
 			}
 			if (horizontalMovement == 1) {
 				//left
-				transform.rotation.y = 0.f;
+				transform.rotation.y = glm::half_pi<float>();
 			}
 			else if (horizontalMovement == -1) {
-				transform.rotation.y = glm::pi<float>();
+				transform.rotation.y = -glm::half_pi<float>();
 				//right
 			}
 		}
@@ -189,8 +193,8 @@ namespace EWE {
 			if (currentLevel->tileAt(transform.translation.x + horizontalVelocity.x, transform.translation.z) != TileFlag_solid) {
 				transform.translation.x += horizontalVelocity.x;
 				if (horizontalVelocity.y > 0.f) {
-					printf("pos hori clamp \n");
-					printf("before, after - %.5f:%.5f \n", transform.translation.z, std::ceil(transform.translation.z) - 1.001f);
+					//printf("pos hori clamp \n");
+					//printf("before, after - %.5f:%.5f \n", transform.translation.z, std::ceil(transform.translation.z) - 1.001f);
 					clampCeil(transform.translation.z);
 				}
 				else if (horizontalVelocity.y < 0.f) {
@@ -226,9 +230,10 @@ namespace EWE {
 
 		//printf("translation: %.2f:%.2f:%.2f \n", transform.translation.x, transform.translation.y, transform.translation.z);
 		if ((uint16_t)tileFlag >= (uint16_t)TileFlag_exit1) {
+
 			changeLevel = tileFlag - TileFlag_exit1;
 
-			printf("setting changeLevel : %d \n", changeLevel);
+			//printf("setting changeLevel : %d \n", changeLevel);
 		}
 	}
 
@@ -251,10 +256,16 @@ namespace EWE {
 							SoundEngine::getSoundEngineInstance()->playEffect(FX_chop);
 						}
 				}
+				else if (dynamic_cast<SpookyForest*>(currentLevel) != nullptr) {
+					printf("chopping tree in spooky forest \n");
+					if (((SpookyForest*)currentLevel)->chopTree(glm::vec2{ transform.translation.x, transform.translation.z }, glm::normalize(forwardDir))) {
+						SoundEngine::getSoundEngineInstance()->playEffect(FX_chop);
+					}
+				}
 			}
 			else if (carrotPet->animFrame >= 250) {
-				carrotPet->animState = CarrotSkeleton::Anim_idle;
 				carrotPet->animFrame = 0;
+				carrotPet->animState = CarrotSkeleton::Anim_idle;
 			}
 			break;
 		}
@@ -263,8 +274,8 @@ namespace EWE {
 			if (polledKeys.actionPressed[0]) {
 				printf("action 0 was pressed \n");
 
-				carrotPet->animState = CarrotSkeleton::Anim_chop;
 				carrotPet->animFrame = 0;
+				carrotPet->animState = CarrotSkeleton::Anim_chop;
 
 			}
 			break;
@@ -274,8 +285,8 @@ namespace EWE {
 			if (polledKeys.actionPressed[0]) {
 				printf("action 0 was pressed \n");
 
-				carrotPet->animState = CarrotSkeleton::Anim_chop;
 				carrotPet->animFrame = 0;
+				carrotPet->animState = CarrotSkeleton::Anim_chop;
 
 			}
 			break;
@@ -320,7 +331,7 @@ namespace EWE {
 			//printf("transform queue size : %d \n", oldTransforms.size());
 			zeroPet->transform.translation = oldTransforms.front().translation;
 			zeroPet->transform.rotation = oldTransforms.front().rotation;
-			zeroPet->transform.rotation.y += glm::half_pi<float>();
+			//zeroPet->transform.rotation.y += glm::quarter_pi<float>();
 			oldTransforms.pop();
 		}
 		else {
@@ -337,13 +348,16 @@ namespace EWE {
 		}
 		if (barkFrames > 0) {
 			barkFrames = (barkFrames + 1) % 350;
-			printf("barkFrames : %d \n", barkFrames);
+			//printf("barkFrames : %d \n", barkFrames);
 		}
-		if (dynamic_cast<ConnectorLevel*>(currentLevel) != nullptr) {
-			if (barkFrames == 300) {
+
+		if (barkFrames == 300) {
+			if (dynamic_cast<ConnectorLevel*>(currentLevel) != nullptr) {
 				((ConnectorLevel*)currentLevel)->bark(transform.translation.x, transform.translation.z);
 			}
-
+			if (dynamic_cast<SpookyForest*>(currentLevel) != nullptr) {
+				((SpookyForest*)currentLevel)->bark(transform.translation.x, transform.translation.z);
+			}
 		}
 
 	}

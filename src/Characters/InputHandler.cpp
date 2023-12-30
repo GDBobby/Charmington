@@ -44,17 +44,12 @@ namespace EWE {
                     inputPtr->liveActions.rightPressed = true;
 					break;
                 case GLFW_KEY_ESCAPE: {
-                    if (inputPtr->menuActive) {
-                        inputPtr->menuActive = false;
-                        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-                        inputPtr->returnFocus();
-                    }
-                    else {
-                        printf("opening menu from input handler \n");
-                        inputPtr->menuActive = true;
-                        //returnCallbacks();
-                        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                    }
+
+                    printf("opening menu from input handler \n");
+                    inputPtr->menuActive = true;
+                    //returnCallbacks();
+                    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                    
                     break;
                 }
                 default:

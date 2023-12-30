@@ -66,6 +66,7 @@ namespace EWE {
 		if (logicThread.get() != nullptr) {
 			logicThread->join();
 		}
+		levelManager.exitScene();
 		ewEngine.objectManager.eweObjects.clear();
 	}
 

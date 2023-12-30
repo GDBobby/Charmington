@@ -1,6 +1,8 @@
 #include "LevelManager.h"
 #include <EWEngine/graphics/model/EWE_Basic_Model.h>
 
+#include "../GUI/MenuEnums.h"
+
 namespace EWE {
 	LevelManager::LevelManager(EightWindsEngine& ewEngine, EWEDevice& device, Charmer& charmer) : device{ device }, soundEngine{ SoundEngine::getSoundEngineInstance() }, charmer{ charmer }, ewEngine{ewEngine} {
 
@@ -26,10 +28,22 @@ namespace EWE {
 			}
 		}
 		charmerOverlay->updateFromSettings();
+		paused = false;
 	}
 	void LevelManager::logicUpdate() {
+
+		if(charmer.wantsMenu()) {
+			ewEngine.menuManager.giveMenuFocus();
+			paused = true;
+		}
+		if (paused) {
+			printf("paused \n");
+			return;
+		}
+
 		charmer.logicUpdate();
 		int32_t changeBuffer = charmer.getLevelChange();
+
 		//printf("change buffer in level manager : %d \n", changeBuffer);
 		if (changeBuffer >= 0) {
 
@@ -112,6 +126,11 @@ namespace EWE {
 				SpookyForest* spookyForest = ((SpookyForest*)currentLevel);
 				if (spookyForest->sheet.get() != nullptr) {
 					spookyForest->sheet->logicUpdate();
+					if (spookyForest->sheet->transform.translation.z < -8.5f) {
+						ewEngine.menuManager.changeMenuState(menu_end);
+						ewEngine.menuManager.giveMenuFocus();
+						paused = true;
+					}
 				}
 				break;
 			}
@@ -197,5 +216,9 @@ namespace EWE {
 		currentLevelID = SaveJSON::saveData.currentMap;
 		LevelID entranceID = SaveJSON::saveData.currentEntrance;
 		charmer.setTransform(currentLevel->getEntryTransform(entranceID));
+	}
+	void LevelManager::exitScene() {
+		currentLevel->exitLevel();
+		
 	}
 }

@@ -18,6 +18,7 @@ enum TileFlag : uint16_t {
 	TileFlag_exit4,
 	TileFlag_exit5,
 	TileFlag_exit6,
+	TileFlag_solidNonGrass,
 };
 
 namespace EWE {

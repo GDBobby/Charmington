@@ -33,6 +33,11 @@ namespace EWE {
 		}
 		void scare();
 		void flee();
+		void GoTo(glm::vec3 target) {
+			this->target = target;
+			animFrame = 0;
+			animState = SheetSkeleton::Anim_walk;
+		}
 		TransformComponent transform{};
 
 		bool scaredAnim() {
@@ -40,9 +45,9 @@ namespace EWE {
 		}
 		bool escaped = false;
 		bool guarding = false;
-
+		SheetSkeleton::Sheet_Animations animState = SheetSkeleton::Anim_idle;
 	protected:
-
+		glm::vec3 target;
 		std::vector<std::pair<bool, glm::vec3>>* treeData{nullptr};
 		int8_t hitSomething = -1;
 		int8_t hidingSpots = 10;
@@ -53,7 +58,6 @@ namespace EWE {
 		PlayerPushConstantData pushData{};
 
 		uint32_t animFrame = 0;
-		SheetSkeleton::Sheet_Animations animState = SheetSkeleton::Anim_idle;
 	};
 }
 

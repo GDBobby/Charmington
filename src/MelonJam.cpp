@@ -155,6 +155,8 @@ namespace EWE {
 	void MelonJam::addModulesToMenuManager(float screenWidth, float screenHeight) {
 		menuManager.menuModules.emplace(menu_main, std::make_unique<MainMenuMM>(screenWidth, screenHeight));
 		menuManager.menuModules.at(menu_main)->labels[1].string = "1.0.0";
+		menuManager.menuModules.emplace(menu_end, std::make_unique<MenuEndMM>(ewEngine.eweDevice, screenWidth, screenHeight));
+		menuManager.menuModules.emplace(menu_Charmington, std::make_unique<GameMenuMM>(ewEngine.eweDevice, screenWidth, screenHeight));
 		//
 		//menuManager.menuModules.emplace(menu_ShaderGen, std::make_unique<ShaderGenerationMM>(windowPtr, screenWidth, screenHeight));
 	}
@@ -238,6 +240,7 @@ namespace EWE {
 			}
 			case MCR_swapToCharmington: {
 				printf("swapping to charmington \n");
+				menuManager.closeMenu();
 				currentScene = scene_Charmington;
 				wantsToChangeScene = true;
 				break;
@@ -254,6 +257,11 @@ namespace EWE {
 					menuManager.closeMenu();
 					((CharmingtonScene*)currentScenePtr)->giveCharmerFocus();
 				}
+				break;
+			}
+			case MCR_CharmingtonResume: {
+				menuManager.closeMenu();
+				((CharmingtonScene*)currentScenePtr)->giveCharmerFocus();
 				break;
 			}
 			case MCR_none: {
@@ -281,7 +289,6 @@ namespace EWE {
 		effectsMap.emplace(FX_click, "sounds/effects/click.mp3");
 		effectsMap.emplace(FX_bark, "sounds/effects/bark.mp3");
 		effectsMap.emplace(FX_steppage, "sounds/effects/steppage.mp3");
-		effectsMap.emplace(FX_step, "sounds/effects/step.mp3");
 		effectsMap.emplace(FX_hya, "sounds/effects/hya.mp3");
 		effectsMap.emplace(FX_chop, "sounds/effects/chop.mp3");
 		effectsMap.emplace(FX_atten, "sounds/effects/atten.mp3");

@@ -4,10 +4,12 @@
 enum MenuClickReturn : uint16_t {
 	MCR_swapToCharmington = EWE::MCR_engine_size,
 	MCR_swapToMainMenu,
+	MCR_CharmingtonResume,
 	MCR_app_size,
 };
 enum MenuStates : uint16_t {
 	menu_Charmington = EWE::menu_engine_size,
+	menu_end,
 
 	menu_app_size,
 };

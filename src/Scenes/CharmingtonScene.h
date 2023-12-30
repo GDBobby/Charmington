@@ -22,6 +22,7 @@ namespace EWE {
 		bool render(double dt) override;
 
 		void giveCharmerFocus() {
+			levelManager.paused = false;
 			charmer.giveInputFocus();
 		}
 		std::shared_ptr<CharmerOverlay> charmerOverlay;
