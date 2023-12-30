@@ -32,6 +32,5 @@ namespace EWE {
 
 		bufferPointer->writeData(skeleton->getFinalBones((uint8_t)animState, animFrame));
 		bufferPointer->flush();
-		animFrame = (animFrame + 1) % 100;
 	}
 }

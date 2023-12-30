@@ -29,6 +29,10 @@ public:
 		PF_Cat = 1 << 1,
 		PF_Dog = 1 << 2,
 	};
+	enum ObstacleFlags : uint64_t {
+		OF_Stump = 1,
+		OF_Bridge = 1 << 1,
+	};
 
 	struct SaveData {
 		int version = 10;

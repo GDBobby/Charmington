@@ -65,7 +65,7 @@ namespace EWE {
 		TransformComponent transform{};
 
 		uint32_t animFrame = 0;
-		CarrotSkeleton::Charmer_Animations animState = CarrotSkeleton::Anim_idle;
+		CarrotSkeleton::Carrot_Animations animState = CarrotSkeleton::Anim_idle;
 	};
 }
 

@@ -23,14 +23,14 @@ namespace EWE {
 
 		TransformComponent transform{};
 
+		uint32_t animFrame = 0;
+		CarrotSkeleton::Carrot_Animations animState = CarrotSkeleton::Anim_idle;
 	protected:
 		SkinBufferHandler* bufferPointer{ nullptr };
 		//AnimationData animationData{};
 
 		PlayerPushConstantData pushData{};
 
-		uint32_t animFrame = 0;
-		CarrotSkeleton::Charmer_Animations animState = CarrotSkeleton::Anim_idle;
 	};
 }
 

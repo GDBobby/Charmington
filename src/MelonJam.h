@@ -8,6 +8,7 @@
 
 #include "pipelines/BackgroundPipe.h"
 #include "pipelines/GrassPipe.h"
+#include "pipelines/BillboardPipe.h"
 #include "pipelines/PipelineEnum.h"
 #include "MusicEnum.h"
 

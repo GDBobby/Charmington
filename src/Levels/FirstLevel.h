@@ -26,10 +26,12 @@ namespace EWE {
 		void eatApple(uint8_t treeID);
 
 		void render(FrameInfo& frameInfo) override;
+		TileFlag tileAt(float x, float y) override;
 
 		std::unique_ptr<Carrot> carrot{nullptr};
 	protected:
-		std::vector<EweObject> apples;
+		std::vector<EweObject> apples{};
+		std::vector<EweObject> trees{};
 
 		std::vector<std::pair<bool, glm::vec3>> treeData = {
 			{false, glm::vec3{4.5f, 0.f, -3.5f}},

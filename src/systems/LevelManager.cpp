@@ -30,6 +30,11 @@ namespace EWE {
 			swapNextStage(currentLevel->exits[changeBuffer]);
 		}
 		switch (currentLevelID) {
+			case Level::Level_Start: {
+				//StartLevel* startArea = ((StartLevel*)currentLevel);
+				//if()
+				break;
+			}
 			case Level::Level_First:{
 				FirstLevel* firstLevel = ((FirstLevel*)currentLevel);
 				if (firstLevel->carrot.get() != nullptr) {
@@ -71,7 +76,23 @@ namespace EWE {
 
 				break;
 			}
-			
+			case Level::Level_WoodChop: {
+				ForestLevel* forestLevel = ((ForestLevel*)currentLevel);
+				if (forestLevel->zero.get() != nullptr) {
+					forestLevel->zero->logicUpdate();
+				}
+				break;
+			}
+			case Level::Level_SpookyForest: {
+				SpookyForest* spookyForest = ((SpookyForest*)currentLevel);
+				if (spookyForest->sheet.get() != nullptr) {
+					spookyForest->sheet->logicUpdate();
+				}
+				break;
+			}
+			default: {
+				break;
+			}
 		}
 	}
 
@@ -117,6 +138,7 @@ namespace EWE {
 		levels.emplace(Level::Level_First, std::make_unique<FirstLevel>(device));
 		levels.emplace(Level::Level_Connector, std::make_unique<ConnectorLevel>(device));
 		levels.emplace(Level::Level_WoodChop, std::make_unique<ForestLevel>(device));
+		levels.emplace(Level::Level_SpookyForest, std::make_unique<SpookyForest>(device));
 		printf("after loading levels : %d\n", SaveJSON::saveData.currentMap);
 		currentLevel = levels.at(SaveJSON::saveData.currentMap).get();
 		currentLevelID = SaveJSON::saveData.currentMap;

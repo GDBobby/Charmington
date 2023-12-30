@@ -4,7 +4,7 @@ namespace EWE {
 	ConnectorLevel::ConnectorLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
 		exits.push_back(Level_Start);
 		exits.push_back(Level_WoodChop);
-		exits.push_back(Level_Fourth);
+		exits.push_back(Level_SpookyForest);
 
 		TransformComponent entryTransform{};
 		entryTransform.translation.x = 2.5f;
@@ -24,7 +24,7 @@ namespace EWE {
 		entryTransform.translation.z = -16.f;
 		entryTransform.rotation.y = 0.f;
 
-		entryPoints.emplace(Level::Level_Fourth, entryTransform);
+		entryPoints.emplace(Level::Level_SpookyForest, entryTransform);
 
 
 	}
@@ -120,7 +120,12 @@ namespace EWE {
 		}
 		for (int y = 0; y < 6; y++) {
 			for (int x = 0; x < mapWidth; x++) {
-				extension.emplace_back(TileFlag::TileFlag_none);
+				if (x >= 53 && x <= 56) {
+					extension.emplace_back(TileFlag::TileFlag_none);
+				}
+				else {
+					extension.emplace_back(TileFlag::TileFlag_solid);
+				}
 			}
 		}
 		tiles.insert(tiles.begin(), extension.begin(), extension.end());

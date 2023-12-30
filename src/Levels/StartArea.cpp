@@ -28,8 +28,35 @@ namespace EWE {
 		//for (auto iter = rock->ownedTextureIDs.begin(); iter != rock->ownedTextureIDs.end(); iter++) {
 		//	materialHandler->removeByTransform(*iter, &rock->transform);
 		//}
-		rock.reset();
+		//rock.reset();
 		Level::exitLevel();
+		stumps.clear();
+
+	}
+
+	void StartLevel::chopTree(glm::vec2 position, glm::vec2 direction) {
+		if ((position.x > -1.5f) && (position.x < 1.5f)) {
+
+			for (int i = 0; i < stumpPositions.size(); i++) {
+				glm::vec2 distanceVec = stumpPositions[i] - position;
+				float distance = glm::length(distanceVec);
+				printf("distance : %.2f \n", distance);
+				if (distance < 2.f) {
+					distanceVec = glm::normalize(distanceVec);
+					printf("direction : %.2f : %.2f \n", direction.x, direction.y);
+					printf("incoming dot - %d : %.2f \n", i, glm::dot(distanceVec, direction));
+					if (glm::dot(distanceVec, direction) > 0.5f) {
+						for (int j = 0; j < stumps.size(); j++) {
+							stumps[j].drawable = false;
+						}
+						for (int j = 0; j < 6; j++) {
+							tiles.at(47 + 29 * mapWidth + j) = TileFlag_none;
+						}
+						SaveJSON::saveData.obstacleFlags |= SaveJSON::OF_Stump;
+					}
+				}
+			}
+		}
 
 
 	}
@@ -39,9 +66,31 @@ namespace EWE {
 		std::string tileMapLocation{ "models/startArea.tmx" };
 
 		enterLevelP(device, textureLocation, tileMapLocation);
+		bool stumpsActive = (SaveJSON::saveData.obstacleFlags & SaveJSON::OF_Stump) == 0;
 
+		stumps.reserve(2);
+		stumps.emplace_back("stump", device, false);
+		stumps.back().transform.translation.z = -11.f;
+		stumps.back().transform.translation.x = -1.f;
+		stumps.back().transform.rotation.x = glm::half_pi<float>();
+		stumps.back().drawable = stumpsActive;
+		stumps.emplace_back(stumps[0]);
+		stumps.back().transform.translation.z = -11.f;
+		stumps.back().transform.translation.x = 1.f;
+		stumps.back().transform.rotation.x = glm::half_pi<float>();
+		stumps.back().drawable = stumpsActive;
 
-		rock.reset(new EweObject("rock", device, false));
-		rock->transform.translation.z = -11.f;
+		if (stumpsActive) {
+			for (int i = 0; i < 6; i++) {
+				tiles.at(47 + 29 * mapWidth + i) = TileFlag_solid;
+			}
+		}
+
+		//47 29
+		//52 29
+		
+
+		//rock.reset(new EweObject("rock", device, false));
+		//rock->transform.translation.z = -11.f;
 	}
 }

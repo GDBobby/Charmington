@@ -40,7 +40,7 @@ namespace EWE {
 		LightBufferObject lbo;
 		lbo.ambientColor = glm::vec4(0.1f, 0.1f, 0.1f, 1.f);
 		lbo.sunlightDirection = { 1.f, 3.f, 1.f, 0.f };
-		lbo.sunlightColor = glm::vec4{ 1.f, 1.f, 1.f, 1.f };
+		lbo.sunlightColor = glm::vec4{ 0.25f, 0.25f, 0.25f, 0.5f };
 		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			ewEngine.bufferMap[Buff_gpu][i]->writeToBuffer(&lbo);
 			ewEngine.bufferMap[Buff_gpu][i]->flush();

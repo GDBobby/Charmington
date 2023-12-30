@@ -42,7 +42,7 @@ namespace EWE {
 			Level_First, //encounter with Carrot
 			Level_Connector,
 			Level_WoodChop,
-			Level_Fourth,
+			Level_SpookyForest,
 		};
 
 		Level(TileSet::TileSet_Enum tsEnum) : tileSet{tsEnum} {}

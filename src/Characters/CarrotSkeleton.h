@@ -2,14 +2,11 @@
 
 #include <EWEngine/SkeletonHandlerBase.h>
 
-#define CHARMER_IMPORT_PATH "a"
-#define CHARMER_TEXTURE_PATH "b"
-
 namespace EWE {
 	class CarrotSkeleton : public SkeletonBase {
 	private:
 	public:
-		enum Charmer_Animations {
+		enum Carrot_Animations {
 
 			Anim_chop,
 			Anim_idle,

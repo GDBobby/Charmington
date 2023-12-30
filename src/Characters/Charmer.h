@@ -14,6 +14,8 @@
 #include "InputHandler.h"
 #include "../systems/Level.h"
 #include "CarrotPet.h"
+#include "../Levels/StartArea.h"
+#include "../Levels/ForestLevel.h"
 
 //#include <skeleton>
 
@@ -89,6 +91,9 @@ namespace EWE {
 		CharmerSkeleton::Charmer_Animations animState = CharmerSkeleton::Anim_idle;
 
 		glm::vec2 forwardDir{1.f, 0.f};
+
+		void movement(CharmerKeys polledKeys);
+		void updateCarrotPet(CharmerKeys polledKeys);
 	};
 }
 
