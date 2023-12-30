@@ -31,6 +31,7 @@ namespace EWE {
 		Level::exitLevel();
 		zero.reset();
 		logs.clear();
+		sticks.clear();
 	}
 
 	void ForestLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
@@ -38,13 +39,24 @@ namespace EWE {
 		std::string tileMapLocation{ "models/WoodChop.tmx" };
 
 		enterLevelP(device, textureLocation, tileMapLocation);
-		zero = std::make_unique<Zero>(device, globalPool);
+
+
+		bool zeroTamed = (SaveJSON::saveData.petFlags & SaveJSON::PetFlags::PF_Zero) == SaveJSON::PF_Zero;
+		if (!zeroTamed) {
+			printf("loading zero into ForestLevel \n");
+			zero = std::make_unique<Zero>(device, globalPool);
+			zero->giveSticks(&sticks);
+		}
+		else {
+			printf("ZERO WAS NOT LOADED INTO FOREST LEVEL : %d \n", SaveJSON::saveData.petFlags);
+		}
 
 		trees.reserve(treeData.size());
 
 		logTextureID = EWETexture::addSceneTexture(device, "woodLog.png");
+		stickTextureID = EWETexture::addSceneTexture(device, "stick.png");
 
-		TransformComponent logTransform{};
+		glm::vec3 logTranslation{};
 		for (int i = 0; i < treeData.size(); i++) {
 			treeData[i].first = false;
 			if (i == 0) {
@@ -56,16 +68,18 @@ namespace EWE {
 				trees.back().drawable = true;
 			}
 			trees.at(i).transform.translation = treeData.at(i).second;
-			logTransform = trees.at(i).transform;
-			logTransform.translation.y += .25f;
-			logs.emplace_back(logTransform, logTextureID);
+			logTranslation = trees.at(i).transform.translation;
+			logTranslation.y += .25f;
+			logs.emplace_back(logTranslation);
 		}
 		
 	}
 
 	void ForestLevel::render(FrameInfo& frameInfo) {
 		Level::render(frameInfo);
-		zero->renderUpdate();
+		if (zero.get() != nullptr) {
+			zero->renderUpdate();
+		}
 
 		bool pipeBinded = false;
 		auto pipe = PipelineSystem::at(Pipe_billboard);
@@ -80,9 +94,29 @@ namespace EWE {
 					pipeBinded = true;
 					push.radius = 1.f;
 				}
-				push.position = glm::vec4(logs[i].transform.translation, 1.f);
+				push.position = glm::vec4(logs[i].translation, 1.f);
 				pipe->pushAndDraw(&push);
 			}
+		}
+
+		if (pipeBinded && sticks.size() > 0) {
+			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(stickTextureID, frameInfo.cmdIndexPair.second));
+		}
+
+		for (auto stick : sticks) {
+			if (!stick.drawable) {
+				continue;
+			}
+
+			if (!pipeBinded) {
+				pipe->bindPipeline();
+				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
+				pipe->bindDescriptor(1, EWETexture::getDescriptorSets(stickTextureID, frameInfo.cmdIndexPair.second));
+				pipeBinded = true;
+				push.radius = 1.f;
+			}
+			push.position = glm::vec4(stick.translation, 1.f);
+			pipe->pushAndDraw(&push);
 		}
 
 	}
@@ -91,9 +125,9 @@ namespace EWE {
 			if (!logs[i].drawable) {
 				continue;
 			}
-			float horiDist = logs[i].transform.translation.x - x;
+			float horiDist = logs[i].translation.x - x;
 			horiDist *= 1.f - (2.f * (horiDist < 0.f));
-			float vertDist = logs[i].transform.translation.z - y;
+			float vertDist = logs[i].translation.z - y;
 			vertDist *= 1.f - (2.f * (vertDist < 0.f));
 			if ((horiDist < 0.5f) && (vertDist < 0.5f)) {
 				logs[i].drawable = false;
@@ -102,6 +136,11 @@ namespace EWE {
 		}
 		return false;
 	}
+	void ForestLevel::dropStick(float x, float y, glm::vec2 forwardDir) {
+		sticks.emplace_back(glm::vec3{ x + forwardDir.x, 0.25f, y - forwardDir.y} );
+		sticks.back().drawable = true;
+	}
+
 
 	TileFlag ForestLevel::tileAt(float x, float y) {
 
@@ -131,7 +170,7 @@ namespace EWE {
 		return tiles.at(static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2 + static_cast<int>(std::floor(y * 2.f)) * mapWidth + (mapWidth * mapHeight / 2));
 	}
 
-	void ForestLevel::chopTree(glm::vec2 position, glm::vec2 direction) {
+	bool ForestLevel::chopTree(glm::vec2 position, glm::vec2 direction) {
 
 		for (int i = 0; i < treeData.size(); i++) {
 			if (treeData[i].first) {
@@ -149,11 +188,10 @@ namespace EWE {
 					trees[i].drawable = false;
 					treeData[i].first = true;
 					logs.at(i).drawable = true;
+					return true;
 				}
 			}
 		}
-		
-
-
+		return false;
 	}
 }

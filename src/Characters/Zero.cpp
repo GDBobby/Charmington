@@ -1,5 +1,8 @@
 #include "Zero.h"
 
+#include <EWEngine/SoundEngine.h>
+#include "../MusicEnum.h"
+
 namespace EWE {
 	Zero::Zero(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
 
@@ -15,10 +18,31 @@ namespace EWE {
 
 	void Zero::logicUpdate() {
 
+		glm::vec2 charmerDiff;
+		charmerDiff.x = charmerTranslation->x - transform.translation.x;
+		charmerDiff.y = charmerTranslation->z - transform.translation.z;
+		float charmerDistSqd = charmerDiff.x * charmerDiff.x + charmerDiff.y * charmerDiff.y;
 
 		switch (animState) {
 		case ZeroSkeleton::Anim_idle: {
 			animFrame = (animFrame + 1) % 879;
+			bool visibleStick = false;
+			for (auto& stick : *sticks) {
+				if (!stick.drawable) {
+					continue;
+				}
+				visibleStick = true;
+			}
+			if (visibleStick) {
+				animState = ZeroSkeleton::Anim_walk;
+				animFrame = 0;
+			}
+			if (charmerDistSqd > 9.f) {
+				animState = ZeroSkeleton::Anim_walk;
+				animFrame = 0;
+				SoundEngine::getSoundEngineInstance()->playEffect(FX_atten);
+			}
+
 			break;
 		}
 		case ZeroSkeleton::Anim_walk: {
@@ -26,116 +50,77 @@ namespace EWE {
 			if (animFrame >= 160) {
 				animFrame = 0;
 			}
+			if (sticks->size() == 0){
+				if (charmerDistSqd < 4.f) {
+					animState = ZeroSkeleton::Anim_idle;
+					transform.rotation.y = 0.f;
+					animFrame = 0;
+				}
+				else {
+					charmerDiff = glm::normalize(charmerDiff);
+					transform.translation.x += charmerDiff.x / 250.f;
+					transform.translation.z += charmerDiff.y / 250.f;
+
+					transform.rotation.y = glm::acos(glm::dot(charmerDiff, glm::vec2(0.f, 1.f)));
+					transform.rotation.y *= (1.f - 2.f * (charmerDiff.x < 0.f));
+				}
+
+			}
+			else {
+				float shortestDist = 1000000.f;
+				Billboard* closestStick = nullptr;
+				glm::vec2 closestDirection;
+				bool visibleStick = false;
+				for (auto& stick : *sticks) {
+					if (!stick.drawable) {
+						continue;
+					}
+					visibleStick = true;
+					closestDirection.x = stick.translation.x - transform.translation.x;
+					closestDirection.y = stick.translation.z - transform.translation.z;
+					float currentDist = closestDirection.x * closestDirection.x + closestDirection.y * closestDirection.y;
+					if (currentDist < shortestDist) {
+						shortestDist = currentDist;
+						closestStick = &stick;
+					}
+				}
+				if (!visibleStick) {
+					if (charmerDistSqd < 4.f) {
+						animState = ZeroSkeleton::Anim_idle;
+						transform.rotation.y = 0.f;
+						animFrame = 0;
+					}
+					else {
+						charmerDiff = glm::normalize(charmerDiff);
+						transform.translation.x += charmerDiff.x / 250.f;
+						transform.translation.z += charmerDiff.y / 250.f;
+
+						transform.rotation.y = glm::acos(glm::dot(charmerDiff, glm::vec2(0.f, 1.f)));
+						transform.rotation.y *= (1.f - 2.f * (charmerDiff.x < 0.f));
+					}
+					return;
+				}
+				if (shortestDist < 0.25f) {
+					printf("Eating stick : %d \n", stickCount);
+					closestStick->drawable = false;
+					stickCount++;
+					if (stickCount == 5) {
+						printf("zero tamed \n");
+						tamed = true;
+					}
+				}
+				closestDirection = glm::normalize(closestDirection);
+				transform.translation.x += closestDirection.x / 250.f;
+				transform.translation.z += closestDirection.y / 250.f;
+
+				transform.rotation.y = glm::acos(glm::dot(closestDirection, glm::vec2(0.f, 1.f)));
+				transform.rotation.y *= (1.f - 2.f * (closestDirection.x < 0.f));
+			}
 			break;
 		}
 		default:
 			break;
 		}
-		/*
-		if (animState != ZeroSkeleton::Anim_chop) {
-			if (appleLocations.size() > 0) {
-				printf("apple locations size? : %lu \n", appleLocations.size());
-				float shortestDist = 10000000.f; //big value
-				std::pair<uint8_t, glm::vec3>* closestApple = nullptr;
-				glm::vec2 appleDirection;
-
-				for (auto& apple : appleLocations) {
-					//find closest apple
-					appleDirection.x = apple.second.x - transform.translation.x;
-					appleDirection.y = apple.second.z - transform.translation.z;
-					float currentDist = appleDirection.x * appleDirection.x + appleDirection.y * appleDirection.y;
-
-					if (currentDist < shortestDist) {
-						shortestDist = currentDist;
-						closestApple = &apple;
-					}
-				}
-				if (shortestDist < 0.25f) {
-					//eat the apple
-					appleAteCount++;
-					if (appleAteCount >= 3) {
-						tamed = true;
-					}
-					ateAppleID = closestApple->first;
-					for (int i = 0; i < appleLocations.size(); i++) {
-						if (appleLocations[i].first == closestApple->first) {
-							appleLocations.erase(appleLocations.begin() + i);
-							break;
-						}
-					}
-				}
-				else {
-
-					appleDirection = glm::normalize(appleDirection);
-					transform.translation.x += appleDirection.x / 250.f;
-					transform.translation.z += appleDirection.y / 250.f;
-
-					transform.rotation.y = glm::acos(glm::dot(appleDirection, glm::vec2(0.f, 1.f)));
-					transform.rotation.y *= (1.f - 2.f * (appleDirection.x < 0.f));
-				}
-
-
-			}
-			else {
-
-				glm::vec2 charmerDirection = { charmerTranslation->x - transform.translation.x, charmerTranslation->z - transform.translation.z };
-				float charmerDistanceSquared = charmerDirection.x * charmerDirection.x + charmerDirection.y * charmerDirection.y;
-				if (charmerDistanceSquared < 1.f) {
-					animState = CarrotSkeleton::Anim_chop;
-					animFrame = 0;
-				}
-				else if (charmerDistanceSquared < 25.f) {
-					charmerDirection = glm::normalize(charmerDirection);
-
-					transform.translation.x += charmerDirection.x / 250.f;
-					transform.translation.z += charmerDirection.y / 250.f;
-
-					transform.rotation.y = glm::acos(glm::dot(charmerDirection, glm::vec2(0.f, 1.f)));
-					transform.rotation.y *= (1.f - 2.f * (charmerDirection.x < 0.f));
-
-					if (animState != CarrotSkeleton::Anim_walk) {
-						animState = CarrotSkeleton::Anim_walk;
-						animFrame = 0;
-					}
-
-				}
-			}
-		}
-		else {
-			animFrame++;
-			if (animFrame < 100) {
-				glm::vec2 charmerDirection = { charmerTranslation->x - transform.translation.x, charmerTranslation->z - transform.translation.z };
-				charmerDirection = glm::normalize(charmerDirection);
-
-				transform.rotation.y = glm::acos(glm::dot(charmerDirection, glm::vec2(0.f, 1.f)));
-				transform.rotation.y *= (1.f - 2.f * (charmerDirection.x < 0.f));
-			}
-
-			if (animFrame == 100) {
-				glm::vec2 charmerDirection = { charmerTranslation->x - transform.translation.x, charmerTranslation->z - transform.translation.z };
-				float charmerDistanceSquared = charmerDirection.x * charmerDirection.x + charmerDirection.y * charmerDirection.y;
-
-				if (charmerDistanceSquared < 1.f) {
-					printf("hit the charmer \n");
-					hitSomething = 0;
-				}
-				else {
-					printf("checking tree for apples : %d \n", treeLocations.size());
-					for (int i = 0; i < treeLocations.size(); i++) {
-						float treeDistance = (treeLocations[i].x - transform.translation.x) * (treeLocations[i].x - transform.translation.x) + (treeLocations[i].z - transform.translation.z) * (treeLocations[i].z - transform.translation.z);
-						printf("treeDistance : %.2f \n", treeDistance);
-						if (treeDistance < 2.25f) {
-							hitSomething = i + 1;
-						}
-					}
-				}
-			}
-			else if (animFrame == 250) {
-				animState = CarrotSkeleton::Anim_idle;
-				animFrame = 0;
-			}
-		}
-		*/
 	}
 	void Zero::renderUpdate() {
 		pushData.modelMatrix = transform.mat4();

@@ -12,10 +12,17 @@
 
 #include "CharmerSkeleton.h"
 #include "InputHandler.h"
+
 #include "../systems/Level.h"
-#include "CarrotPet.h"
 #include "../Levels/StartArea.h"
 #include "../Levels/ForestLevel.h"
+#include "../Levels/ConnectorLevel.h"
+
+
+#include "CarrotPet.h"
+#include "ZeroPet.h"
+
+#include <queue>
 
 //#include <skeleton>
 
@@ -54,12 +61,12 @@ namespace EWE {
 			return changeLevel;
 		}
 
-		void setTransform(TransformComponent const& transform) {
-			this->transform = transform;
-		}
+		void setTransform(TransformComponent const& transform);
 		void tamedCarrot(EWEDevice& device, std::shared_ptr<CarrotSkeleton> carrotSkele) {
 			carrotPet = std::make_unique<CarrotPet>(device, carrotSkele);
 		}
+		void tamedZero(EWEDevice& device, std::shared_ptr<ZeroSkeleton> zeroSkele);
+
 		glm::vec3* getTranslationPtr() {
 			return &transform.translation;
 		}
@@ -71,7 +78,7 @@ namespace EWE {
 			TextOverlay::staticAddText(translationRender);
 		}
 #endif
-
+		uint8_t logCount;
 	protected:
 #if RENDER_TRANSLATION
 		TextStruct translationRender{ "translation : ", 1920, 1000, TA_right, 1.f };
@@ -79,6 +86,7 @@ namespace EWE {
 		int32_t changeLevel = -1;
 		CharmerInput inputHandler;
 		std::unique_ptr<CarrotPet> carrotPet{nullptr};
+		std::unique_ptr<ZeroPet> zeroPet{ nullptr };
 
 		SkinBufferHandler* bufferPointer{ nullptr };
 		//AnimationData animationData{};
@@ -87,13 +95,21 @@ namespace EWE {
 		TransformComponent transform{};
 		EWECamera& camera;
 
+		std::queue<TransformComponent> oldTransforms{};
+
 		uint32_t animFrame = 0;
 		CharmerSkeleton::Charmer_Animations animState = CharmerSkeleton::Anim_idle;
 
-		glm::vec2 forwardDir{1.f, 0.f};
+		glm::vec2 forwardDir{1.f / 250.f, 0.f};
+		uint16_t barkFrames = 0;
 
 		void movement(CharmerKeys polledKeys);
 		void updateCarrotPet(CharmerKeys polledKeys);
+		void updateZeroPet(CharmerKeys polledKeys);
+		void updateForest(CharmerKeys polledKeys);
+		void updateConnector(CharmerKeys polledKeys);
+
+		void setZeroHistory();
 	};
 }
 

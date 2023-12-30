@@ -4,6 +4,7 @@
 #include "../systems/LevelManager.h"
 #include "../Characters/Charmer.h"
 #include "../Characters/Carrot.h"
+#include "../GUI/CharmerOverlay.h"
 
 namespace EWE {
 	class CharmingtonScene : public Scene {
@@ -23,10 +24,12 @@ namespace EWE {
 		void giveCharmerFocus() {
 			charmer.giveInputFocus();
 		}
+		std::shared_ptr<CharmerOverlay> charmerOverlay;
 
 	protected:
 		Charmer charmer;
 		LevelManager levelManager;
+
 
 		bool logicActive = false;
 		void logicThreadFunction();

@@ -21,7 +21,7 @@ namespace EWE {
 	}
 	void MainMenuScene::entry() {
 		soundEngine->stopMusic();
-		soundEngine->playMusic(Music_spookyForest, true);
+		soundEngine->playMusic(Music_menu, true);
 
 		menuManager.changeMenuState(menu_main, 0);
 

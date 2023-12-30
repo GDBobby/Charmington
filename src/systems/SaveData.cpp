@@ -76,7 +76,10 @@ bool SaveJSON::readFromJsonFile(rapidjson::Document& document) {
 		printf("SD not int \n");
 		return false;
 	}
-
+	if (!document["logCount"].IsInt()) {
+		printf("SD not int \n");
+		return false;
+	}
 	if (!document["petFlags"].IsUint64()) {
 		printf("MaV not int \n");
 		return false;
@@ -90,6 +93,9 @@ bool SaveJSON::readFromJsonFile(rapidjson::Document& document) {
 	saveData.currentMap = valueBuffer;
 	valueBuffer = document["currentEntrance"].GetInt();
 	saveData.currentEntrance = valueBuffer;
+	valueBuffer = document["logCount"].GetInt();
+	saveData.logCount = valueBuffer;
+
 	uint64_t uint64Buffer = document["petFlags"].GetUint64();
 	saveData.petFlags = uint64Buffer;
 	uint64Buffer = document["obstacleFlags"].GetUint64();
@@ -108,6 +114,9 @@ void SaveJSON::saveToJsonFile() {
 	writer.Int(saveData.currentMap);
 	writer.Key("currentEntrance");
 	writer.Int(saveData.currentEntrance);
+	writer.Key("logCount");
+	writer.Int(saveData.logCount);
+
 	writer.Key("petFlags");
 	writer.Uint64(saveData.petFlags);
 	writer.Key("obstacleFlags");

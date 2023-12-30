@@ -11,7 +11,7 @@
 
 namespace EWE {
 	struct CharmerKeyMappings {
-		int action[4] = { GLFW_KEY_Q, GLFW_KEY_W, GLFW_KEY_E, GLFW_KEY_R };
+		int action[4] = { GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_R, GLFW_KEY_I };
 		int forward = GLFW_KEY_W;
 		int backward = GLFW_KEY_S;
 		int left = GLFW_KEY_A;

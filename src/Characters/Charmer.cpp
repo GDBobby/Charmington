@@ -1,5 +1,9 @@
 #include "Charmer.h"
 
+#define ZERO_FOLLOW_DISTANCE 125
+#include <EWEngine/SoundEngine.h>
+#include "../MusicEnum.h"
+
 namespace EWE {
 	std::unique_ptr<CharmerSkeleton> Charmer::skeleton{nullptr};
 
@@ -24,7 +28,17 @@ namespace EWE {
 		if (SaveJSON::saveData.petFlags & SaveJSON::PetFlags::PF_Carrot) {
 			carrotPet = std::make_unique<CarrotPet>(device, globalPool);
 		}
+		if ((SaveJSON::saveData.petFlags & SaveJSON::PF_Zero) == SaveJSON::PF_Zero) {
+			printf("loading zero into charmer \n");
+			zeroPet = std::make_unique<ZeroPet>(device, globalPool);
 
+			setZeroHistory();
+		}
+
+		logCount = SaveJSON::saveData.logCount;
+		if (logCount > 9) {
+			logCount = 9;
+		}
 	}
 	Charmer::~Charmer() {
 		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);
@@ -34,14 +48,28 @@ namespace EWE {
 	void Charmer::logicUpdate() {
 		CharmerKeys polledKeys = inputHandler.pollInput();
 		movement(polledKeys);
+		if (zeroPet.get() != nullptr) {
+			updateZeroPet(polledKeys);	
+		}
 
 		if (carrotPet.get() != nullptr) {
 			updateCarrotPet(polledKeys);
 		}
 		if (dynamic_cast<ForestLevel*>(currentLevel) != nullptr) {
-			if (((ForestLevel*)currentLevel)->pickLog(transform.translation.x, transform.translation.z)) {
-
-			}
+			updateForest(polledKeys);
+		}
+		if (dynamic_cast<ConnectorLevel*>(currentLevel) != nullptr) {
+			updateConnector(polledKeys);
+		}
+		switch (animState) {
+		case CharmerSkeleton::Anim_idle: {
+			animFrame = (animFrame + 1) % 160;
+			break;
+		}
+		case CharmerSkeleton::Anim_walk: {
+			animFrame = (animFrame + 1) % 160;
+			break;
+		}
 		}
 	}
 
@@ -57,7 +85,6 @@ namespace EWE {
 
 		bufferPointer->writeData(skeleton->getFinalBones((uint8_t)animState, animFrame));
 		bufferPointer->flush();
-		animFrame = (animFrame + 1) % 80;
 
 		if (carrotPet.get() != nullptr) {
 			carrotPet->transform.translation = transform.translation;
@@ -69,7 +96,10 @@ namespace EWE {
 			carrotPet->transform.rotation.y += glm::half_pi<float>();
 			carrotPet->renderUpdate();
 		}
+		if (zeroPet.get() != nullptr) {
 
+			zeroPet->renderUpdate();
+		}
 	}
 
 	void Charmer::movement(CharmerKeys polledKeys) {
@@ -78,6 +108,29 @@ namespace EWE {
 		glm::vec2 horizontalVelocity = glm::vec2{ 2.f / 250.f * horizontalMovement, 2.f / 250.f * lateralMovement };
 		if ((horizontalMovement != 0) || (lateralMovement != 0)) {
 			forwardDir = horizontalVelocity;
+			if (zeroPet.get() != nullptr) {
+				oldTransforms.push(transform);
+			}
+			if (carrotPet.get() != nullptr) {
+				if (carrotPet->animState != CarrotSkeleton::Anim_walk) {
+					carrotPet->animState = CarrotSkeleton::Anim_walk;
+					carrotPet->animFrame = 0;
+				}
+			}
+			
+			if (animState != CharmerSkeleton::Anim_walk) {
+				animState = CharmerSkeleton::Anim_walk;
+				animFrame = 0;
+			}
+			
+		}
+		else {
+			if (carrotPet.get() != nullptr) {
+				if (carrotPet->animState == CarrotSkeleton::Anim_walk) {
+					carrotPet->animState = CarrotSkeleton::Anim_idle;
+					carrotPet->animFrame = 0;
+				}
+			}
 		}
 
 		if ((horizontalMovement != 0) && (lateralMovement != 0)) {
@@ -174,6 +227,7 @@ namespace EWE {
 		//printf("translation: %.2f:%.2f:%.2f \n", transform.translation.x, transform.translation.y, transform.translation.z);
 		if ((uint16_t)tileFlag >= (uint16_t)TileFlag_exit1) {
 			changeLevel = tileFlag - TileFlag_exit1;
+
 			printf("setting changeLevel : %d \n", changeLevel);
 		}
 	}
@@ -187,11 +241,15 @@ namespace EWE {
 			if (carrotPet->animFrame == 100) {
 				if (dynamic_cast<StartLevel*>(currentLevel) != nullptr) {
 					printf("dynamic casted wasn't null \n");
-					((StartLevel*)currentLevel)->chopTree({ transform.translation.x, transform.translation.z }, glm::normalize(forwardDir));
+					if (((StartLevel*)currentLevel)->chopTree({ transform.translation.x, transform.translation.z }, glm::normalize(forwardDir))) {
+						SoundEngine::getSoundEngineInstance()->playEffect(FX_chop);
+					}
 				}
 				else if (dynamic_cast<ForestLevel*>(currentLevel) != nullptr) {
 						printf("chopping in forest on charmer \n");
-						((ForestLevel*)currentLevel)->chopTree(glm::vec2{ transform.translation.x, transform.translation.z }, glm::normalize(forwardDir));
+						if (((ForestLevel*)currentLevel)->chopTree(glm::vec2{ transform.translation.x, transform.translation.z }, glm::normalize(forwardDir))) {
+							SoundEngine::getSoundEngineInstance()->playEffect(FX_chop);
+						}
 				}
 			}
 			else if (carrotPet->animFrame >= 250) {
@@ -201,7 +259,7 @@ namespace EWE {
 			break;
 		}
 		case CarrotSkeleton::Anim_idle: {
-			carrotPet->animFrame = carrotPet->animFrame % 100;
+			carrotPet->animFrame = carrotPet->animFrame % 400;
 			if (polledKeys.actionPressed[0]) {
 				printf("action 0 was pressed \n");
 
@@ -212,7 +270,7 @@ namespace EWE {
 			break;
 		}
 		case CarrotSkeleton::Anim_walk: {
-			carrotPet->animFrame = carrotPet->animFrame % 100;
+			carrotPet->animFrame = carrotPet->animFrame % 200;
 			if (polledKeys.actionPressed[0]) {
 				printf("action 0 was pressed \n");
 
@@ -226,6 +284,90 @@ namespace EWE {
 
 			break;
 		}
+		}
+	}
+	void Charmer::tamedZero(EWEDevice& device, std::shared_ptr<ZeroSkeleton> zeroSkele) {
+		zeroPet = std::make_unique<ZeroPet>(device, zeroSkele);
+
+
+		setZeroHistory();
+	}
+	void Charmer::setTransform(TransformComponent const& transform) {
+		this->transform = transform;
+		if (zeroPet.get() != nullptr) {
+			setZeroHistory();
+		}
+	}
+	void Charmer::setZeroHistory() {
+		zeroPet->transform = transform;
+		zeroPet->transform.translation.x -= forwardDir.x * 100.f;
+		zeroPet->transform.translation.z -= forwardDir.y * 100.f;
+
+		while (!oldTransforms.empty()) {
+			oldTransforms.pop();
+		}
+		while (oldTransforms.size() < ZERO_FOLLOW_DISTANCE) {
+			oldTransforms.push(zeroPet->transform);
+		}
+	}
+	void Charmer::updateZeroPet(CharmerKeys polledKeys) {
+		if (oldTransforms.size() > ZERO_FOLLOW_DISTANCE) {
+			zeroPet->animState = ZeroSkeleton::Anim_walk;
+			zeroPet->animFrame++;
+			if (zeroPet->animFrame >= 160) {
+				zeroPet->animFrame = 0;
+			}
+			//printf("transform queue size : %d \n", oldTransforms.size());
+			zeroPet->transform.translation = oldTransforms.front().translation;
+			zeroPet->transform.rotation = oldTransforms.front().rotation;
+			zeroPet->transform.rotation.y += glm::half_pi<float>();
+			oldTransforms.pop();
+		}
+		else {
+			zeroPet->animFrame = 0;
+			zeroPet->animState = ZeroSkeleton::Anim_idle;
+		}
+		if (polledKeys.actionPressed[2]) {
+			//bark
+			if (barkFrames == 0) {
+				printf("bork \n");
+				SoundEngine::getSoundEngineInstance()->playEffect(1);
+				barkFrames = 1;
+			}
+		}
+		if (barkFrames > 0) {
+			barkFrames = (barkFrames + 1) % 350;
+			printf("barkFrames : %d \n", barkFrames);
+		}
+		if (dynamic_cast<ConnectorLevel*>(currentLevel) != nullptr) {
+			if (barkFrames == 300) {
+				((ConnectorLevel*)currentLevel)->bark(transform.translation.x, transform.translation.z);
+			}
+
+		}
+
+	}
+	void Charmer::updateForest(CharmerKeys polledKeys) {
+		if (((ForestLevel*)currentLevel)->pickLog(transform.translation.x, transform.translation.z)) {
+			logCount++;
+			if (logCount > 9) {
+				logCount = 9;
+			}
+			SaveJSON::saveData.logCount = logCount;
+		}
+		if (polledKeys.actionPressed[1] && (logCount > 0)) {
+			printf("E was pressed? \n");
+			logCount--;
+			((ForestLevel*)currentLevel)->dropStick(transform.translation.x, transform.translation.z, glm::normalize(forwardDir));
+		}
+	}
+	void Charmer::updateConnector(CharmerKeys polledKeys) {
+
+		if (polledKeys.actionPressed[1] && (logCount > 0)) {
+			printf("E was pressed? \n");
+			if (((ConnectorLevel*)currentLevel)->scaredSheet) {
+				logCount -= ((ConnectorLevel*)currentLevel)->dropPlank(transform.translation.x, transform.translation.z, glm::normalize(forwardDir));
+			}
 		}
 	}
 }

@@ -7,6 +7,7 @@ namespace EWE {
 		populateLevels();
 	}
 	LevelManager::~LevelManager() {
+		currentLevel->exitLevel();
 	}
 
 	void LevelManager::initLevel(EWEDevice& device) {
@@ -19,6 +20,12 @@ namespace EWE {
 				((FirstLevel*)currentLevel)->carrot->charmerTranslation = charmer.getTranslationPtr();
 			}
 		}
+		else if (currentLevelID == Level::Level_WoodChop) {
+			if (((ForestLevel*)currentLevel)->zero.get() != nullptr) {
+				((ForestLevel*)currentLevel)->zero->charmerTranslation = charmer.getTranslationPtr();
+			}
+		}
+		charmerOverlay->updateFromSettings();
 	}
 	void LevelManager::logicUpdate() {
 		charmer.logicUpdate();
@@ -71,15 +78,33 @@ namespace EWE {
 						charmer.tamedCarrot(device, firstLevel->carrot->skeleton);
 						firstLevel->unloadCarrot();
 						waitingForLogic = false;
+						charmerOverlay->updateFromSettings();
 					}
 				}
 
 				break;
 			}
+
 			case Level::Level_WoodChop: {
 				ForestLevel* forestLevel = ((ForestLevel*)currentLevel);
 				if (forestLevel->zero.get() != nullptr) {
 					forestLevel->zero->logicUpdate();
+
+					if (forestLevel->zero->tamed) {
+						printf("ZERO WAS TAMED \n");
+						SaveJSON::saveData.petFlags |= SaveJSON::PetFlags::PF_Zero;
+						SaveJSON::saveToJsonFile();
+						waitingForRender = true;
+						waitingForLogic = true;
+						while (waitingForRender) {
+							printf("waiting for render thread \n");
+							std::this_thread::sleep_for(std::chrono::milliseconds(10));
+						}
+						charmer.tamedZero(device, forestLevel->zero->skeleton);
+						forestLevel->zero.reset(nullptr);
+						waitingForLogic = false;
+						charmerOverlay->updateFromSettings();
+					}
 				}
 				break;
 			}
@@ -87,6 +112,27 @@ namespace EWE {
 				SpookyForest* spookyForest = ((SpookyForest*)currentLevel);
 				if (spookyForest->sheet.get() != nullptr) {
 					spookyForest->sheet->logicUpdate();
+				}
+				break;
+			}
+			case Level::Level_Connector: {
+				ConnectorLevel* connector = ((ConnectorLevel*)currentLevel);
+				if (connector->sheet.get() != nullptr) {
+					connector->sheet->logicUpdate();
+					if (connector->scaredSheet && connector->sheet->escaped) {
+						waitingForRender = true;
+						waitingForLogic = true;
+						while (waitingForRender) {
+							printf("waiting for render thread \n");
+							std::this_thread::sleep_for(std::chrono::milliseconds(10));
+						}
+						
+						connector->sheet.reset(nullptr);
+						waitingForLogic = false;
+						SaveJSON::saveData.obstacleFlags |= SaveJSON::ObstacleFlags::OF_Sheet;
+						SaveJSON::saveToJsonFile();
+						charmerOverlay->updateFromSettings();
+					}
 				}
 				break;
 			}
@@ -125,10 +171,17 @@ namespace EWE {
 				((FirstLevel*)currentLevel)->carrot->charmerTranslation = charmer.getTranslationPtr();
 			}
 		}
+		else if (currentLevelID == Level::Level_WoodChop) {
+			if (((ForestLevel*)currentLevel)->zero.get() != nullptr) {
+				((ForestLevel*)currentLevel)->zero->charmerTranslation = charmer.getTranslationPtr();
+			}
+		}
 
 		printf("finished swapping stage \n");
 		waitingForLogic = false;
 		SaveJSON::saveToJsonFile();
+
+		charmerOverlay->updateFromSettings();
 	}
 
 	void LevelManager::populateLevels() {

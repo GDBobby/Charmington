@@ -1,5 +1,9 @@
 #include "Carrot.h"
 
+#include <EWEngine/SoundEngine.h>
+
+#include "../MusicEnum.h"
+
 namespace EWE {
 
 	Carrot::Carrot(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
@@ -13,6 +17,7 @@ namespace EWE {
 	}
 	Carrot::~Carrot() {
 		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);
+		SoundEngine::getSoundEngineInstance()->stopEfect(FX_steppage);
 	}
 
 
@@ -21,11 +26,33 @@ namespace EWE {
 
 		switch (animState) {
 			case CarrotSkeleton::Anim_idle: {
-				animFrame = (animFrame + 1) % 100;
+				animFrame = (animFrame + 1) % 400;
 				break;
 			}
 			case CarrotSkeleton::Anim_walk: {
-				animFrame = (animFrame + 1) % 100;
+				animFrame = (animFrame + 1) % 200;
+				break;
+			}
+			case CarrotSkeleton::Anim_eat: {
+				animFrame++;
+				if (animFrame == 200) {
+					appleAteCount++;
+					if (appleAteCount >= 3) {
+						tamed = true;
+					}
+					ateAppleID = closestApple->first;
+					for (int i = 0; i < appleLocations.size(); i++) {
+						if (appleLocations[i].first == closestApple->first) {
+							appleLocations.erase(appleLocations.begin() + i);
+							break;
+						}
+					}
+				}
+				if (animFrame >= 249) {
+					animState = CarrotSkeleton::Anim_walk;
+					animFrame = 0;
+				}
+				return;
 				break;
 			}
 			default:
@@ -34,9 +61,16 @@ namespace EWE {
 
 		if (animState != CarrotSkeleton::Anim_chop) {
 			if (appleLocations.size() > 0) {
+
+				if (animState != CarrotSkeleton::Anim_walk) {
+					SoundEngine::getSoundEngineInstance()->stopEfect(FX_steppage);
+					SoundEngine::getSoundEngineInstance()->playEffect(FX_steppage, true);
+					animState = CarrotSkeleton::Anim_walk;
+					animFrame = 0;
+				}
+
 				printf("apple locations size? : %lu \n", appleLocations.size());
 				float shortestDist = 10000000.f; //big value
-				std::pair<uint8_t, glm::vec3>* closestApple = nullptr;
 				glm::vec2 appleDirection; 
 
 				for (auto& apple : appleLocations) {
@@ -52,17 +86,8 @@ namespace EWE {
 				}
 				if (shortestDist < 0.25f) {
 					//eat the apple
-					appleAteCount++;
-					if (appleAteCount >= 3) {
-						tamed = true;
-					}
-					ateAppleID = closestApple->first;
-					for (int i = 0; i < appleLocations.size(); i++) {
-						if (appleLocations[i].first == closestApple->first) {
-							appleLocations.erase(appleLocations.begin() + i);
-							break;
-						}
-					}
+					animState = CarrotSkeleton::Anim_eat;
+					animFrame = 0;
 				}
 				else {
 
@@ -81,6 +106,7 @@ namespace EWE {
 				glm::vec2 charmerDirection = { charmerTranslation->x - transform.translation.x, charmerTranslation->z - transform.translation.z };
 				float charmerDistanceSquared = charmerDirection.x * charmerDirection.x + charmerDirection.y * charmerDirection.y;
 				if (charmerDistanceSquared < 1.f) {
+					SoundEngine::getSoundEngineInstance()->stopEfect(FX_steppage);
 					animState = CarrotSkeleton::Anim_chop;
 					animFrame = 0;
 				}
@@ -94,6 +120,8 @@ namespace EWE {
 					transform.rotation.y *= (1.f - 2.f * (charmerDirection.x < 0.f));
 
 					if (animState != CarrotSkeleton::Anim_walk) {
+						SoundEngine::getSoundEngineInstance()->stopEfect(FX_steppage);
+						SoundEngine::getSoundEngineInstance()->playEffect(FX_steppage, true);
 						animState = CarrotSkeleton::Anim_walk;
 						animFrame = 0;
 					}
@@ -110,6 +138,9 @@ namespace EWE {
 				transform.rotation.y = glm::acos(glm::dot(charmerDirection, glm::vec2(0.f, 1.f)));
 				transform.rotation.y *= (1.f - 2.f * (charmerDirection.x < 0.f));
 			}
+			if (animFrame == 80) {
+				SoundEngine::getSoundEngineInstance()->playEffect(FX_hya);
+			}
 
 			if (animFrame == 100) {
 				glm::vec2 charmerDirection = { charmerTranslation->x - transform.translation.x, charmerTranslation->z - transform.translation.z };
@@ -125,6 +156,7 @@ namespace EWE {
 						float treeDistance = (treeLocations[i].x - transform.translation.x) * (treeLocations[i].x - transform.translation.x) + (treeLocations[i].z - transform.translation.z) * (treeLocations[i].z - transform.translation.z);
 						printf("treeDistance : %.2f \n", treeDistance);
 						if (treeDistance < 2.25f) {
+							SoundEngine::getSoundEngineInstance()->playEffect(FX_chop);
 							hitSomething = i + 1;
 						}
 					}

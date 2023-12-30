@@ -34,7 +34,7 @@ namespace EWE {
 
 	}
 
-	void StartLevel::chopTree(glm::vec2 position, glm::vec2 direction) {
+	bool StartLevel::chopTree(glm::vec2 position, glm::vec2 direction) {
 		if ((position.x > -1.5f) && (position.x < 1.5f)) {
 
 			for (int i = 0; i < stumpPositions.size(); i++) {
@@ -53,11 +53,12 @@ namespace EWE {
 							tiles.at(47 + 29 * mapWidth + j) = TileFlag_none;
 						}
 						SaveJSON::saveData.obstacleFlags |= SaveJSON::OF_Stump;
+						return true;
 					}
 				}
 			}
 		}
-
+		return false;
 
 	}
 

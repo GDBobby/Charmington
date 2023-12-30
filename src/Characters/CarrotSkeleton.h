@@ -9,6 +9,7 @@ namespace EWE {
 		enum Carrot_Animations {
 
 			Anim_chop,
+			Anim_eat,
 			Anim_idle,
 			Anim_walk,
 		};

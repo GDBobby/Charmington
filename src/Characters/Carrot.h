@@ -58,6 +58,8 @@ namespace EWE {
 
 		uint8_t appleAteCount = 0;
 
+		std::pair<uint8_t, glm::vec3>* closestApple = nullptr;
+
 		SkinBufferHandler* bufferPointer{ nullptr };
 		//AnimationData animationData{};
 

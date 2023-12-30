@@ -8,7 +8,8 @@ namespace EWE {
 	public:
 		enum Charmer_Animations {
 
-			Anim_idle,
+			Anim_idle, //80
+			Anim_walk, // 160
 		};
 
 

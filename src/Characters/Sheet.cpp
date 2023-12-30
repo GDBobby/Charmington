@@ -12,6 +12,16 @@ namespace EWE {
 	Sheet::~Sheet() {
 		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);
 	}
+	void Sheet::scare() {
+		if (animState == SheetSkeleton::Anim_idle) {
+			animState = SheetSkeleton::Anim_scared;
+			animFrame = 0;
+		}
+	}
+	void Sheet::flee() {
+		animState = SheetSkeleton::Anim_walk;
+		animFrame = 0;
+	}
 
 	void Sheet::logicUpdate() {
 
@@ -25,6 +35,21 @@ namespace EWE {
 			animFrame++;
 			if (animFrame >= 249) {
 				animFrame = 50;
+			}
+			if (guarding) {
+				transform.translation.z -= 1.f / 250.f;
+				transform.rotation.y = glm::half_pi<float>();
+				if (transform.translation.z < -26.f) {
+					escaped = true;
+				}
+			}
+			break;
+		}
+		case SheetSkeleton::Anim_scared: {
+			animFrame++;
+			if (animFrame >= 260) {
+				animFrame = 0;
+				animState = SheetSkeleton::Anim_idle;
 			}
 			break;
 		}

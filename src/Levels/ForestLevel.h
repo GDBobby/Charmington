@@ -7,15 +7,6 @@
 #include "../Characters/Zero.h"
 
 namespace EWE {
-	struct LogStruct {
-		TransformComponent transform;
-		TextureID logTexture = TEXTURE_UNBINDED;
-		bool drawable = false;
-
-		LogStruct() : transform{} {}
-		LogStruct(TransformComponent const& transform, TextureID logTextureID) : transform{ transform }, logTexture{ logTextureID } {
-		}
-	};
 
 	class ForestLevel : public Level {
 	public:
@@ -27,19 +18,23 @@ namespace EWE {
 
 		TileFlag tileAt(float x, float y) override;
 
-		void chopTree(glm::vec2 position, glm::vec2 direction);
+		bool chopTree(glm::vec2 position, glm::vec2 direction);
 
 		std::unique_ptr<Zero> zero{nullptr};
 
 		bool pickLog(float x, float y);
+		void dropStick(float x, float y, glm::vec2 forwardDir);
+		void eatStick(uint8_t ateStickID);
 
 	protected:
 		std::vector<EweObject> trees{};
-		std::vector<LogStruct> logs{};
+		std::vector<Billboard> logs{};
+		std::vector<Billboard> sticks{};
 		//std::unique_ptr<EWEModel> logModel;
 
 		std::vector<std::pair<bool, glm::vec3>> treeData{};
 
 		TextureID logTextureID;
+		TextureID stickTextureID;
 	};
 }

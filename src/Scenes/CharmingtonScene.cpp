@@ -6,9 +6,14 @@ namespace EWE {
 		menuManager{ ewEngine.menuManager },
 		soundEngine{ SoundEngine::getSoundEngineInstance() },
 		charmer{ ewEngine.eweDevice, ewEngine.mainWindow.getGLFWwindow(), ewEngine.camera, ewEngine.advancedRS.globalPool },
-		levelManager{ewEngine, ewEngine.eweDevice, charmer}
+		levelManager{ewEngine, ewEngine.eweDevice, charmer},
+		charmerOverlay{std::make_shared<CharmerOverlay>(ewEngine.eweDevice, ewEngine.menuManager.screenWidth, ewEngine.menuManager.screenHeight, charmer.logCount)}
 	{
 		CharmerInput::giveCallbackReturns(ewEngine.menuManager.staticMouseCallback, ewEngine.menuManager.staticKeyCallback);
+
+		ewEngine.uiHandler.overlay = charmerOverlay;
+		levelManager.charmerOverlay = charmerOverlay;
+		charmerOverlay->setActive(false);
 	}
 	CharmingtonScene::~CharmingtonScene() {
 		printf("deconstructing main menu \n");
@@ -52,10 +57,11 @@ namespace EWE {
 		menuManager.closeMenu();
 		logicActive = true;
 		logicThread = std::make_unique<std::thread>(&CharmingtonScene::logicThreadFunction, this);
-
+		charmerOverlay->setActive(true);
 		//handle threads in this scene, or a game specific class
 	}
 	void CharmingtonScene::exit() {
+		charmerOverlay->setActive(false);
 		logicActive = false;
 		if (logicThread.get() != nullptr) {
 			logicThread->join();
@@ -104,7 +110,6 @@ namespace EWE {
 			//ewEngine.drawObjects(cmdBufFrameIndex, dt);
 			PipelineSystem::setCmdIndexPair(cmdBufFrameIndex);
 			ewEngine.draw3DObjects(cmdBufFrameIndex, dt);
-			ewEngine.draw2DObjects(cmdBufFrameIndex);
 			FrameInfo frameInfo;
 			frameInfo.cmdIndexPair = cmdBufFrameIndex;
 			frameInfo.time = static_cast<float>(dt);
@@ -116,6 +121,7 @@ namespace EWE {
 				charmer.drawTranslation();
 				ewEngine.uiHandler.Benchmarking(dt, ewEngine.peakRenderTime, ewEngine.averageRenderTime, ewEngine.highestRenderTime, ewEngine.averageLogicTime, BENCHMARKING_GPU, ewEngine.elapsedGPUMS, ewEngine.averageElapsedGPUMS);
 			}
+			ewEngine.draw2DObjects(cmdBufFrameIndex);
 			ewEngine.uiHandler.drawOverlayText(cmdBufFrameIndex.first, ewEngine.displayingRenderInfo);
 			menuManager.drawText();
 			ewEngine.uiHandler.endTextRender(cmdBufFrameIndex.first);

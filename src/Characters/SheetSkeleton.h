@@ -7,8 +7,9 @@ namespace EWE {
 	private:
 	public:
 		enum Sheet_Animations {
-			Anim_idle,
-			Anim_walk,
+			Anim_idle, //200
+			Anim_scared, //260
+			Anim_walk, //250
 		};
 
 

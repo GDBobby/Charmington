@@ -26,18 +26,20 @@ class SaveJSON {
 public:
 	enum PetFlags : uint64_t {
 		PF_Carrot = 1,
-		PF_Cat = 1 << 1,
-		PF_Dog = 1 << 2,
+		PF_Sheet = 1 << 1,
+		PF_Zero = 1 << 2,
 	};
 	enum ObstacleFlags : uint64_t {
 		OF_Stump = 1,
 		OF_Bridge = 1 << 1,
+		OF_Sheet = 1 << 2,
 	};
 
 	struct SaveData {
 		int version = 10;
 		int currentMap = 0;
 		int currentEntrance = 0;
+		int logCount = 0;
 
 		uint64_t petFlags = 0;
 		uint64_t obstacleFlags = 0;

@@ -278,7 +278,13 @@ namespace EWE {
 
 
 		std::unordered_map<uint16_t, std::string> effectsMap{};
-		effectsMap.emplace(0, "sounds/effects/click.mp3");
+		effectsMap.emplace(FX_click, "sounds/effects/click.mp3");
+		effectsMap.emplace(FX_bark, "sounds/effects/bark.mp3");
+		effectsMap.emplace(FX_steppage, "sounds/effects/steppage.mp3");
+		effectsMap.emplace(FX_step, "sounds/effects/step.mp3");
+		effectsMap.emplace(FX_hya, "sounds/effects/hya.mp3");
+		effectsMap.emplace(FX_chop, "sounds/effects/chop.mp3");
+		effectsMap.emplace(FX_atten, "sounds/effects/atten.mp3");
 		printf("loading effects \n");
 		soundEngine->loadSoundMap(effectsMap, SoundEngine::SoundType::Effect);
 

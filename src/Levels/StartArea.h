@@ -11,7 +11,7 @@ namespace EWE {
 		void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) override;
 		void exitLevel() override;
 
-		void chopTree(glm::vec2 position, glm::vec2 direction);
+		bool chopTree(glm::vec2 position, glm::vec2 direction);
 
 	protected:
 		//std::unique_ptr<EweObject> rock;

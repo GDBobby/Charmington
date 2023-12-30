@@ -24,18 +24,17 @@ namespace EWE {
 
 		glm::vec3* charmerTranslation;
 
-		void giveTreeLocations(std::vector<std::pair<bool, glm::vec3>>* trees) {
-			treeData = trees;
-		}
 		void treeChopped(uint8_t treeID) {
 			printf("sheet losing tree: %d \n", treeID);
 			//appleLocations.push_back(treeID);
 		}
+		void giveSticks(std::vector<Billboard>* sticks) {
+			this->sticks = sticks;
+		}
 
 	protected:
-		std::vector<std::pair<bool, glm::vec3>>* treeData{ nullptr };
-		int8_t hitSomething = -1;
-		int8_t hidingSpots = 10;
+		std::vector<Billboard>* sticks;
+		uint8_t stickCount = 0;
 
 		SkinBufferHandler* bufferPointer{ nullptr };
 		//AnimationData animationData{};

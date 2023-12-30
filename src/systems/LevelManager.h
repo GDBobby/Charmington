@@ -19,6 +19,8 @@
 #include "../Levels/ForestLevel.h"
 #include "../Levels/SpookyForest.h"
 
+#include "../GUI/CharmerOverlay.h"
+
 
 namespace EWE {
 	class LevelManager {
@@ -59,7 +61,7 @@ namespace EWE {
 
 		bool waitingForRender = false;
 		bool waitingForLogic = false;
-
+		std::shared_ptr<CharmerOverlay> charmerOverlay{ nullptr };
 	protected:
 		Charmer& charmer;
 
@@ -72,6 +74,7 @@ namespace EWE {
 		EightWindsEngine& ewEngine;
 
 		void populateLevels();
+
 
 	};
 

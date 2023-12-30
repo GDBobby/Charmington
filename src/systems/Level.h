@@ -15,6 +15,15 @@
 
 
 namespace EWE {
+	struct Billboard {
+		glm::vec3 translation;
+		bool drawable = false;
+
+		Billboard() : translation{} {}
+		Billboard(glm::vec3 const& translation) : translation{ translation } {
+		}
+	};
+
 	struct Terrain_Object {
 		Terrain_Object(EWEDevice& device, std::string modelPath)
 			:model{EWEModel::createModelFromFile(device, modelPath)}
