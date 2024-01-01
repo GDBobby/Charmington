@@ -8,15 +8,7 @@
 namespace EWE {
 	class FirstLevel : public Level {
 	public:
-		FirstLevel(EWEDevice& device) : Level{TileSet::TS_First} {
-			exits.push_back(Level_Start);
-
-			TransformComponent entryTransform{};
-			entryTransform.translation.x = 9.f;
-
-			entryPoints.emplace(Level::Level_Start, entryTransform);
-
-		}
+		FirstLevel(EWEDevice& device);
 		void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) override;
 		void exitLevel() override;
 		void unloadCarrot() {

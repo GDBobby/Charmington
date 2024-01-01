@@ -153,7 +153,7 @@ namespace EWE {
 		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
 	}
 	void MelonJam::addModulesToMenuManager(float screenWidth, float screenHeight) {
-		menuManager.menuModules.emplace(menu_main, std::make_unique<MainMenuMM>(screenWidth, screenHeight));
+		menuManager.menuModules.emplace(menu_main, std::make_unique<MainMenuMM>(ewEngine.eweDevice, screenWidth, screenHeight));
 		menuManager.menuModules.at(menu_main)->labels[1].string = "1.0.0";
 		menuManager.menuModules.emplace(menu_end, std::make_unique<MenuEndMM>(ewEngine.eweDevice, screenWidth, screenHeight));
 		menuManager.menuModules.emplace(menu_Charmington, std::make_unique<GameMenuMM>(ewEngine.eweDevice, screenWidth, screenHeight));
@@ -297,9 +297,10 @@ namespace EWE {
 
 		std::unordered_map<uint16_t, std::string> musicMap{};
 
-		musicMap.emplace(Music_menu, "sounds/music/Melon_main_theme.mp3");
+		musicMap.emplace(Music_menu, "sounds/music/main_theme_loop.mp3");
 
-		musicMap.emplace(Music_spookyForest, "sounds/music/Spooky_forrest_lol.mp3");
+		musicMap.emplace(Music_spookyForest, "sounds/music/Ghost_level_loop.mp3");
+		musicMap.emplace(Music_forest, "sounds/music/forrest_theme_loop.mp3");
 
 		soundEngine->loadSoundMap(musicMap, SoundEngine::SoundType::Music);
 	}

@@ -239,4 +239,28 @@ namespace EWE {
 
 		loadGrass(device);
 	}
+	void Level::exitLevel() {
+		floor.reset();
+		for (int i = 0; i < grassField.size(); i++) {
+			grassField[i].reset();
+		}
+		tiles.clear();
+		backgroundTrees.clear();
+	}
+	void Level::loadBackTrees(EWEDevice& device) {
+		TransformComponent transform{};
+
+		backgroundTrees.reserve(backgroundTrans.size());
+		backgroundTrees.emplace_back("treeTwo", device, false);
+		transform.translation = backgroundTrans[0];
+		backgroundTrees.back().transform = transform;
+		backgroundTrees.back().drawable = true;
+		for (int i = 1; i < backgroundTrans.size(); i++) {
+
+			backgroundTrees.emplace_back(backgroundTrees[0]);
+			transform.translation = backgroundTrans[i];
+			backgroundTrees.back().transform = transform;
+			backgroundTrees.back().drawable = true;
+		}
+	}
 }

@@ -1,5 +1,7 @@
 #include "CharmingtonScene.h"
 
+#include "../MusicEnum.h"
+
 namespace EWE {
 	CharmingtonScene::CharmingtonScene(EightWindsEngine& ewEngine)
 		: ewEngine{ ewEngine },
@@ -30,8 +32,8 @@ namespace EWE {
 	void CharmingtonScene::entry() {
 		//soundEngine->stopMusic();
 
-
-		//soundEngine->playMusic(Music_Menu);
+		soundEngine->stopMusic();
+		soundEngine->playMusic(Music_forest, true);
 
 		//menuManager.changeMenuState(menu_main, 0);
 

@@ -2,7 +2,7 @@
 
 #include "MelonJam.h"
 
-int main() {
+int WinMain() {
 	SettingsJSON::initializeSettings();
 	EWE::EightWindsEngine ewEngine{"Melon Jam"};
 	EWE::MelonJam* melonJam = nullptr;

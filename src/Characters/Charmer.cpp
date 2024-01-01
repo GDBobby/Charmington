@@ -78,6 +78,7 @@ namespace EWE {
 		//update pet position
 		//update animation
 		glm::vec3 cameraPos = transform.translation + glm::vec3{ 0.f, 6.f, 3.f };
+		//glm::vec3 cameraPos = transform.translation + glm::vec3{ 0.5f, 2.f, 2.f };
 		glm::vec3 target = transform.translation;
 		camera.updateViewData(cameraPos, target);
 

@@ -31,7 +31,7 @@ namespace EWE {
 		rock.reset();
 
 		SoundEngine::getSoundEngineInstance()->stopMusic();
-		SoundEngine::getSoundEngineInstance()->playMusic(Music_menu, true);
+		SoundEngine::getSoundEngineInstance()->playMusic(Music_forest, true);
 	}
 
 

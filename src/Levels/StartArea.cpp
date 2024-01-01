@@ -22,6 +22,24 @@ namespace EWE {
 		entryTransform.translation.z = -10.0f;
 
 		entryPoints.emplace(Level::Level_Connector, entryTransform);
+
+		backgroundTrans = {
+			glm::vec3{4.f, 0.f, -12.f},
+			glm::vec3{-4.f, 0.f, -12.f},
+			glm::vec3{8.f, 0.f, -12.f},
+			glm::vec3{-8.f, 0.f, -12.f},
+			glm::vec3{12.f, 0.f, -12.f},
+			glm::vec3{-12.f, 0.f, -12.f},
+			glm::vec3{12.f, 0.f, -7.f},
+			glm::vec3{-12.f, 0.f, -7.f},
+			glm::vec3{12.f, 0.f, -3.f},
+			glm::vec3{-12.f, 0.f, -3.f},
+			glm::vec3{12.f, 0.f, 4.f},
+			glm::vec3{-12.f, 0.f, 4.f},
+			glm::vec3{12.f, 0.f, 10.f},
+			glm::vec3{-12.f, 0.f, 10.f},
+
+		};
 	}
 	void StartLevel::exitLevel() {
 		//auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
@@ -31,7 +49,6 @@ namespace EWE {
 		//rock.reset();
 		Level::exitLevel();
 		stumps.clear();
-
 	}
 
 	bool StartLevel::chopTree(glm::vec2 position, glm::vec2 direction) {
@@ -86,12 +103,8 @@ namespace EWE {
 				tiles.at(47 + 29 * mapWidth + i) = TileFlag_solid;
 			}
 		}
-
-		//47 29
-		//52 29
 		
+		loadBackTrees(device);
 
-		//rock.reset(new EweObject("rock", device, false));
-		//rock->transform.translation.z = -11.f;
 	}
 }

@@ -1,6 +1,41 @@
 #include "FirstLevel.h"
 
 namespace EWE {
+	FirstLevel::FirstLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
+		exits.push_back(Level_Start);
+
+		TransformComponent entryTransform{};
+		entryTransform.translation.x = 9.f;
+
+		entryPoints.emplace(Level::Level_Start, entryTransform);
+
+		backgroundTrans = {
+			glm::vec3{11.f, 0.f, -3.f},
+			glm::vec3{11.f, 0.f, 4.f},
+			glm::vec3{11.f, 0.f, 8.5f},
+			glm::vec3{11.f, 0.f, -7.f},
+			glm::vec3{7.f, 0.f, -9.5f},
+			glm::vec3{4.f, 0.f, -9.5f},
+			glm::vec3{1.f, 0.f, -9.5f},
+			glm::vec3{-2.f, 0.f, -9.5f},
+			glm::vec3{-5.f, 0.f, -9.5f},
+			glm::vec3{-8.f, 0.f, -9.5f},
+			glm::vec3{-8.f, 0.f, -9.5f},
+			glm::vec3{-8.f, 0.f, -6.5f},
+			glm::vec3{-8.f, 0.f, -3.5f},
+			glm::vec3{-8.f, 0.f, -0.5f},
+			glm::vec3{-8.f, 0.f, 3.5f},
+			glm::vec3{-8.f, 0.f, 6.5f},
+			glm::vec3{-8.f, 0.f, 9.5f},
+			glm::vec3{7.f, 0.f, 9.5f},
+			glm::vec3{4.f, 0.f, 9.5f},
+			glm::vec3{1.f, 0.f, 9.5f},
+			glm::vec3{-2.f, 0.f, 9.5f},
+			glm::vec3{-5.f, 0.f, 9.5f},
+
+		};
+	}
+
 	void FirstLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
 		std::string textureLocation{ "firstArena.png" };
 		std::string tileMapLocation{ "models/firstArena.tmx" };
@@ -43,6 +78,7 @@ namespace EWE {
 			}
 			trees.at(i).transform.translation = treeData.at(i).second;
 		}
+		loadBackTrees(device);
 	}
 	void FirstLevel::exitLevel() {
 		carrot.reset(nullptr);
@@ -63,6 +99,7 @@ namespace EWE {
 		}
 		trees.clear();
 		apples.clear();
+		Level::exitLevel();
 	}
 	void FirstLevel::render(FrameInfo& frameInfo) {
 		Level::render(frameInfo);

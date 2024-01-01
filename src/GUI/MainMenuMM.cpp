@@ -1,7 +1,7 @@
 #include "MainMenuMM.h"
 
 namespace EWE {
-	MainMenuMM::MainMenuMM(float screenWidth, float screenHeight) {
+	MainMenuMM::MainMenuMM(EWEDevice& device, float screenWidth, float screenHeight) {
 		float widthRescaling = screenWidth / DEFAULT_WIDTH;
 		float heightRescaling = screenHeight / DEFAULT_HEIGHT;
 
@@ -16,6 +16,10 @@ namespace EWE {
 		clickText.emplace_back("Exit", 0.f, 860.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
 		clickText.emplace_back("Charmington", 0.f, 520.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
 		//clickText.emplace_back("Level Builder", 0.f, 760.f * heightRescaling, TA_left, 3.f, screenWidth, screenHeight);
+
+		Transform2dComponent transform{};
+		transform.scale = { 2.f, 2.f };
+		images.emplace_back(EWETexture::addUITexture(device, "title.png"), transform);
 		
 	}
 

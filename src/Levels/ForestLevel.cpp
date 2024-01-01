@@ -15,7 +15,59 @@ namespace EWE {
 				treeData.emplace_back(false, glm::vec3{static_cast<float>(x) * 6.f, 0.f, static_cast<float>(y) * 6.f - 4.f});
 			}
 		}
+		backgroundTrans = {
+			{-13.f, 0.f, -5.f },
+			{-13.f, 0.f, -7.f },
+			{-13.f, 0.f, -9.f },
+			{-13.f, 0.f, -11.f },
+			{-13.f, 0.f, -13.f },
 
+			{-11.f, 0.f, -13.f },
+			{-9.f, 0.f, -13.f },
+			{-7.f, 0.f, -13.f },
+			{-5.f, 0.f, -13.f },
+			{-3.f, 0.f, -13.f },
+			{-1.f, 0.f, -13.f },
+			{1.f, 0.f, -13.f },
+			{3.f, 0.f, -13.f },
+			{5.f, 0.f, -13.f },
+			{7.f, 0.f, -13.f },
+			{9.f, 0.f, -13.f },
+
+			{11.f, 0.f, -13.f },
+			{11.f, 0.f, -11.f },
+			{11.f, 0.f, -9.f },
+			{11.f, 0.f, -7.f },
+			{11.f, 0.f, -5.f },
+			{11.f, 0.f, -3.f },
+			{11.f, 0.f, -1.f },
+			{11.f, 0.f, 1.f },
+			{11.f, 0.f, 3.f },
+			{11.f, 0.f, 5.f },
+			{11.f, 0.f, 7.f },
+			{11.f, 0.f, 9.f },
+
+			{-13.f, 0.f, 9.f },
+			{-11.f, 0.f, 9.f },
+			{-9.f, 0.f, 9.f },
+			{-7.f, 0.f, 9.f },
+			{-5.f, 0.f, 9.f },
+			{-3.f, 0.f, 9.f },
+			{-1.f, 0.f, 9.f },
+			{1.f, 0.f, 9.f },
+			{3.f, 0.f, 9.f },
+			{5.f, 0.f, 9.f },
+			{7.f, 0.f, 9.f },
+			{9.f, 0.f, 9.f },
+			{11.f, 0.f, 9.f },
+
+			{-13.f, 0.f, 7.f },
+			{-13.f, 0.f, 5.f },
+			{-13.f, 0.f, 3.f },
+			{-13.f, 0.f, 1.f },
+
+
+		};
 	}
 
 	void ForestLevel::exitLevel() {
@@ -73,7 +125,7 @@ namespace EWE {
 			logTranslation.y += .25f;
 			logs.emplace_back(logTranslation);
 		}
-		
+		loadBackTrees(device);
 	}
 
 	void ForestLevel::render(FrameInfo& frameInfo) {

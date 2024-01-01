@@ -5,6 +5,7 @@
 #include <EWEngine/graphics/PushConstants.h>
 #include <EWEngine/systems/PipelineSystem.h>
 #include <EWEngine/graphics/model/EWE_Basic_Model.h>
+#include <EWEngine/graphics/EWE_Object.h>
 
 #include "../pipelines/PipelineEnum.h"
 #include "TileMap.h"
@@ -65,13 +66,7 @@ namespace EWE {
 		};
 
 		virtual void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) = 0;
-		virtual void exitLevel() {
-			floor.reset();
-			for (int i = 0; i < grassField.size(); i++) {
-				grassField[i].reset();
-			}
-			tiles.clear();
-		}
+		virtual void exitLevel();
 
 		std::vector<LevelID> exits{};
 
@@ -107,8 +102,10 @@ namespace EWE {
 
 		std::array<std::unique_ptr<EWEModel>, 5> grassField;
 
-		
+		std::vector<EweObject> backgroundTrees{};
 
 		void enterLevelP(EWEDevice& device, std::string textureLocation, std::string tileMapLocation);
+		std::vector<glm::vec3> backgroundTrans{};
+		void loadBackTrees(EWEDevice& device);
 	};
 }
