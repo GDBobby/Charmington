@@ -11,7 +11,7 @@ namespace EWE {
 	protected:
 
 	public:
-		ZeroPet(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool);
+		ZeroPet(EWEDevice& device);
 		ZeroPet(EWEDevice& device, std::shared_ptr<ZeroSkeleton> ZeroSkele);
 		~ZeroPet();
 

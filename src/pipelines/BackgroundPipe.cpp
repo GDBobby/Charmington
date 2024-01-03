@@ -1,5 +1,11 @@
 #include "BackgroundPipe.h"
 
+#include <EWEngine/graphics/model/EWE_Basic_Model.h>
+
+#include <functional>
+#include <typeinfo>
+#include <unordered_map>
+
 namespace EWE {
 	BackgroundPipe::BackgroundPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
 		//createPipeline();
@@ -10,7 +16,8 @@ namespace EWE {
 
 	void BackgroundPipe::createPipeLayout(EWEDevice& device) {
 		pushStageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		pushSize = sizeof(ModelPushData);
+		//pushSize = sizeof(ModelPushData);
+		pushSize = sizeof(UVScrollingPushData);
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -22,11 +29,20 @@ namespace EWE {
 
 		pipelineLayoutInfo.pushConstantRangeCount = 1;
 		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+		//pipelineLayoutInfo.pushConstantRangeCount = 0;
+		//pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
+		vertexIndexBufferLayout = EWEDescriptorSetLayout::Builder(device)
+			.addBinding(0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.addBinding(1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.build();
+		std::vector<VkDescriptorSetLayout> tempDSL;// = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
+		tempDSL.push_back(DescriptorHandler::getDescSetLayout(LDSL_global, device));
+		tempDSL.push_back(vertexIndexBufferLayout->getDescriptorSetLayout());
+		tempDSL.push_back(EWETexture::getSimpleDescriptorSetLayout());
 
-		std::vector<VkDescriptorSetLayout>* tempDSL = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
-		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL->size());
-		pipelineLayoutInfo.pSetLayouts = tempDSL->data();
+		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL.size());
+		pipelineLayoutInfo.pSetLayouts = tempDSL.data();
 
 		if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipeLayout) != VK_SUCCESS) {
 			printf("failed to create background pipe layout \n");
@@ -40,11 +56,15 @@ namespace EWE {
 
 		pipelineConfig.pipelineLayout = pipeLayout;
 		//pipelineConfig.bindingDescriptions = EffectVertex::getBindingDescriptions();
-		pipelineConfig.bindingDescriptions = EWEModel::getBindingDescriptions<EffectVertex>();
-		pipelineConfig.attributeDescriptions = EffectVertex::getAttributeDescriptions();
-		std::string vertString = "visualEffect.vert.spv";
-		std::string fragString = "visualEffect.frag.spv";
+		pipelineConfig.bindingDescriptions = TileVertex::getBindingDescriptions();
+		pipelineConfig.attributeDescriptions = TileVertex::getAttributeDescriptions();
+		std::string vertString = "tileInstancing.vert.spv";
+		std::string fragString = "tileInstancing.frag.spv";
 
 		pipe = std::make_unique<EWEPipeline>(device, vertString, fragString, pipelineConfig);
+	}
+
+	void BackgroundPipe::drawInstanced(EWEModel* model) {
+		model->BindAndDrawInstanceNoIndex(cmdBuf);
 	}
 }

@@ -4,13 +4,13 @@
 #include "../MusicEnum.h"
 
 namespace EWE {
-	Zero::Zero(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
+	Zero::Zero(EWEDevice& device) {
 
 		skeleton = std::make_shared<ZeroSkeleton>(device);
 
 		SkinRenderSystem::setPushData(skeleton->getSkeletonID(), &pushData, static_cast<uint8_t>(sizeof(pushData)));
 		bufferPointer = SkinRenderSystem::getSkinBuffer(skeleton->getSkeletonID());
-		bufferPointer->changeMaxActorCount(device, 1, globalPool); // if issues, set this up first
+		bufferPointer->changeMaxActorCount(device, 1); // if issues, set this up first
 	}
 	Zero::~Zero() {
 		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);

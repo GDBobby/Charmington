@@ -14,23 +14,23 @@ namespace EWE {
 		value = std::floor(value * 2.f) / 2.f + .001f;
 	}
 
-	Charmer::Charmer(EWEDevice& device, GLFWwindow* wnd, EWECamera& camera, std::shared_ptr<EWEDescriptorPool> globalPool) : inputHandler{ wnd }, camera{ camera } {
+	Charmer::Charmer(EWEDevice& device, GLFWwindow* wnd, EWECamera& camera) : inputHandler{ wnd }, camera{ camera } {
 		if (skeleton.get() == nullptr) {
 			printf("current directory? : %s \n", std::filesystem::current_path().string().c_str());
 			skeleton = std::make_unique<CharmerSkeleton>(device);
 		}
 		SkinRenderSystem::setPushData(skeleton->getSkeletonID(), &pushData, static_cast<uint8_t>(sizeof(pushData)));
 		bufferPointer = SkinRenderSystem::getSkinBuffer(skeleton->getSkeletonID());
-		bufferPointer->changeMaxActorCount(device, 1, globalPool); // if issues, set this up first
+		bufferPointer->changeMaxActorCount(device, 1); // if issues, set this up first
 
 		transform.rotation.y = -glm::half_pi<float>();
 
 		if (SaveJSON::saveData.petFlags & SaveJSON::PetFlags::PF_Carrot) {
-			carrotPet = std::make_unique<CarrotPet>(device, globalPool);
+			carrotPet = std::make_unique<CarrotPet>(device);
 		}
 		if ((SaveJSON::saveData.petFlags & SaveJSON::PF_Zero) == SaveJSON::PF_Zero) {
 			printf("loading zero into charmer \n");
-			zeroPet = std::make_unique<ZeroPet>(device, globalPool);
+			zeroPet = std::make_unique<ZeroPet>(device);
 
 			setZeroHistory();
 		}

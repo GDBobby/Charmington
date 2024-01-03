@@ -1,7 +1,7 @@
 #include "FirstLevel.h"
 
 namespace EWE {
-	FirstLevel::FirstLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
+	FirstLevel::FirstLevel(EWEDevice& device) : Level{"firstArena.tmx", TileSet::TS_First} {
 		exits.push_back(Level_Start);
 
 		TransformComponent entryTransform{};
@@ -36,11 +36,12 @@ namespace EWE {
 		};
 	}
 
-	void FirstLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
+	void FirstLevel::enterLevel(EWEDevice& device) {
 		std::string textureLocation{ "firstArena.png" };
 		std::string tileMapLocation{ "models/firstArena.tmx" };
 
-		enterLevelP(device, textureLocation, tileMapLocation);
+		tileMap = std::make_unique<TileMap>(device, mapName, tileSetID);
+		//enterLevelP(device, textureLocation, tileMapLocation);
 		printf("SaveJSON::saveData.petFlags : %lu \n", SaveJSON::saveData.petFlags);
 		for (int i = 0; i < treeData.size(); i++) {
 			treeData[i].first = false;
@@ -48,7 +49,7 @@ namespace EWE {
 
 		if ((SaveJSON::saveData.petFlags & SaveJSON::PF_Carrot) != SaveJSON::PF_Carrot) {
 			printf("loading in carrot \n");
-			carrot.reset(new Carrot(device, globalPool));
+			carrot.reset(new Carrot(device));
 			TransformComponent transform{};
 
 			carrot->setTransform(transform);
@@ -152,6 +153,6 @@ namespace EWE {
 		}
 		
 
-		return tiles.at(static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2 + static_cast<int>(std::floor(y * 2.f)) * mapWidth + (mapWidth * mapHeight / 2));
+		return tileMap->tileFlags.at(static_cast<int>(std::floor(x * 2.f)) + tileMap->width / 2 + static_cast<int>(std::floor(y * 2.f)) * tileMap->width + (tileMap->width * tileMap->height / 2));
 	}
 }

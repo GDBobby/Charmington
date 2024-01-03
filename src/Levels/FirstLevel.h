@@ -9,7 +9,7 @@ namespace EWE {
 	class FirstLevel : public Level {
 	public:
 		FirstLevel(EWEDevice& device);
-		void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) override;
+		void enterLevel(EWEDevice& device) override;
 		void exitLevel() override;
 		void unloadCarrot() {
 			carrot.reset(nullptr);

@@ -34,7 +34,7 @@ namespace EWE {
 	public:
 		//std::unique_ptr<CharmerSkeleton> skeleton;
 		//std::shared_ptr<EweObject> tool; //if wielding a tool?
-		Charmer(EWEDevice& device, GLFWwindow* wnd, EWECamera& camera, std::shared_ptr<EWEDescriptorPool> globalPool);
+		Charmer(EWEDevice& device, GLFWwindow* wnd, EWECamera& camera);
 		~Charmer();
 
 		void giveInputFocus() {

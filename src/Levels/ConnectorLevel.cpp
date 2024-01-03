@@ -1,7 +1,11 @@
 #include "ConnectorLevel.h"
 
+#include <EWEngine/systems/PipelineSystem.h>
+#include "../pipelines/BackgroundPipe.h"
+#include "../pipelines/PipelineEnum.h"
+
 namespace EWE {
-	ConnectorLevel::ConnectorLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
+	ConnectorLevel::ConnectorLevel(EWEDevice& device) : Level{"connector.tmx", TileSet::TS_First } {
 		exits.push_back(Level_Start);
 		exits.push_back(Level_WoodChop);
 		exits.push_back(Level_SpookyForest);
@@ -68,21 +72,22 @@ namespace EWE {
 		//placedPlankCount = 0;
 	}
 
-	void ConnectorLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
+	void ConnectorLevel::enterLevel(EWEDevice& device) {
 		std::string textureLocation{ "connector.png" };
 		std::string tileMapLocation{ "models/connector.tmx" };
 
-		enterLevelP(device, textureLocation, tileMapLocation);
+		tileMap = std::make_unique<TileMap>(device, mapName, tileSetID);
+		//enterLevelP(device, textureLocation, tileMapLocation);
 		for (int i = 0; i < waterTextures.size(); i++) {
 			std::string waterTextureLocation{ "water" + std::to_string(i) + ".png" };
 			waterTextures[i] = EWETexture::addSceneTexture(device, waterTextureLocation);
 		}
 
-		waterTransform.scale.x = static_cast<float>(mapWidth) / 2.f;
+		waterTransform.scale.x = static_cast<float>(tileMap->width) / 2.f;
 		waterTransform.scale.z = 6.f;
 		waterTransform.translation.y = -0.01f;
 		waterTransform.translation.z = -20.f;
-		waterModel = Basic_Model::generateSimple3DQuad(device, glm::vec2{ static_cast<float>(mapWidth), 12.f });
+		waterModel = Basic_Model::generateSimple3DQuad(device, glm::vec2{ static_cast<float>(tileMap->width), 12.f });
 		extensionModel = Basic_Model::generateSimple3DQuad(device);
 		builtBridge = (SaveJSON::saveData.obstacleFlags & SaveJSON::ObstacleFlags::OF_Bridge) == SaveJSON::ObstacleFlags::OF_Bridge;
 		loadExtension(device);
@@ -90,7 +95,7 @@ namespace EWE {
 		//rock->transform.translation.z = -11.f;
 		scaredSheet = (SaveJSON::saveData.obstacleFlags & SaveJSON::ObstacleFlags::OF_Sheet) == SaveJSON::ObstacleFlags::OF_Sheet;
 		if (!scaredSheet) {
-			sheet = std::make_unique<Sheet>(device, globalPool);
+			sheet = std::make_unique<Sheet>(device);
 			sheet->transform.translation.x = 0.5f;
 			sheet->transform.translation.z = -20.f;
 			sheet->guarding = true;
@@ -183,14 +188,14 @@ namespace EWE {
 		extensionTransform.scale.z = -static_cast<float>(extensionHeight) / 2.f;
 
 		uint32_t tileCount = extensionWidth * extensionHeight;
-		extension.reserve(tileCount + (6 * mapWidth));
+		extension.reserve(tileCount + (6 * tileMap->width));
 		uint16_t tileBuffer;
 		while (!inStream.eof()) {
 			inStream >> tileBuffer;
 			extension.emplace_back((TileFlag)tileBuffer);
 		}
 		for (int y = 0; y < 6; y++) {
-			for (int x = 0; x < mapWidth; x++) {
+			for (int x = 0; x < tileMap->width; x++) {
 				if (builtBridge && x >= 53 && x <= 56) {
 					extension.emplace_back(TileFlag::TileFlag_none);
 				}
@@ -199,7 +204,7 @@ namespace EWE {
 				}
 			}
 		}
-		tiles.insert(tiles.begin(), extension.begin(), extension.end());
+		//tiles.insert(tiles.begin(), extension.begin(), extension.end());
 	}
 
 	TileFlag ConnectorLevel::tileAt(float x, float y) {
@@ -207,7 +212,7 @@ namespace EWE {
 		//printf("x ? %d \n", static_cast<int>(std::floor(x * 2.f + 1.f)) + mapWidth / 2);
 		//printf("y ? %d \n", static_cast<int>(std::floor(y * 2.f + 10.f)) * mapWidth + (mapWidth * (mapHeight)));
 
-		return tiles.at(static_cast<int>(std::floor(x * 2.f + 1.f)) + mapWidth / 2 + static_cast<int>(std::floor(y * 2.f + 12.f)) * mapWidth + (mapWidth * (mapHeight / 2)));
+		return tileMap->tileFlags.at(static_cast<int>(std::floor(x * 2.f + 1.f)) + tileMap->width / 2 + static_cast<int>(std::floor(y * 2.f + 12.f)) * tileMap->width + (tileMap->width * (tileMap->height / 2)));
 	}
 
 	void ConnectorLevel::bark(float x, float y) {
@@ -260,10 +265,10 @@ namespace EWE {
 					printf("finished bridge construction \n");
 					builtBridge = true;
 					for (int y = 5; y < 12; y++) {
-						uint32_t tileIter = y * mapWidth;
+						uint32_t tileIter = y * tileMap->width;
 						for (int x = 53; x <= 56; x++) {
 
-							tiles.at(y * mapWidth + x) = TileFlag::TileFlag_none;
+							tileMap->tileFlags.at(y * tileMap->width + x) = TileFlag::TileFlag_none;
 							SaveJSON::saveData.obstacleFlags |= SaveJSON::OF_Bridge;
 							SaveJSON::saveToJsonFile();
 						}

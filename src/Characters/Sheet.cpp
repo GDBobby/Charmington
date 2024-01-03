@@ -1,13 +1,13 @@
 #include "Sheet.h"
 
 namespace EWE {
-	Sheet::Sheet(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
+	Sheet::Sheet(EWEDevice& device) {
 
 		skeleton = std::make_shared<SheetSkeleton>(device);
 
 		SkinRenderSystem::setPushData(skeleton->getSkeletonID(), &pushData, static_cast<uint8_t>(sizeof(pushData)));
 		bufferPointer = SkinRenderSystem::getSkinBuffer(skeleton->getSkeletonID());
-		bufferPointer->changeMaxActorCount(device, 1, globalPool); // if issues, set this up first
+		bufferPointer->changeMaxActorCount(device, 1); // if issues, set this up first
 	}
 	Sheet::~Sheet() {
 		SkinRenderSystem::removePushData(skeleton->getSkeletonID(), &pushData);

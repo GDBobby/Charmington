@@ -14,7 +14,7 @@ namespace EWE {
 
 	void LevelManager::initLevel(EWEDevice& device) {
 
-		currentLevel->enterLevel(device, ewEngine.advancedRS.globalPool);
+		currentLevel->enterLevel(device);
 		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
 		charmer.currentLevel = currentLevel;
 		if (currentLevelID == Level::Level_First) {
@@ -180,7 +180,7 @@ namespace EWE {
 		printf("swapstage : %d \n", levelID);
 		currentLevel->exitLevel();
 		currentLevel = levels.at(levelID).get();
-		currentLevel->enterLevel(device, ewEngine.advancedRS.globalPool);
+		currentLevel->enterLevel(device);
 		charmer.setTransform(currentLevel->getEntryTransform(currentLevelID));
 		currentLevelID = levelID;
 		charmer.currentLevel = currentLevel;

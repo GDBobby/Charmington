@@ -39,33 +39,12 @@ namespace EWE {
 
 		//pipe->drawInstanced(floor.get());
 		{
-			auto pipe = PipelineSystem::at(Pipe_grass2);
-			pipe->bindPipeline();
-			
-			pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
-			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(grassTextureID, frameInfo.cmdIndexPair.second));
 			grassTime += frameInfo.time;
-			UVScrollingPushData push{ glm::vec2{glm::mod(grassTime / 6.f, 1.f), glm::mod(grassTime / 9.f, 1.f)} };
-			//printf("uv scroll : %.5f:%.5f \n", push.uvScroll.x, push.uvScroll.y);
-			pipe->push(&push);
-
-			for (int i = 0; i < grassField.size(); i++) {
-				pipe->drawInstanced(grassField[i].get());
-			}
+			tileMap->renderGrass(grassTime, frameInfo.cmdIndexPair.second);
 		}
 		{
-			auto pipe = PipelineSystem::at(Pipe_background);
+			tileMap->renderTiles(frameInfo.cmdIndexPair.second);
 
-			pipe->bindPipeline();
-			pipe->bindModel(floor.get());
-			pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
-			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(floorTextureID, frameInfo.cmdIndexPair.second));
-
-			ModelPushData push;
-			push.modelMatrix = floorTransform.mat4();
-			//push.normalMatrix = floorTransform.normalMatrix();
-
-			pipe->pushAndDraw(&push);
 		}
 
 		return;
@@ -87,12 +66,14 @@ namespace EWE {
 	*/
 	TileFlag Level::tileAt(float x, float y) {
 
-		//printf("x ? %d \n", static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2);
-		//printf("y ? %d \n", static_cast<int>(std::floor(y * 2.f)) * mapHeight + (mapWidth * mapHeight / 2));
-		
-		return tiles.at(static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2 + static_cast<int>(std::floor(y * 2.f)) * mapWidth + (mapWidth * mapHeight / 2));
-	}
+		//printf("x ? %d \n", static_cast<int>(std::floor(x * 2.f)) + tileMap->width / 2);
+		//printf("y ? %d \n", static_cast<int>(std::floor(y * 2.f)) * tileMap->height + (tileMap->width * tileMap->height / 2));
+		//printf("tileMap->width ? %d \n", tileMap->width);
+		//printf("tileMap->height ? %d \n", tileMap->height);
 
+		return tileMap->tileFlags.at(static_cast<int>(std::floor(x * 2.f)) + tileMap->width / 2 + static_cast<int>(std::floor(y * 2.f)) * tileMap->width + (tileMap->width * tileMap->height / 2));
+	}
+	/*
 	void Level::loadGrass(EWEDevice& device) {
 		//LARGE_INTEGER queryStart;
 		//QueryPerformanceCounter(&queryStart);
@@ -119,10 +100,10 @@ namespace EWE {
 		std::array<std::vector<GrassInstance>, 5> instanceTranslation;
 		glm::vec3 instanceRotations[4] = {
 			//		cos	sin
-			/*0*/	{0.f, 0.f, 0.f},
-			/*90*/	{0.f, glm::half_pi<float>(), 0.f},
-			/*180*/	{0.f, glm::pi<float>(), 0.f},
-			/*270*/	{0.f, glm::quarter_pi<float>() * 3.f, 0.f}
+			{0.f, 0.f, 0.f},
+			{0.f, glm::half_pi<float>(), 0.f},
+			{0.f, glm::pi<float>(), 0.f},
+			{0.f, glm::quarter_pi<float>() * 3.f, 0.f}
 		};
 
 		//float grassRadius = 17.56f * (grassFieldWidth / 2);
@@ -156,7 +137,7 @@ namespace EWE {
 					rotationCounter[counter] = (rotationCounter[counter] + 1) % 4;
 					//printf("counter value? : %d \n", counter);
 				}
-				else if (tiles.at(i + j * mapWidth) == TileFlag::TileFlag_solidNonGrass) {
+				else if (tiles.at(i + j * mapWidth) == TileFlag::TileFlag_solid) {
 					tiles.at(i + j * mapWidth) = TileFlag::TileFlag_solid;
 				}
 				counter = (counter + 1) % 5;
@@ -183,68 +164,16 @@ namespace EWE {
 		floorTextureID = EWETexture::addSceneTexture(device, textureLocation);
 		tileSize = 32;
 
-		std::ifstream inStream{ tileMapLocation };
-		if (!inStream.is_open()) {
-			if (!std::filesystem::exists(tileMapLocation)) {
-				printf("loaded map doesn't exist : %s \n", tileMapLocation.c_str());
-				throw std::runtime_error("inexistant file \n");
-			}
-			inStream.open(tileMapLocation);
-			if (!inStream.is_open()) {
-				printf("failed to load map twice : %s \n", tileMapLocation.c_str());
-				throw std::runtime_error("failed to loadm ap twice");
-			}
-		}
-		inStream >> mapWidth;
-		inStream >> mapHeight;
-
-		floor = Basic_Model::generateSimple3DQuad(device);
-		floorTransform.scale.x = static_cast<float>(mapWidth) / 2.f;
-		floorTransform.scale.z = -static_cast<float>(mapHeight) / 2.f;
-
-		uint32_t tileCount = mapWidth * mapHeight;
-		tiles.reserve(tileCount);
-		//std::vector<TileInstance> instanceData;
-		//instanceData.reserve(tileCount);
-		//TransformComponent transform{};
-		//transform.scale = { 0.505f, 0.5f, 0.505f };
-		//glm::vec2 uvOffset;
-		//uint32_t currentTile = 0;
-		//TileFlag tileFlag;
-		uint16_t tileBuffer;
-		while (!inStream.eof()) {
-			//printf("reading from file : %d \n", currentTile);
-			//transform.rotation.y = 0.f;
-			//std::string tileString;
-			//inStream >> tileString;
-			//printf("tileString : %s \n", tileString.c_str());
-			//continue;
-
-			inStream >> tileBuffer;
-			//inStream >> tileFlag;
-			
-			//if (tileID > tileSet.width * tileSet.height) {
-			//	printf("tileID : %lu \n", tileID);
-			//}
-
-			//tileSet.interpretTileID(tileID);// , transform.rotation.y);
-
-			//transform.translation.x = 0.5f * (static_cast<float>(currentTile % mapWidth) - (static_cast<float>(mapWidth) / 2.f));
-			//transform.translation.z = static_cast<float>(0.5 * (std::floor(static_cast<double>(currentTile) / static_cast<double>(mapWidth)) - (static_cast<double>(mapHeight) / 2.0)));
-
-			//instanceData[currentTile].transform = transform.mat4();
-			//tileSet.setUVOffset(tileID, uvOffset);
-			tiles.emplace_back((TileFlag)tileBuffer);
-		}
-
 		loadGrass(device);
 	}
+	*/
 	void Level::exitLevel() {
-		floor.reset();
-		for (int i = 0; i < grassField.size(); i++) {
-			grassField[i].reset();
-		}
-		tiles.clear();
+		tileMap.reset(nullptr);
+		//floor.reset();
+		//for (int i = 0; i < grassField.size(); i++) {
+		//	grassField[i].reset();
+		//}
+		//tileMap->tileFlags.clear();
 		backgroundTrees.clear();
 	}
 	void Level::loadBackTrees(EWEDevice& device) {
@@ -256,7 +185,6 @@ namespace EWE {
 		backgroundTrees.back().transform = transform;
 		backgroundTrees.back().drawable = true;
 		for (int i = 1; i < backgroundTrans.size(); i++) {
-
 			backgroundTrees.emplace_back(backgroundTrees[0]);
 			transform.translation = backgroundTrans[i];
 			backgroundTrees.back().transform = transform;

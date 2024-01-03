@@ -9,7 +9,7 @@ namespace EWE {
 	class ConnectorLevel : public Level {
 	public:
 		ConnectorLevel(EWEDevice& device);
-		void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) override;
+		void enterLevel(EWEDevice& device) override;
 		void exitLevel() override;
 		void render(FrameInfo& frameInfo) override;
 		TileFlag tileAt(float x, float y) override;

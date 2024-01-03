@@ -8,7 +8,7 @@ namespace EWE {
 	class StartLevel : public Level {
 	public:
 		StartLevel(EWEDevice& device);
-		void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) override;
+		void enterLevel(EWEDevice& device) override;
 		void exitLevel() override;
 
 		bool chopTree(glm::vec2 position, glm::vec2 direction);

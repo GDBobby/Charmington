@@ -1,56 +1,32 @@
 #pragma once
 
-#include <EWEngine/Data/EngineDataTypes.h>
-#include <EWEngine/Data/TransformInclude.h>
+#include <EWEngine/graphics/model/EWE_Model.h>
 
-#include <stdexcept>
-#include <string>
-#include <vector>
+#include "TileSet.h"
+#include <array>
 
-typedef uint64_t TileID;
-enum TileFlag : uint16_t {
-	TileFlag_none,
-	TileFlag_solid,
-	TileFlag_slow,
-	TileFlag_exit1,
-	TileFlag_exit2,
-	TileFlag_exit3,
-	TileFlag_exit4,
-	TileFlag_exit5,
-	TileFlag_exit6,
-	TileFlag_solidNonGrass,
-};
 
 namespace EWE {
-	struct TileSet {
-		enum TileSet_Enum {
-			TS_First,
-			//TS_Start,
-		};
-
-		TileSet_Enum setID;
-		uint32_t tileSize;
-		uint32_t width;
-		uint32_t height;
-		//std::string fileLocation;
-
-		TileSet(TileSet_Enum map_id);
-		void interpretTileID(TileID& tileID);//, float& rotation);
-
-		void setUVOffset(TileID tileID, glm::vec2& offset);
-
-		TileFlag getTileFlag(TileID tileID);
-	};
-
-	struct TileMap {
+	class TileMap {
+	public:
 		uint32_t width;
 		uint32_t height;
 		TileSet tileSet;
 		TextureID textureID;
+		std::vector<TileFlag> tileFlags;
 
-		TileMap(std::string fileLocation, TileSet::TileSet_Enum tileSetID) : tileSet{tileSetID} {
+		TileMap(EWEDevice& device, std::string fileLocation, TileSet::TileSet_Enum tileSetID);
 
-		}
+		bool buildTileSquare(uint32_t tileID, TransformComponent& transform, glm::mat4& ret, glm::vec2& uvOffset);
 
+		std::array<std::unique_ptr<EWEModel>, 5> grassField{nullptr, nullptr, nullptr, nullptr, nullptr};
+
+		void renderGrass(float grassTime, uint8_t frameIndex);
+		void renderTiles(uint8_t frameIndex);
+	private:
+		static TextureID grassTextureID;
+		std::unique_ptr<EWEBuffer> tileVertexBuffer{ nullptr };
+		std::unique_ptr<EWEBuffer> tileIndexBuffer{ nullptr };
+		VkDescriptorSet descriptorSet{ VK_NULL_HANDLE };
 	};
 }

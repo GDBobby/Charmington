@@ -3,11 +3,9 @@
 #include <EWEngine/graphics/model/EWE_Model.h>
 #include <EWEngine/graphics/EWE_FrameInfo.h>
 #include <EWEngine/graphics/PushConstants.h>
-#include <EWEngine/systems/PipelineSystem.h>
 #include <EWEngine/graphics/model/EWE_Basic_Model.h>
 #include <EWEngine/graphics/EWE_Object.h>
 
-#include "../pipelines/PipelineEnum.h"
 #include "TileMap.h"
 #include "SaveData.h"
 
@@ -55,8 +53,6 @@ namespace EWE {
 			Level_SpookyForest,
 		};
 
-		Level(TileSet::TileSet_Enum tsEnum) : tileSet{tsEnum} {}
-
 		struct Level_Exit {
 			LevelID destination;
 			TransformComponent destinationSpawnPoint;
@@ -65,7 +61,9 @@ namespace EWE {
 			}
 		};
 
-		virtual void enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) = 0;
+		Level(std::string mapName, TileSet::TileSet_Enum tileSetID) : mapName{ mapName }, tileSetID{tileSetID} {}
+
+		virtual void enterLevel(EWEDevice& device) = 0;
 		virtual void exitLevel();
 
 		std::vector<LevelID> exits{};
@@ -73,13 +71,12 @@ namespace EWE {
 		//std::vector<Terrain_Object> terrainObjects{};
 
 		TransformComponent floorTransform{};
-		TextureID floorTextureID;
 
 		//TileFlag tileFlagAt(float x, float y);
 
 		virtual void render(FrameInfo& frameInfo);
 
-		void loadGrass(EWEDevice& device);
+		//void loadGrass(EWEDevice& device);
 
 		virtual TileFlag tileAt(float x, float y);
 
@@ -90,21 +87,17 @@ namespace EWE {
 	protected:
 		std::unordered_map<LevelID, TransformComponent> entryPoints{};
 
-		TileSet tileSet;
 		std::unique_ptr<EWEModel> floor;
-		std::vector<TileFlag> tiles;
-		int32_t mapWidth;
-		int32_t mapHeight;
-		uint32_t tileSize;
 
-		TextureID grassTextureID;
+		std::string mapName; 
+		TileSet::TileSet_Enum tileSetID;
+		std::unique_ptr<TileMap> tileMap{nullptr};
+
 		float grassTime = 0.f;
-
-		std::array<std::unique_ptr<EWEModel>, 5> grassField;
 
 		std::vector<EweObject> backgroundTrees{};
 
-		void enterLevelP(EWEDevice& device, std::string textureLocation, std::string tileMapLocation);
+		//void enterLevelP(EWEDevice& device, std::string textureLocation, std::string tileMapLocation);
 		std::vector<glm::vec3> backgroundTrans{};
 		void loadBackTrees(EWEDevice& device);
 	};

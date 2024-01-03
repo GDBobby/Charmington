@@ -7,7 +7,7 @@ namespace EWE {
 		: ewEngine{ ewEngine },
 		menuManager{ ewEngine.menuManager },
 		soundEngine{ SoundEngine::getSoundEngineInstance() },
-		charmer{ ewEngine.eweDevice, ewEngine.mainWindow.getGLFWwindow(), ewEngine.camera, ewEngine.advancedRS.globalPool },
+		charmer{ ewEngine.eweDevice, ewEngine.mainWindow.getGLFWwindow(), ewEngine.camera},
 		levelManager{ewEngine, ewEngine.eweDevice, charmer},
 		charmerOverlay{std::make_shared<CharmerOverlay>(ewEngine.eweDevice, ewEngine.menuManager.screenWidth, ewEngine.menuManager.screenHeight, charmer.logCount)}
 	{

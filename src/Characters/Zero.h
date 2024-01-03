@@ -11,7 +11,7 @@ namespace EWE {
 	protected:
 
 	public:
-		Zero(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool);
+		Zero(EWEDevice& device);
 		~Zero();
 		void logicUpdate();
 		void renderUpdate();

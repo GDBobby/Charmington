@@ -1,7 +1,10 @@
 #include "ForestLevel.h"
 
+#include "../pipelines/BillboardPipe.h"
+#include "../pipelines/PipelineEnum.h"
+
 namespace EWE {
-	ForestLevel::ForestLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
+	ForestLevel::ForestLevel(EWEDevice& device) : Level{"spookyForest.tmx", TileSet::TS_First} {
 		exits.push_back(Level_Connector);
 
 		TransformComponent entryTransform{};
@@ -87,17 +90,18 @@ namespace EWE {
 		
 	}
 
-	void ForestLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
+	void ForestLevel::enterLevel(EWEDevice& device) {
 		std::string textureLocation{ "WoodChop.png" };
 		std::string tileMapLocation{ "models/WoodChop.tmx" };
 
-		enterLevelP(device, textureLocation, tileMapLocation);
+		tileMap = std::make_unique<TileMap>(device, mapName, tileSetID);
+		//enterLevelP(device, textureLocation, tileMapLocation);
 
 
 		bool zeroTamed = (SaveJSON::saveData.petFlags & SaveJSON::PetFlags::PF_Zero) == SaveJSON::PF_Zero;
 		if (!zeroTamed) {
 			printf("loading zero into ForestLevel \n");
-			zero = std::make_unique<Zero>(device, globalPool);
+			zero = std::make_unique<Zero>(device);
 			zero->giveSticks(&sticks);
 		}
 		else {
@@ -220,7 +224,7 @@ namespace EWE {
 		}
 
 
-		return tiles.at(static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2 + static_cast<int>(std::floor(y * 2.f)) * mapWidth + (mapWidth * mapHeight / 2));
+		return tileMap->tileFlags.at(static_cast<int>(std::floor(x * 2.f)) + tileMap->width / 2 + static_cast<int>(std::floor(y * 2.f)) * tileMap->width + (tileMap->width * tileMap->height / 2));
 	}
 
 	bool ForestLevel::chopTree(glm::vec2 position, glm::vec2 direction) {

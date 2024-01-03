@@ -28,6 +28,8 @@ namespace EWE {
 		currentScene = scene_mainmenu;
 		scenes.emplace(scene_mainmenu, std::make_unique<MainMenuScene>(ewEngine));
 		scenes.emplace(scene_Charmington, std::make_unique<CharmingtonScene>(ewEngine));
+		scenes.emplace(scene_LevelCreation, std::make_unique<LevelCreationScene>(ewEngine));
+		((LevelCreationScene*)scenes.at(scene_LevelCreation).get())->giveGLFWCallbackReturns(menuManager.staticMouseCallback, menuManager.staticKeyCallback);
 		//scenes.emplace(scene_)
 		currentScenePtr = scenes.at(currentScene).get();
 		currentScenePtr->load();
@@ -264,6 +266,11 @@ namespace EWE {
 				((CharmingtonScene*)currentScenePtr)->giveCharmerFocus();
 				break;
 			}
+			case MCR_swapToLevelCreation: {
+				currentScene = scene_LevelCreation;
+				wantsToChangeScene = true;
+				break;
+			}
 			case MCR_none: {
 				printf("returned MCR_Return \n");
 				throw std::runtime_error("this should nto be returned");
@@ -281,6 +288,7 @@ namespace EWE {
 		PipelineSystem::emplace(Pipe_background, new BackgroundPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
 		PipelineSystem::emplace(Pipe_grass2, new GrassPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
 		PipelineSystem::emplace(Pipe_billboard, new BillboardPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
+		PipelineSystem::emplace(Pipe_Grid2d, new GridPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
 	}
 	void MelonJam::addSound() {
 

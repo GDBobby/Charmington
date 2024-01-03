@@ -1,7 +1,7 @@
 #include "StartArea.h"
 
 namespace EWE {
-	StartLevel::StartLevel(EWEDevice& device) : Level{ TileSet::TS_First } {
+	StartLevel::StartLevel(EWEDevice& device) : Level{"startArea.tmx", TileSet::TS_First} {
 		exits.push_back(Level_First);
 		exits.push_back(Level_Connector);
 
@@ -67,7 +67,7 @@ namespace EWE {
 							stumps[j].drawable = false;
 						}
 						for (int j = 0; j < 6; j++) {
-							tiles.at(47 + 29 * mapWidth + j) = TileFlag_none;
+							tileMap->tileFlags.at(47 + 29 * tileMap->width + j) = TileFlag_none;
 						}
 						SaveJSON::saveData.obstacleFlags |= SaveJSON::OF_Stump;
 						return true;
@@ -79,11 +79,13 @@ namespace EWE {
 
 	}
 
-	void StartLevel::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
+	void StartLevel::enterLevel(EWEDevice& device) {
 		std::string textureLocation{ "startArea.png" };
 		std::string tileMapLocation{ "models/startArea.tmx" };
 
-		enterLevelP(device, textureLocation, tileMapLocation);
+		tileMap = std::make_unique<TileMap>(device, mapName, tileSetID);
+
+		//enterLevelP(device, textureLocation, tileMapLocation);
 		bool stumpsActive = (SaveJSON::saveData.obstacleFlags & SaveJSON::OF_Stump) == 0;
 
 		stumps.reserve(2);
@@ -100,7 +102,7 @@ namespace EWE {
 
 		if (stumpsActive) {
 			for (int i = 0; i < 6; i++) {
-				tiles.at(47 + 29 * mapWidth + i) = TileFlag_solid;
+				tileMap->tileFlags.at(47 + 29 * tileMap->width + i) = TileFlag_solid;
 			}
 		}
 		

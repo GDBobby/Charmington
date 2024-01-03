@@ -11,7 +11,7 @@ namespace EWE {
 	protected:
 
 	public:
-		CarrotPet(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool);
+		CarrotPet(EWEDevice& device);
 		CarrotPet(EWEDevice& device, std::shared_ptr<CarrotSkeleton> carrotSkele);
 		~CarrotPet();
 

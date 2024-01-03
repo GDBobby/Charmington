@@ -3,7 +3,7 @@
 #include "../MusicEnum.h"
 
 namespace EWE {
-	SpookyForest::SpookyForest(EWEDevice& device) : Level{ TileSet::TS_First } {
+	SpookyForest::SpookyForest(EWEDevice& device) : Level{"spookyForest.tmx", TileSet::TS_First} {
 		exits.push_back(Level_Connector);
 
 		TransformComponent entryTransform{};
@@ -35,12 +35,13 @@ namespace EWE {
 	}
 
 
-	void SpookyForest::enterLevel(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool) {
+	void SpookyForest::enterLevel(EWEDevice& device) {
 		std::string textureLocation{ "SpookyForest.png" };
 		std::string tileMapLocation{ "models/SpookyForest.tmx" };
 
-		enterLevelP(device, textureLocation, tileMapLocation);
-		sheet = std::make_unique<Sheet>(device, globalPool);
+		tileMap = std::make_unique<TileMap>(device, mapName, tileSetID);
+		//enterLevelP(device, textureLocation, tileMapLocation);
+		sheet = std::make_unique<Sheet>(device);
 		sheet->transform.translation = treeData[1].second;
 		sheet->transform.translation.y += 1.f;
 
@@ -137,7 +138,7 @@ namespace EWE {
 		}
 
 
-		return tiles.at(static_cast<int>(std::floor(x * 2.f)) + mapWidth / 2 + static_cast<int>(std::floor(y * 2.f)) * mapWidth + (mapWidth * mapHeight / 2));
+		return tileMap->tileFlags.at(static_cast<int>(std::floor(x * 2.f)) + tileMap->width / 2 + static_cast<int>(std::floor(y * 2.f)) * tileMap->width + (tileMap->width * tileMap->height / 2));
 	}
 	void SpookyForest::bark(float x, float y) {
 		if (sheet.get() != nullptr) {

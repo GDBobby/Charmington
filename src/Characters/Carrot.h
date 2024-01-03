@@ -11,7 +11,7 @@ namespace EWE {
 	protected:
 
 	public:
-		Carrot(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool);
+		Carrot(EWEDevice& device);
 		~Carrot();
 		void logicUpdate();
 		void renderUpdate();

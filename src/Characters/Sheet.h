@@ -11,7 +11,7 @@ namespace EWE {
 	protected:
 
 	public:
-		Sheet(EWEDevice& device, std::shared_ptr<EWEDescriptorPool> globalPool);
+		Sheet(EWEDevice& device);
 		~Sheet();
 		void logicUpdate();
 		void renderUpdate();
