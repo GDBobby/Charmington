@@ -3,6 +3,11 @@
 #include <EWEngine/graphics/model/EWE_Basic_Model.h>
 #include <EWEngine/graphics/EWE_Texture.h>
 
+
+const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
+const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+
 namespace EWE {
 	TileSet::TileSet(EWEDevice& device, TileSet_Enum map_id) : setID{ map_id } {
 		switch (map_id) {
@@ -25,11 +30,42 @@ namespace EWE {
 
 	}
 
-	void TileSet::setUVOffset(TileID tileID, glm::vec2& offset) {
+	std::array<glm::vec2, 4> TileSet::getUVOffset(TileID tileID) {
+		//clockwise, from top left
 
-		offset.x = static_cast<float>(tileID % width) / static_cast<float>(width);
-		offset.y = std::floor(static_cast<float>(tileID) / static_cast<float>(width)) / static_cast<float>(height);
-		printf("tile uv offset - %u : %.5f:%.5f - %u:%u \n", tileID, offset.x, offset.y, width, height);
+		std::array<glm::vec2, 4> offsets;
+
+		glm::vec2 baseOffset{ static_cast<float>(tileID % width) / static_cast<float>(width), std::floor(static_cast<float>(tileID) / static_cast<float>(width)) / static_cast<float>(height) };
+
+		offsets[0] = baseOffset;
+
+		offsets[2] = baseOffset;
+		offsets[2].x += 1.f / static_cast<float>(width);
+		offsets[2].y += 1.f / static_cast<float>(height);
+
+		offsets[1].x = offsets[2].x;
+		offsets[1].y = baseOffset.y;
+
+		offsets[3].x = baseOffset.x;
+		offsets[3].y = offsets[2].y;
+
+
+		if (tileID & FLIPPED_HORIZONTALLY_FLAG) {
+			std::swap(offsets[0], offsets[1]);
+			std::swap(offsets[3], offsets[2]);
+		}
+		if ((tileID & FLIPPED_DIAGONALLY_FLAG)) {
+			//1->4 or 0 -> 5? doesnt matter i guess
+			std::swap(offsets[1], offsets[3]);
+		}
+		if (tileID & FLIPPED_VERTICALLY_FLAG) {
+			std::swap(offsets[0], offsets[3]);
+			std::swap(offsets[1], offsets[2]);
+		}
+
+		printf("uv offsets : (%.5f:%.5f)(%.5f:%.5f)(%.5f:%.5f)(%.5f:%.5f) \n", offsets[0].x, offsets[0].y, offsets[1].x, offsets[1].y, offsets[2].x, offsets[2].y, offsets[3].x, offsets[3].y);
+
+		return offsets;
 	}
 
 	TileFlag TileSet::getTileFlag(TileID tileID) {

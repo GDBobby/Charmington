@@ -171,8 +171,12 @@ namespace EWE {
 		if (clickReturns.size() == 0) {
 			return false;
 		}
+
 		soundEngine->playEffect(0);
 		uint16_t processMCR = clickReturns.front();
+		if (currentScene == scene_LevelCreation) {
+			printf("click return in level creation ???? - %d \n", processMCR);
+		}
 		while (clickReturns.size() > 0) {
 			clickReturns.pop();
 		}

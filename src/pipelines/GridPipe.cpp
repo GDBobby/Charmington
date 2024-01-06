@@ -10,7 +10,7 @@ namespace EWE {
 
 	void GridPipe::createPipeLayout(EWEDevice& device) {
 		pushStageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-		pushSize = sizeof(Simple2DPushConstantData);
+		pushSize = sizeof(Grid2DPushConstantData);
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -40,16 +40,18 @@ namespace EWE {
 		pipelineConfig.pipelineRenderingInfo = pipeRenderInfo;
 
 		pipelineConfig.pipelineLayout = pipeLayout;
-		//pipelineConfig.bindingDescriptions = EffectVertex::getBindingDescriptions();
+		pipelineConfig.bindingDescriptions = EWEModel::getBindingDescriptions<VertexGrid2D>();
+		pipelineConfig.attributeDescriptions = VertexGrid2D::getAttributeDescriptions();
 		std::string vertString = "2dGrid.vert.spv";
 		std::string fragString = "2dGrid.frag.spv";
 
 		pipe = std::make_unique<EWEPipeline>(device, vertString, fragString, pipelineConfig);
 	}
-	void GridPipe::pushAndDraw(void* push) {
 
-		vkCmdPushConstants(cmdBuf, pipeLayout, pushStageFlags, 0, pushSize, push);
+	//void GridPipe::pushAndDraw(void* push) {
 
-		vkCmdDraw(cmdBuf, 6, 1, 0, 0);
-	}
+	//	vkCmdPushConstants(cmdBuf, pipeLayout, pushStageFlags, 0, pushSize, push);
+
+	//	vkCmdDraw(cmdBuf, 6, 1, 0, 0);
+	//}
 }

@@ -37,7 +37,7 @@ namespace EWE {
 
 		TileSet(EWEDevice& device, TileSet_Enum map_id);
 
-		void setUVOffset(TileID tileID, glm::vec2& offset);
+		std::array<glm::vec2, 4> getUVOffset(TileID tileID);
 
 		TileFlag getTileFlag(TileID tileID);
 

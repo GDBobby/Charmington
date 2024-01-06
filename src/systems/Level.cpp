@@ -37,13 +37,8 @@ namespace EWE {
 
 	void Level::render(FrameInfo& frameInfo) {
 
-		//pipe->drawInstanced(floor.get());
 		{
-			grassTime += frameInfo.time;
-			tileMap->renderGrass(grassTime, frameInfo.cmdIndexPair.second);
-		}
-		{
-			tileMap->renderTiles(frameInfo.cmdIndexPair.second);
+			tileMap->renderTiles(frameInfo.cmdIndexPair.first, frameInfo.cmdIndexPair.second);
 
 		}
 

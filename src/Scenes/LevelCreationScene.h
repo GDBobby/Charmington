@@ -4,6 +4,9 @@
 #include <EWEngine/imgui/imGuiHandler.h>
 #include "../GUI/imGUI/LevelCreationIMGUI.h"
 
+#include "../systems/TileMap.h"
+#include "../systems/TileMapDevelopment.h"
+
 namespace EWE {
 	class LevelCreationScene : public Scene {
 	private:
@@ -32,19 +35,33 @@ namespace EWE {
 
 		bool show_demo_window = true;
 		bool logicActive = false;
-		void logicThreadFunction();
+		//void logicThreadFunction();
 		std::unique_ptr<std::thread> logicThread;
 		LevelCreationIMGUI levelCreationIMGUI;
 
-		void renderBackgroundGrid(std::pair<VkCommandBuffer, uint8_t>& cmdIndexPair);
+		void renderBackgroundGrid();
+		void renderTiles(uint8_t frameIndex);
 		glm::vec2 pushScale;
 		glm::vec2 pushTrans;
+		glm::vec2 pushGridScale{1.f};
 
 		static void mouseCallback(GLFWwindow* window, int button, int action, int mods);
 		static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+		static void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
 		GLFWmousebuttonfun mouseReturnFunction;
 		GLFWkeyfun keyReturnFunction;
 
+		double currentMouseXPos;
+		double currentMouseYPos;
+
+		static void createLevel(uint32_t width, uint32_t height);
+
+		void fitToScreen();
+
+		std::unique_ptr<EWEModel> gridModel{ nullptr };
+
+		std::unique_ptr<TileMapDevelopment> tileMapD{nullptr};
 	};
 }

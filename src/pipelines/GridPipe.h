@@ -6,7 +6,7 @@ namespace EWE {
 	public:
 		GridPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo);
 
-		void pushAndDraw(void* push) override;
+		//void pushAndDraw(void* push) override;
 	private:
 		void createPipeLayout(EWEDevice& device) override;
 		void createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) override;

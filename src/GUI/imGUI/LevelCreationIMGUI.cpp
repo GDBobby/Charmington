@@ -9,10 +9,11 @@ namespace EWE {
 
     }
 
-    void LevelCreationIMGUI::render(uint8_t frameIndex) {
+    void LevelCreationIMGUI::render() {
         ShowMainMenuBar();
         ShowGridControl();
         ShowTileSet();
+        ShowNewPrompt();
     }
 
     void LevelCreationIMGUI::ShowMainMenuBar() {
@@ -40,7 +41,10 @@ namespace EWE {
     void LevelCreationIMGUI::ShowMenuFile() {
         //IMGUI_DEMO_MARKER("Examples/Menu");
         ImGui::MenuItem("(demo menu)", NULL, false, false);
-        if (ImGui::MenuItem("New")) {}
+        if (ImGui::MenuItem("New")) {
+            printf("new file requested \n");
+            levelNew = true;
+        }
         if (ImGui::MenuItem("Open", "Ctrl+O")) {}
         if (ImGui::BeginMenu("Open Recent")) {
             ImGui::MenuItem("fish_hat.c");
@@ -109,6 +113,7 @@ namespace EWE {
         if (ImGui::MenuItem("Checked", NULL, true)) {}
         ImGui::Separator();
         if (ImGui::MenuItem("Quit", "Alt+F4")) {
+
             clickReturns.push(MCR_swapToMainMenu);
         }
     }
@@ -120,10 +125,16 @@ namespace EWE {
             return;
         }
 
-        ImGui::SliderScalar("Push X Scale", ImGuiDataType_Float, &gridScale->x, &scaleLow, &scaleHigh);
-        ImGui::SliderScalar("Push Y Scale", ImGuiDataType_Float, &gridScale->y, &scaleLow, &scaleHigh);
+        ImGui::SliderScalar("Push X Zoom", ImGuiDataType_Float, &gridZoom->x, &scaleLow, &scaleHigh);
+        ImGui::SliderScalar("Push Y Zoom", ImGuiDataType_Float, &gridZoom->y, &scaleLow, &scaleHigh);
         ImGui::SliderScalar("Push X Trans", ImGuiDataType_Float, &gridTrans->x, &transLow, &transHigh);
         ImGui::SliderScalar("Push Y Trans", ImGuiDataType_Float, &gridTrans->y, &transLow, &transHigh);
+        if (ImGui::SliderScalar("Push X Grid Scale", ImGuiDataType_Float, &gridScale->x, &scaleLow, &scaleHigh)) {
+
+        }
+        ImGui::SliderScalar("Push Y Grid Scale", ImGuiDataType_Float, &gridScale->y, &scaleLow, &scaleHigh);
+
+
 
         //printf("tileSetID : %d \n", tileSetID);
         ImGui::End();
@@ -138,10 +149,15 @@ namespace EWE {
         ImGui::SliderScalar("tileSet ratio", ImGuiDataType_Float, &tileSetRatio, &scaleLow, &scaleHigh);
 
         ImGui::Text("Selected Tile %d", selectedTile);
+
         ImGui::Image(*EWETexture::getDescriptorSets(tileSetID, 0), ImVec2(64, 64), selectedTileUVTL, selectedTileUVBR);
 
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;// ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY | ImGuiChildFlags_Border;
-        ImGui::BeginChild("Child FULL", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 260), ImGuiChildFlags_None, window_flags);
+        ImGui::SameLine();
+        ShowToolControls();
+
+        ImGuiChildFlags child_flags = ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY;
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
+        ImGui::BeginChild("Child FULL", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 260), child_flags, window_flags);
         float texW = tileSetScale * tileUVScaling.y / tileUVScaling.x;
         float texH = tileSetScale;
 
@@ -181,8 +197,8 @@ namespace EWE {
             else {
                 hoveringTileSet = false;
             }
-        ImGui::EndChild();
-        ImGui::End();
+            ImGui::EndChild();
+            ImGui::End();
     }
     void LevelCreationIMGUI::mouseCallback(int button, int action) {
         printf("level creation imgui getting the clalback \n");
@@ -193,6 +209,65 @@ namespace EWE {
                 selectedTileUVBR = toolUVBR;
             }
         }
+    }
+    void LevelCreationIMGUI::scrollCallback(double yOffset) {
+        if (glm::abs(yOffset) > 0.001) {
+            if (hoveringTileSet) {
+                tileSetScale *= 1.f + 0.1f * static_cast<float>(yOffset);
+            }
+        }
+    }
 
+    void LevelCreationIMGUI::ShowNewPrompt() {
+        if (levelNew) {
+            ImGuiWindowFlags flags = ImGuiWindowFlags_MenuBar;
+            if (!ImGui::Begin("New Level", &levelNew, 0)) {
+                ImGui::End();
+                return;
+            }
+            ImGui::InputInt("Level Width", &levelWidth, 1, 10);
+            ImGui::InputInt("Level Height", &levelHeight, 1, 10);
+
+            if (ImGui::Button("Create Level", ImVec2(100, 50))) {
+                levelNew = false;
+                gridScale->x = levelWidth;
+                gridScale->y = levelHeight;
+
+                createButtonPtr(levelWidth, levelHeight);
+            }
+
+            ImGui::End();
+        }
+    }
+    void LevelCreationIMGUI::ShowToolControls() {
+        //ImGui::Image(*EWETexture::getDescriptorSets(tileSetID, 0), ImVec2(64.f, 64.f), toolUV, toolUVBR);
+        ImGui::PushID(0);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
+        ImVec2 size{ 32.f, 32.f };
+        ImVec2 uv0{ 0.f, 0.f };
+        ImVec2 uv1{ 1.f,1.f };
+        ImVec4 tint_col{ 1.0f, 1.0f, 1.0f, 1.0f };
+        if (ImGui::ImageButton("", *EWETexture::getDescriptorSets(pencilTextureID, 0), size, uv0, uv1, pencilColor, tint_col)) {
+            pencilColor = selectedColor;
+            eraserColor = idleColor;
+            selectedTool = Tool_pencil;
+            printf("selecting pencil \n");
+        }
+        ImGui::PopID();
+        ImGui::SameLine();
+        ImGui::PushID(1);
+        if (ImGui::ImageButton("", *EWETexture::getDescriptorSets(eraserTextureID, 0), size, uv0, uv1, eraserColor, tint_col)){
+            pencilColor = idleColor;
+            eraserColor = selectedColor;
+            selectedTool = Tool_eraser;
+            printf("selecting eraser \n");
+        }
+        ImGui::PopStyleVar();
+        ImGui::PopID();
+    }
+    void LevelCreationIMGUI::loadTextures(EWEDevice& device) {
+        tileSetID = EWETexture::addSceneTexture(device, "tileSet.png");
+        pencilTextureID = EWETexture::addSceneTexture(device, "tileCreation/pencil.png");
+        eraserTextureID = EWETexture::addSceneTexture(device, "tileCreation/eraser.png");
     }
 }

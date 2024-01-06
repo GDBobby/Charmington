@@ -93,7 +93,6 @@ namespace EWE {
 		TileSet::TileSet_Enum tileSetID;
 		std::unique_ptr<TileMap> tileMap{nullptr};
 
-		float grassTime = 0.f;
 
 		std::vector<EweObject> backgroundTrees{};
 

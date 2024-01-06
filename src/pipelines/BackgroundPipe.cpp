@@ -17,7 +17,7 @@ namespace EWE {
 	void BackgroundPipe::createPipeLayout(EWEDevice& device) {
 		pushStageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 		//pushSize = sizeof(ModelPushData);
-		pushSize = sizeof(UVScrollingPushData);
+		pushSize = sizeof(PushTileConstantData);
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -35,6 +35,7 @@ namespace EWE {
 		vertexIndexBufferLayout = EWEDescriptorSetLayout::Builder(device)
 			.addBinding(0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 			.addBinding(1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.addBinding(2, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 			.build();
 		std::vector<VkDescriptorSetLayout> tempDSL;// = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
 		tempDSL.push_back(DescriptorHandler::getDescSetLayout(LDSL_global, device));
@@ -56,8 +57,8 @@ namespace EWE {
 
 		pipelineConfig.pipelineLayout = pipeLayout;
 		//pipelineConfig.bindingDescriptions = EffectVertex::getBindingDescriptions();
-		pipelineConfig.bindingDescriptions = TileVertex::getBindingDescriptions();
-		pipelineConfig.attributeDescriptions = TileVertex::getAttributeDescriptions();
+		//pipelineConfig.bindingDescriptions = TileVertex::getBindingDescriptions();
+		//pipelineConfig.attributeDescriptions = TileVertex::getAttributeDescriptions();
 		std::string vertString = "tileInstancing.vert.spv";
 		std::string fragString = "tileInstancing.frag.spv";
 
@@ -65,6 +66,9 @@ namespace EWE {
 	}
 
 	void BackgroundPipe::drawInstanced(EWEModel* model) {
-		model->BindAndDrawInstanceNoIndex(cmdBuf);
+		printf("incorrect clal \n");
+		throw std::runtime_error("just draw on location without calling this function");
+		//model->BindAndDrawInstanceNoIndex(cmdBuf);
+		//vkCmdDraw(commandBuffer, 6, instanceCount, 0, 0);
 	}
 }
