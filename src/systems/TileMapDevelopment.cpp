@@ -2,13 +2,19 @@
 
 #include <EWEngine/GUI/UICompFunctions.h>
 
+#include <queue>
+
 const std::vector<uint32_t> modelIndices = {
 	0,1,3,1,2,3
 };
 
 namespace EWE {
-	TileMapDevelopment::TileMapDevelopment(EWEDevice& device, uint32_t width, uint32_t height) :
-		tileSet{ device, TileSet::TS_First }, width{ width }, height{ height }, modelIndexBuffer{EWEModel::createIndexBuffer(device, modelIndices)} {
+	TileMapDevelopment::TileMapDevelopment(EWEDevice& device, uint16_t width, uint16_t height) : 
+		device{device},
+		tileSet{ device, TileSet::TS_First }, 
+		width{ width }, height{ height }, 
+		modelIndexBuffer{EWEModel::createIndexBuffer(device, modelIndices)} 
+	{
 		init(device);
 	}
 	TileMapDevelopment::~TileMapDevelopment() {
@@ -25,7 +31,7 @@ namespace EWE {
 		//probably better than whatever i would need to do to compact memory from a list or a map, not entirely sure on that though
 
 
-		auto emplaceRet = tileIndexingMap.emplace(tilePosition, 0);
+		auto emplaceRet = tileIndexingMap.try_emplace(tilePosition, 0, tileID);
 		auto uvOffsets = tileSet.getUVOffset(tileID);
 
 		char* uvBufferPtr = reinterpret_cast<char*>(tileUVBuffer->getMappedMemory());
@@ -45,7 +51,7 @@ namespace EWE {
 
 			if (emplaceRet.first == tileIndexingMap.begin()) {
 				//if it wasnt found, we assume this tilePosition will be the lowest active position
-				emplaceRet.first->second = 0;
+				emplaceRet.first->second.memoryLocation = 0;
 				if (instanceCount > 0) {
 					memmove(indexBufferPtr + indexBlockSize, indexBufferPtr, instanceCount * indexBlockSize);
 					memmove(uvBufferPtr + uvBlockSize, uvBufferPtr, instanceCount * uvBlockSize);
@@ -60,7 +66,7 @@ namespace EWE {
 				//the last positions value's are kept track of using the element on the map, and will be offset by 6 for the new tile position's offset
 				printf("inserting a tile, somewhere after the beginning \n");
 				instanceCount++;
-				std::map<uint32_t, uint64_t>::iterator prevIter;
+				std::map<uint32_t, TileInfo>::iterator prevIter;
 				for (auto iter = tileIndexingMap.begin(); iter != emplaceRet.first; iter++) {
 					//finding the position of the previous active tilePosition
 					printf("iterating thru the tile indexing map - map->first:tilePosition - %d:%d \n", iter->first, tilePosition);
@@ -68,21 +74,21 @@ namespace EWE {
 				}
 
 				printf("before this mf - %lu \n", prevIter->second);
-				emplaceRet.first->second = prevIter->second + 1;
+				emplaceRet.first->second.memoryLocation = prevIter->second.memoryLocation + 1;
 
-				if (instanceCount != emplaceRet.first->second) {
+				if (instanceCount != emplaceRet.first->second.memoryLocation) {
 					printf("moving all the following data \n");
-					printf("before mem move : %lu:%lu:%lu:%lu \n", (emplaceRet.first->second + 1) * indexBlockSize, (emplaceRet.first->second) * indexBlockSize, instanceCount - emplaceRet.first->second, instanceCount);
+					printf("before mem move : %lu:%lu:%lu:%lu \n", (emplaceRet.first->second.memoryLocation + 1) * indexBlockSize, emplaceRet.first->second.memoryLocation * indexBlockSize, instanceCount - emplaceRet.first->second.memoryLocation, instanceCount);
 					memmove(
-						indexBufferPtr + ((emplaceRet.first->second + 1) * indexBlockSize),
-						indexBufferPtr + ((emplaceRet.first->second) * indexBlockSize),
-						indexBlockSize * (instanceCount - emplaceRet.first->second)
+						indexBufferPtr + ((emplaceRet.first->second.memoryLocation + 1) * indexBlockSize),
+						indexBufferPtr + (emplaceRet.first->second.memoryLocation * indexBlockSize),
+						indexBlockSize * (instanceCount - emplaceRet.first->second.memoryLocation)
 					);
 					printf("after the memmove1 \n");
 					memmove(
-						uvBufferPtr + ((emplaceRet.first->second + 1) * uvBlockSize),
-						uvBufferPtr + (emplaceRet.first->second * uvBlockSize),
-						uvBlockSize * (instanceCount - emplaceRet.first->second)
+						uvBufferPtr + ((emplaceRet.first->second.memoryLocation + 1) * uvBlockSize),
+						uvBufferPtr + (emplaceRet.first->second.memoryLocation * uvBlockSize),
+						uvBlockSize * (instanceCount - emplaceRet.first->second.memoryLocation)
 					);
 
 					printf("after the memmove2 \n");
@@ -93,12 +99,12 @@ namespace EWE {
 			}
 
 			memcpy(
-				indexBufferPtr + ((emplaceRet.first->second) * indexBlockSize),
+				indexBufferPtr + (emplaceRet.first->second.memoryLocation * indexBlockSize),
 				indexes.data(),
 				indexBlockSize
 			);
 			memcpy(
-				uvBufferPtr + ((emplaceRet.first->second) * uvBlockSize),
+				uvBufferPtr + (emplaceRet.first->second.memoryLocation * uvBlockSize),
 				uvOffsets.data(),
 				uvBlockSize
 			);
@@ -106,7 +112,7 @@ namespace EWE {
 			iter++;
 			for (; iter != tileIndexingMap.end(); iter++) {
 				//now, all following elements will be adjusted so that theyre aware of their new position in the vector
-				iter->second++;
+				iter->second.memoryLocation++;
 			}
 		}
 		else {
@@ -116,7 +122,7 @@ namespace EWE {
 			
 			bool foundDiff = false;
 				
-			if (memcmp(uvBufferPtr + ((emplaceRet.first->second) * uvBlockSize), uvOffsets.data(), uvBlockSize) != 0) {
+			if (memcmp(uvBufferPtr + (emplaceRet.first->second.memoryLocation * uvBlockSize), uvOffsets.data(), uvBlockSize) != 0) {
 				foundDiff = true;
 			}
 			
@@ -124,7 +130,7 @@ namespace EWE {
 				printf("ChangeTile::updating an existing tile\n");
 				updatedForGPU = true;
 
-				memcpy(uvBufferPtr + ((emplaceRet.first->second) * uvBlockSize), uvOffsets.data(), uvBlockSize);
+				memcpy(uvBufferPtr + (emplaceRet.first->second.memoryLocation * uvBlockSize), uvOffsets.data(), uvBlockSize);
 			}
 			else {
 				printf("ChangeTile::updated but no changes found \n");
@@ -152,7 +158,7 @@ namespace EWE {
 		const uint32_t indexBlockSize = sizeof(uint32_t) * 4;
 		const uint32_t uvBlockSize = sizeof(glm::vec2) * 4;
 
-		uint64_t index = currentIter->second;
+		uint64_t index = currentIter->second.memoryLocation;
 
 		memmove(uvBufferPtr + (index * uvBlockSize), uvBufferPtr + (index + 1) * uvBlockSize, (instanceCount - index) * uvBlockSize);
 		memmove(indexBufferPtr + (index * indexBlockSize), indexBufferPtr + (index + 1) * indexBlockSize, (instanceCount - index) * indexBlockSize);
@@ -162,7 +168,7 @@ namespace EWE {
 		auto iter = currentIter;
 		iter++;
 		while(iter != tileIndexingMap.end()){
-			iter->second--;
+			iter->second.memoryLocation--;
 			iter++;
 		}
 
@@ -171,7 +177,7 @@ namespace EWE {
 		instanceCount--;
 	}
 
-	void TileMapDevelopment::refreshMap(EWEDevice& device, uint32_t width, uint32_t height) {
+	void TileMapDevelopment::refreshMap(uint16_t width, uint16_t height) {
 
 		instanceCount = 0;
 		tileIndexingMap.clear();
@@ -344,26 +350,198 @@ namespace EWE {
 		}
 	}
 
-	void TileMapDevelopment::saveMap(std::string saveLocation) {
+	bool TileMapDevelopment::saveMap(std::string saveLocation) {
+		if ((width == 0) || (height == 0)) {
+			printf("attemptign to save with a width or height of 0\n");
+			return false;
+		}
+
 		std::ofstream saveFile{saveLocation, std::ios::binary};
 		if (!saveFile.is_open()) {
 			printf("failed to open save file : %s \n", saveLocation.c_str());
 			saveFile.open(saveLocation, std::ios::binary | std::ofstream::trunc);
 			if (!saveFile.is_open()) {
 				printf("failed to create file : %s \n", saveLocation.c_str());
-				return;
+				return false;
 			}
 		}
-		saveFile.clear();
+		uint64_t fileSize = width;
+		fileSize *= height;
+		fileSize *= 4;
+		fileSize += 4;
+		saveFile.width(fileSize);
+		saveFile.seekp(0, std::ios::beg);
 
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				//if(tileIndexingMap.
-			}
+		saveFile.write(reinterpret_cast<char*>(&width), 2);
+		saveFile.write(reinterpret_cast<char*>(&height), 2);
+
+		printf("saving map with width:height - %d:%d \n", width, height);
+
+		if (tileIndexingMap.size() == 0) {
+			saveFile.fill(0);
+			//printf("empty file, filling with 0s \n");
+			saveFile.close();
+			//maybe just return here and dont save, seems pointless?
+			return false;
 		}
+		uint32_t indexToFillTo;
+
+		uint32_t tilePosition = 0;
+
+		uint32_t blankFill = 0;
+		TileID fillBuffer;
+
+		uint32_t endTilePosition = width * height;
+
 		for (auto iter = tileIndexingMap.begin(); iter != tileIndexingMap.end(); iter++) {
-			iter->first;
+			indexToFillTo = iter->first;
+			while (tilePosition < indexToFillTo) {
+				saveFile.write(reinterpret_cast<const char*>(&blankFill), 4);
+				//printf("writing a blank at : %lu \n", saveFile.tellp());
+				//saveFile.seekp(4, std::ios::cur);
+				tilePosition++;
+			}
+			fillBuffer = iter->second.tileID + 1;
+			saveFile.write(reinterpret_cast<const char*>(&fillBuffer), 4);
+			//printf("writing a tile %d at : %lu \n", fillBuffer, saveFile.tellp());
+			//saveFile.seekp(4, std::ios::cur);
+			tilePosition = iter->first + 1;
+		}
+		while (tilePosition < endTilePosition) {
+			saveFile.write(reinterpret_cast<const char*>(&blankFill), 4);
+			//printf("writing a blank at : %lu \n", saveFile.tellp());
+			//saveFile.seekp(4, std::ios::cur);
+			tilePosition++;
 		}
 
+		uint64_t filePosition = saveFile.tellp();
+		//printf("after saving file, instanceCount:filePosition:expectedSize - %lu:%lu:%lu", instanceCount, filePosition, fileSize);
+
+		saveFile.close();
+	}
+
+	bool TileMapDevelopment::loadMap(std::string loadLocation) {
+		std::ifstream loadFile{ loadLocation, std::ios::binary };
+		if (!loadFile.is_open()) {
+			printf("failed to open load file : %s \n", loadLocation.c_str());
+			loadFile.open(loadLocation, std::ios::binary);
+			if (!loadFile.is_open()) {
+				printf("failed to create file : %s \n", loadLocation.c_str());
+				return false;
+			}
+		}
+		vkQueueWaitIdle(device.graphicsQueue());
+
+		//printf("loading map \n");
+		loadFile.seekg(0, std::ios::beg);
+		uint16_t sizeBuffer;
+		loadFile.read(reinterpret_cast<char*>(&sizeBuffer), 2);
+		//loadFile.seekg(2, std::ios::cur);
+		if (sizeBuffer != width) {
+			if (sizeBuffer == 0) {
+				printf("loading map with width 0? \n");
+				return false;
+			}
+			width = sizeBuffer;
+			loadFile.read(reinterpret_cast<char*>(&sizeBuffer), 2);
+			//loadFile.seekg(2, std::ios::cur);
+			height = sizeBuffer;
+
+			//printf("before deconstructing bfufers, width : %d \n", width);
+			tileVertexBuffer.reset();
+			constructVertices(device, tileSet.tileScale);
+			tileIndexBuffer.reset();
+			tileUVBuffer.reset();
+			constructUVsAndIndices(device);
+			//printf("after destructing the buffers \n");
+		}
+		else {
+			loadFile.read(reinterpret_cast<char*>(&sizeBuffer), 2);
+			//loadFile.seekg(2, std::ios::cur);
+			if (sizeBuffer != height) {
+				if (sizeBuffer == 0) {
+					printf("loading map with height 0?? \n");
+					return false;
+				}
+				height = sizeBuffer;
+
+				//printf("before deconstructing bfufers, height : %d \n", height);
+				tileVertexBuffer.reset();
+				constructVertices(device, tileSet.tileScale);
+				tileIndexBuffer.reset();
+				tileUVBuffer.reset();
+				constructUVsAndIndices(device);
+				//printf("after destructing the buffers \n");
+			}
+		}
+		//printf("width and height of loaded map : %d:%d \n", width, height);
+
+		char* indexBufferPtr = reinterpret_cast<char*>(tileIndexBuffer->getMappedMemory());
+		char* uvBufferPtr = reinterpret_cast<char*>(tileUVBuffer->getMappedMemory());
+		uint32_t indexBlockSize = sizeof(uint32_t) * 4;
+		uint32_t uvBlockSize = sizeof(glm::vec2) * 4;
+		std::array<uint32_t, 4> indexes;
+		std::array<glm::vec2, 4> uvOffsets;
+
+
+		uint32_t tileBuffer;
+		uint32_t tilePosition = 0;
+		instanceCount = 0;
+		tileIndexingMap.clear();
+
+		for (uint16_t y = 0; y < height; y++) {
+			for (uint16_t x = 0; x < width; x++) {
+				loadFile.read(reinterpret_cast<char*>(&tileBuffer), 4);
+				//loadFile.seekg(4, std::ios::cur);
+				if (tileBuffer > 0) {
+					tileBuffer--;
+					indexes = TileMap::getIndices(tilePosition, width, height);
+					uvOffsets = tileSet.getUVOffset(tileBuffer);
+
+					tileIndexingMap.try_emplace(tilePosition, instanceCount, tileBuffer);
+					memcpy(
+						indexBufferPtr + (instanceCount * indexBlockSize),
+						indexes.data(),
+						indexBlockSize
+					);
+					memcpy(
+						uvBufferPtr + (instanceCount * uvBlockSize),
+						uvOffsets.data(),
+						uvBlockSize
+					);
+
+
+
+					instanceCount++;
+				}
+				tilePosition++;
+			}
+		}
+
+		uint64_t filePosition = loadFile.tellg();
+		//printf("after loading, instanceCount:filePosition - %lu:%lu \n", instanceCount, filePosition);
+		loadFile.close();
+		printf("after successfully loading fiel : %s \n", loadLocation);
+
+		return true;
+	}
+
+	void TileMapDevelopment::selectNeighbor(uint32_t selPos, int64_t selID, std::queue<int64_t>& selection) {
+
+	}
+
+	void TileMapDevelopment::colorSelection(uint32_t selectPosition) {
+		int64_t selectedTile = -1;
+
+		{
+			auto selectedPosIter = tileIndexingMap.find(selectPosition);
+			if (selectedPosIter != tileIndexingMap.end()) {
+				selectedTile = selectedPosIter->second.tileID;
+			}
+			//scope to deconstruct selectedPosIter here
+
+		}
+
+		std::queue<int64_t> selection{selectedTile};
 	}
 }

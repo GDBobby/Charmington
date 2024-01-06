@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-typedef uint64_t TileID;
+typedef uint32_t TileID;
 enum TileFlag : uint16_t {
 	TileFlag_none,
 	TileFlag_solid,

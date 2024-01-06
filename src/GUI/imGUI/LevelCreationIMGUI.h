@@ -5,6 +5,8 @@
 
 #include <EWEngine/graphics/EWE_Device.hpp>
 
+#include "../../systems/TileMapDevelopment.h"
+
 #include <queue>
 
 namespace EWE {
@@ -13,6 +15,10 @@ namespace EWE {
 		enum Tool_Enum : uint16_t {
 			Tool_pencil,
 			Tool_eraser,
+			Tool_colorSelection,
+			Tool_bucketFill,
+
+			Tool_count,
 		};
 		Tool_Enum selectedTool = Tool_pencil;
 
@@ -25,7 +31,11 @@ namespace EWE {
 		void ShowMenuFile();
 		void ShowGridControl();
 		void ShowTileSet();
+
+		void ShowSaveLevelPrompt();
+		void ShowLoadLevelPrompt();
 		void ShowNewPrompt();
+
 		void ShowToolControls();
 
 		//void addTextures();
@@ -51,7 +61,7 @@ namespace EWE {
 		float screenWidth;
 		float screenHeight;
 
-		int64_t selectedTile = 0;
+		TileID selectedTile = 0;
 		ImVec2 selectedTileUVBR{0.f,0.f};
 		ImVec2 selectedTileUVTL{1.f / 64.f, 1.f / 19.f};
 
@@ -63,28 +73,38 @@ namespace EWE {
 		bool hoveringTileSet = false;
 
 		std::queue<uint16_t>& clickReturns;
-		int toolSelectedTile = 0;
+		uint32_t toolSelectedTile = 0;
+
+		struct ToolStruct {
+			TextureID texID;
+			ImVec4 bgColor{ 0.f,0.f,0.f,1.f };
+		};
+		std::array<ToolStruct, Tool_count> tools;
 
 		TextureID tileSetID;
-		TextureID pencilTextureID;
-		ImVec4 pencilColor{0.f,0.f,0.f,1.f};
-		ImVec4 eraserColor{ 0.f,0.f,0.f,1.f };
 		ImVec4 selectedColor{ 1.f,1.f,1.f,1.f };
 		ImVec4 idleColor{ 0.f,0.f,0.f,1.f };
-
-		TextureID eraserTextureID;
 
 		bool gridControlOpen = true;
 
 		void mouseCallback(int button, int action);
 		void scrollCallback(double yOffset);
 
-		bool levelNew = false;
+		bool showCreateLevelMenu = false;
+		bool showSaveLevelMenu = false;
+		bool showLoadLevelMenu = false;
 
-		int levelWidth = 8;
-		int levelHeight = 8;
+		int widthBuffer = 8;
+		int heightBuffer = 8;
 
-		void (*createButtonPtr)(uint32_t, uint32_t);
+		void (*createButtonPtr)(uint16_t, uint16_t);
+
+		char saveLocation[128] = "NewMap.ewm";
+		char loadLocation[128] = "NewMap.ewm";
+
+		TileMapDevelopment* tileMapD{ nullptr };
+
+		void toolLeft(uint32_t clickedTilePosition);
 
 	};
 }

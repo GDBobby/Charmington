@@ -20,18 +20,18 @@ const std::array<glm::vec4, 4> baseVertices = {
 namespace EWE {
 
 	//(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
-	std::array<uint32_t, 4> TileMap::getIndices(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+	std::array<uint32_t, 4> TileMap::getIndices(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
 		return {
 			//clockwise starting from top left
-			0 + x + (y * (width + 1)),
-			1 + x + (y * (width + 1)),
-			1 + x + ((y + 1) * (width + 1)),
-			0 + x + ((y + 1) * (width + 1)),
+			(uint32_t)0 + x + (y * (width + 1)),
+			(uint32_t)1 + x + (y * (width + 1)),
+			(uint32_t)1 + x + ((y + 1) * (width + 1)),
+			(uint32_t)0 + x + ((y + 1) * (width + 1)),
 		};
 	}
-	std::array<uint32_t, 4> TileMap::getIndices(uint32_t tilePosition, uint32_t width, uint32_t height) {
-		uint32_t x = tilePosition % width;
-		uint32_t y = static_cast<uint32_t>(std::floor(static_cast<float>(tilePosition) / static_cast<float>(width)));
+	std::array<uint32_t, 4> TileMap::getIndices(uint32_t tilePosition, uint16_t width, uint16_t height) {
+		uint16_t x = tilePosition % width;
+		uint16_t y = static_cast<uint16_t>(std::floor(static_cast<float>(tilePosition) / static_cast<float>(width)));
 		return TileMap::getIndices(x, y, width, height);
 	}
 

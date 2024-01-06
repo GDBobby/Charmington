@@ -46,12 +46,7 @@ namespace EWE {
 					lcPtr->tileMapD->getScreenCoordinates(lcPtr->menuManager.screenWidth, lcPtr->menuManager.screenHeight);
 					int64_t clickedTile = lcPtr->tileMapD->getClickedTile(static_cast<int>(lcPtr->currentMouseXPos), static_cast<int>(lcPtr->currentMouseYPos), lcPtr->menuManager.screenWidth, lcPtr->menuManager.screenHeight);
 					if (clickedTile >= 0) {
-						if(lcPtr->levelCreationIMGUI.selectedTool == LevelCreationIMGUI::Tool_pencil) {
-							lcPtr->tileMapD->changeTile(static_cast<uint32_t>(clickedTile), static_cast<uint64_t>(lcPtr->levelCreationIMGUI.selectedTile));
-						}
-						else if(lcPtr->levelCreationIMGUI.selectedTool == LevelCreationIMGUI::Tool_eraser) {
-							lcPtr->tileMapD->removeTile(static_cast<uint32_t>(clickedTile));
-						}
+						lcPtr->levelCreationIMGUI.toolLeft(static_cast<uint32_t>(clickedTile));
 					}
 				}
 			}
@@ -157,6 +152,7 @@ namespace EWE {
 		gridModel = Basic_Model::generate2DGrid(ewEngine.eweDevice);
 
 		tileMapD = std::make_unique<TileMapDevelopment>(ewEngine.eweDevice, 1, 1);
+		levelCreationIMGUI.tileMapD = tileMapD.get();
 
 		
 	}
@@ -216,11 +212,11 @@ namespace EWE {
 		PipelineSystem::at(Pipe_Grid2d)->pushAndDraw(&push);
 	}
 
-	void LevelCreationScene::createLevel(uint32_t width, uint32_t height) {
+	void LevelCreationScene::createLevel(uint16_t width, uint16_t height) {
 		printf("creating level, waiting for idle \n");
 
 		vkQueueWaitIdle(lcPtr->ewEngine.eweDevice.graphicsQueue());
-		lcPtr->tileMapD->refreshMap(lcPtr->ewEngine.eweDevice, width, height);
+		lcPtr->tileMapD->refreshMap(width, height);
 		lcPtr->fitToScreen();
 		//lcPtr->gridModel.reset();
 		//lcPtr->gridModel = Basic_Model::generate2DGrid(lcPtr->ewEngine.eweDevice);

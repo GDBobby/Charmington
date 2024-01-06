@@ -13,6 +13,9 @@ namespace EWE {
         ShowMainMenuBar();
         ShowGridControl();
         ShowTileSet();
+
+        ShowSaveLevelPrompt();
+        ShowLoadLevelPrompt();
         ShowNewPrompt();
     }
 
@@ -43,9 +46,11 @@ namespace EWE {
         ImGui::MenuItem("(demo menu)", NULL, false, false);
         if (ImGui::MenuItem("New")) {
             printf("new file requested \n");
-            levelNew = true;
+            showCreateLevelMenu = true;
         }
-        if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+        if (ImGui::MenuItem("Open", "Ctrl+O")) {
+            showLoadLevelMenu = true;
+        }
         if (ImGui::BeginMenu("Open Recent")) {
             ImGui::MenuItem("fish_hat.c");
             ImGui::MenuItem("fish_hat.inl");
@@ -63,8 +68,12 @@ namespace EWE {
             }
             ImGui::EndMenu();
         }
-        if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-        if (ImGui::MenuItem("Save As..")) {}
+        if (ImGui::MenuItem("Save", "Ctrl+S")) {
+		
+        }
+        if (ImGui::MenuItem("Save As..")) {
+            showSaveLevelMenu = true;
+        }
 
         ImGui::Separator();
         //IMGUI_DEMO_MARKER("Examples/Menu/Options");
@@ -148,7 +157,7 @@ namespace EWE {
         ImGui::SliderScalar("tileSet scaling", ImGuiDataType_Float, &tileSetScale, &tileSetScaleLow, &tileSetScaleHigh);
         ImGui::SliderScalar("tileSet ratio", ImGuiDataType_Float, &tileSetRatio, &scaleLow, &scaleHigh);
 
-        ImGui::Text("Selected Tile %d", selectedTile);
+        ImGui::Text("Selected Tile %u", selectedTile);
 
         ImGui::Image(*EWETexture::getDescriptorSets(tileSetID, 0), ImVec2(64, 64), selectedTileUVTL, selectedTileUVBR);
 
@@ -175,7 +184,7 @@ namespace EWE {
                 //region_y = region_y - glm::mod(region_y, 32.f);
                 //region_x = region_x - glm::mod(region_x, 32.f);
 
-                toolSelectedTile = static_cast<int>(std::floor(region_x / texW * 64.f) + std::floor(region_y / texH * 19.f) * 64.f);
+                toolSelectedTile = static_cast<TileID>(std::floor(region_x / texW * 64.f) + std::floor(region_y / texH * 19.f) * 64.f);
 
                 toolUV.x = std::floor(region_x / texW * 64.f) / 64.f;
                 toolUV.y = std::floor(region_y / texH * 19.f) / 19.f;
@@ -201,7 +210,7 @@ namespace EWE {
             ImGui::End();
     }
     void LevelCreationIMGUI::mouseCallback(int button, int action) {
-        printf("level creation imgui getting the clalback \n");
+        //printf("level creation imgui getting the clalback \n");
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             if (hoveringTileSet) {
                 selectedTile = toolSelectedTile;
@@ -219,55 +228,138 @@ namespace EWE {
     }
 
     void LevelCreationIMGUI::ShowNewPrompt() {
-        if (levelNew) {
+        if (showCreateLevelMenu) {
             ImGuiWindowFlags flags = ImGuiWindowFlags_MenuBar;
-            if (!ImGui::Begin("New Level", &levelNew, 0)) {
+            if (!ImGui::Begin("New Level", &showCreateLevelMenu, 0)) {
                 ImGui::End();
                 return;
             }
-            ImGui::InputInt("Level Width", &levelWidth, 1, 10);
-            ImGui::InputInt("Level Height", &levelHeight, 1, 10);
+            ImGui::InputInt("Level Width", &widthBuffer, 1, 10);
+            if (widthBuffer > UINT16_MAX) {
+                widthBuffer = UINT16_MAX;
+            }
+            else if (widthBuffer < 0) {
+                widthBuffer = 0;
+            }
+
+            ImGui::InputInt("Level Height", &heightBuffer, 1, 10);
+            if (heightBuffer > UINT16_MAX){
+                heightBuffer = UINT16_MAX;
+			}
+            else if (heightBuffer < 0){
+                heightBuffer = 0;
+			}
 
             if (ImGui::Button("Create Level", ImVec2(100, 50))) {
-                levelNew = false;
-                gridScale->x = levelWidth;
-                gridScale->y = levelHeight;
+                showCreateLevelMenu = false;
+                
+                gridScale->x = static_cast<float>(widthBuffer);
+                gridScale->y = static_cast<float>(heightBuffer);
 
-                createButtonPtr(levelWidth, levelHeight);
+                createButtonPtr(static_cast<uint16_t>(widthBuffer), static_cast<uint16_t>(heightBuffer));
             }
 
             ImGui::End();
         }
     }
+    void LevelCreationIMGUI::ShowSaveLevelPrompt() {
+        if (showSaveLevelMenu) {
+            if (!ImGui::Begin("Save Level", &showSaveLevelMenu, 0)) {
+                ImGui::End();
+                return;
+            }
+            ImGui::InputText("Save Location", saveLocation, 128);
+
+            if (ImGui::Button("Save File", ImVec2(100, 50))) {
+                showSaveLevelMenu = false;
+
+                tileMapD->saveMap(saveLocation);
+            }
+
+            ImGui::End();
+        }
+    }
+    void LevelCreationIMGUI::ShowLoadLevelPrompt() {
+        if (showLoadLevelMenu) {
+
+            if (!ImGui::Begin("Load Level", &showLoadLevelMenu, 0)) {
+                ImGui::End();
+                return;
+            }
+            ImGui::InputText("Load Location", loadLocation, 128);
+
+            if (ImGui::Button("Load File", ImVec2(100, 50))) {
+                showLoadLevelMenu = false;
+
+                tileMapD->loadMap(loadLocation);
+            }
+
+            ImGui::End();
+        }
+    }
+
     void LevelCreationIMGUI::ShowToolControls() {
         //ImGui::Image(*EWETexture::getDescriptorSets(tileSetID, 0), ImVec2(64.f, 64.f), toolUV, toolUVBR);
-        ImGui::PushID(0);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
-        ImVec2 size{ 32.f, 32.f };
-        ImVec2 uv0{ 0.f, 0.f };
-        ImVec2 uv1{ 1.f,1.f };
-        ImVec4 tint_col{ 1.0f, 1.0f, 1.0f, 1.0f };
-        if (ImGui::ImageButton("", *EWETexture::getDescriptorSets(pencilTextureID, 0), size, uv0, uv1, pencilColor, tint_col)) {
-            pencilColor = selectedColor;
-            eraserColor = idleColor;
-            selectedTool = Tool_pencil;
-            printf("selecting pencil \n");
-        }
-        ImGui::PopID();
-        ImGui::SameLine();
-        ImGui::PushID(1);
-        if (ImGui::ImageButton("", *EWETexture::getDescriptorSets(eraserTextureID, 0), size, uv0, uv1, eraserColor, tint_col)){
-            pencilColor = idleColor;
-            eraserColor = selectedColor;
-            selectedTool = Tool_eraser;
-            printf("selecting eraser \n");
+        for (uint16_t i = 0; i < tools.size(); i++) {
+            ImGui::PushID(i);
+
+            ImVec2 size{ 32.f, 32.f };
+            ImVec2 uv0{ 0.f, 0.f };
+            ImVec2 uv1{ 1.f,1.f };
+            ImVec4 tint_col{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+            if (ImGui::ImageButton("", *EWETexture::getDescriptorSets(tools[i].texID, 0), size, uv0, uv1, tools[i].bgColor, tint_col)) {
+                tools[i].bgColor = selectedColor;
+                for (int j = 0; j < tools.size(); j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    tools[j].bgColor = idleColor;
+                }
+                selectedTool = (Tool_Enum)i;
+                printf("selecting tool : %d \n", i);
+            }
+
+            ImGui::PopID();
+            ImGui::SameLine();
         }
         ImGui::PopStyleVar();
-        ImGui::PopID();
+        ImGui::NewLine();
     }
+
     void LevelCreationIMGUI::loadTextures(EWEDevice& device) {
         tileSetID = EWETexture::addSceneTexture(device, "tileSet.png");
-        pencilTextureID = EWETexture::addSceneTexture(device, "tileCreation/pencil.png");
-        eraserTextureID = EWETexture::addSceneTexture(device, "tileCreation/eraser.png");
+
+        tools[Tool_pencil].texID = EWETexture::addSceneTexture(device, "tileCreation/pencil.png");
+        tools[Tool_eraser].texID = EWETexture::addSceneTexture(device, "tileCreation/eraser.png");
+        tools[Tool_colorSelection].texID = EWETexture::addSceneTexture(device, "tileCreation/colorSelection.png");
+        tools[Tool_bucketFill].texID = EWETexture::addSceneTexture(device, "tileCreation/bucketFill.png");
+    }
+
+    void LevelCreationIMGUI::toolLeft(uint32_t clickedTilePosition) {
+        switch (selectedTool) {
+        case LevelCreationIMGUI::Tool_pencil: {
+            tileMapD->changeTile(clickedTilePosition, selectedTile);
+            break;
+        }
+        case LevelCreationIMGUI::Tool_eraser: {
+            tileMapD->removeTile(clickedTilePosition);
+            break;
+        }
+        case LevelCreationIMGUI::Tool_colorSelection: {
+            tileMapD->colorSelection(clickedTilePosition);
+            break;
+        }
+        case LevelCreationIMGUI::Tool_bucketFill: {
+            tileMapD->bucketFill(clickedTilePosition, selectedTile);
+            break;
+        }
+        default: {
+            printf("Default tool? : %d \n", selectedTool);
+            break;
+        }
+
+        }
     }
 }

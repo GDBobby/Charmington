@@ -9,8 +9,8 @@
 namespace EWE {
 	class TileMap {
 	public:
-		uint32_t width;
-		uint32_t height;
+		uint16_t width;
+		uint16_t height;
 		TileSet tileSet;
 		TextureID textureID;
 		std::vector<TileFlag> tileFlags;
@@ -32,8 +32,8 @@ namespace EWE {
 
 		//virtual void buildTileSquare(uint32_t& tileID, TransformComponent& transform, glm::mat4& ret, glm::vec2& uvOffset);
 
-		static std::array<uint32_t, 4> getIndices(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-		static std::array<uint32_t, 4> getIndices(uint32_t tilePosition, uint32_t width, uint32_t height);
+		static std::array<uint32_t, 4> getIndices(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+		static std::array<uint32_t, 4> getIndices(uint32_t tilePosition, uint16_t width, uint16_t height);
 
 
 		static void createTileVertices(std::vector<glm::vec4>& outVertices, int width, int height, float tileScale);
