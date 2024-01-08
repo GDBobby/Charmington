@@ -22,6 +22,17 @@ enum TileFlag : uint16_t {
 };
 
 namespace EWE {
+	enum TileReadFlag : uint32_t {
+		TILE_VOID_FLAG = 0x80000000,
+		TILE_FLIPPED_HORIZONTALLY_FLAG = 0x40000000,
+		TILE_FLIPPED_VERTICALLY_FLAG = 0x20000000,
+		TILE_FLIPPED_DIAGONALLY_FLAG = 0x10000000,
+	};
+
+	const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x40000000;
+	const uint32_t FLIPPED_VERTICALLY_FLAG = 0x20000000;
+	const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x10000000;
+
 	struct TileSet {
 		enum TileSet_Enum {
 			TS_First,

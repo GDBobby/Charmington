@@ -1,6 +1,9 @@
 #pragma once
 #include "TileMap.h"
 #include "../pipelines/PipelineEnum.h"
+#include "TileContainer.h"
+
+#include <queue>
 
 namespace EWE {
 	class TileMapDevelopment {
@@ -37,6 +40,7 @@ namespace EWE {
 
 		void colorSelection(uint32_t selectPosition);
 		void selectNeighbor(uint32_t selectPosition, int64_t selID, std::queue<int64_t>& selection);
+		void bucketFill(uint32_t clickedTilePosition, uint32_t selectedTile) {}
 
 		bool refreshedMap = true;
 	protected:
@@ -49,54 +53,11 @@ namespace EWE {
 			TileID tileID;
 			TileInfo(uint64_t memLoc, TileID tileID) : memoryLocation(memLoc), tileID(tileID) {}
 		};
-		struct TileNode {
-			TileID tileID;
-			uint32_t nextPosition;
-		};
-		struct TileContainer {
-		protected:
-			uint32_t beginPosition;
-			uint32_t count;
-			uint32_t size;
-			uint32_t finalPosition;
 
-			TileNode* tileMemory;
+		TileContainer* tileContainer;
+		//std::map<uint32_t, TileInfo> tileIndexingMap{}; //tilePositionID, indices/uv memLocation
 
-			//i wanna know when i have contiguous
-			//thinking second buffer, just for sparse tracking, question is
-			//how do i track regions of contiguous memory
-
-
-		public:
-			uint32_t begin() {
-				return beginPosition;
-			}
-			uint32_t count() {
-				return count;
-			}
-			uint32_t size() {
-
-			}
-			void writeToBuffer(void* buffer) {
-				char* buf = reinterpret_cast<char*>(buffer);
-				uint64_t memLoc = 0;
-				TileNode* tileNode = tileMemory + beginPosition;
-				uint64_t tileOffset = offsetof(TileNode, tileID);
-
-				uint32_t curPos = beginPosition;
-				uint32_t dataSize;
-				while (curPos != finalPosition) {
-					memcpy(buf + memLoc, tileNode + tileOffset, 4);
-					memLoc++;
-				}
-			}
-		};
-
-		std::map<uint32_t, TileInfo> tileIndexingMap{}; //tilePositionID, indices/uv memLocation
-
-		std::unique_ptr<EWEModel> tileModel{ nullptr };
-
-		uint64_t instanceCount = 0;
+		//uint64_t instanceCount = 0;
 		uint16_t width, height;
 
 		std::array<float, 6> screenCoordinates{};

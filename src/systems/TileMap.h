@@ -42,5 +42,6 @@ namespace EWE {
 		static void createTileUVs(std::vector<glm::vec2>& tileUVs, int width, int height, uint32_t tileWidth, uint32_t tileHeight);
 
 		friend class TileMapDevelopment;
+		friend class TileContainer;
 	};
 }

@@ -4,10 +4,6 @@
 #include <EWEngine/graphics/EWE_Texture.h>
 
 
-const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
-const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
-
 namespace EWE {
 	TileSet::TileSet(EWEDevice& device, TileSet_Enum map_id) : setID{ map_id } {
 		switch (map_id) {

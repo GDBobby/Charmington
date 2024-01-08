@@ -12,12 +12,13 @@ namespace EWE {
 	TileMapDevelopment::TileMapDevelopment(EWEDevice& device, uint16_t width, uint16_t height) : 
 		device{device},
 		tileSet{ device, TileSet::TS_First }, 
-		width{ width }, height{ height }, 
+		width{ width }, height{ height },
 		modelIndexBuffer{EWEModel::createIndexBuffer(device, modelIndices)} 
 	{
 		init(device);
 	}
 	TileMapDevelopment::~TileMapDevelopment() {
+		delete tileContainer;
 		if (descriptorSet != VK_NULL_HANDLE) {
 			EWEDescriptorPool::freeDescriptor(DescriptorPool_Global, &descriptorSet);
 			descriptorSet = VK_NULL_HANDLE;
@@ -26,11 +27,14 @@ namespace EWE {
 	
 	void TileMapDevelopment::changeTile(uint32_t tilePosition, TileID tileID) {
 
+		tileContainer->changeTile(tilePosition, tileID);
+		return;
+
 		//im specifically using a vector so that the data is contiguous, as its goign to be sent to the GPU. 
 		// inserting to a vector is a little unfortunate
 		//probably better than whatever i would need to do to compact memory from a list or a map, not entirely sure on that though
 
-
+		/*
 		auto emplaceRet = tileIndexingMap.try_emplace(tilePosition, 0, tileID);
 		auto uvOffsets = tileSet.getUVOffset(tileID);
 
@@ -142,10 +146,12 @@ namespace EWE {
 			tileIndexBuffer->flush();
 			tileUVBuffer->flush();
 		}
-
+		*/
 	}
 
 	void TileMapDevelopment::removeTile(uint32_t tilePosition) {
+		tileContainer->removeTile(tilePosition);
+		/*
 		auto currentIter = tileIndexingMap.find(tilePosition);
 		if (currentIter == tileIndexingMap.end()) {
 			printf("removing tile that doesn't exist \n");
@@ -175,12 +181,12 @@ namespace EWE {
 		tileIndexingMap.erase(currentIter);
 
 		instanceCount--;
+		*/
 	}
 
 	void TileMapDevelopment::refreshMap(uint16_t width, uint16_t height) {
 
-		instanceCount = 0;
-		tileIndexingMap.clear();
+		//instanceCount = 0;
 
 		if ((this->width != width) || (this->height != height)) {
 			tileIndexBuffer.reset();
@@ -192,16 +198,24 @@ namespace EWE {
 			constructUVsAndIndices(device);
 			constructDescriptor();
 			refreshedMap = true;
+			delete tileContainer;
+			tileContainer = new TileContainer(width, height, tileIndexBuffer.get(), tileUVBuffer.get(), tileSet);
+		}
+		else {
+			tileContainer->reset();
 		}
 
 
 	}
 	void TileMapDevelopment::init(EWEDevice& device) {
 		//createTileVertices(vertices, width, height, tileSet.tileScale);
-		instanceCount = 0;
+		//instanceCount = 0;
 		constructVertices(device, tileSet.tileScale);
 		constructUVsAndIndices(device);
 		constructDescriptor();
+		
+
+		tileContainer = new TileContainer(width, height, tileIndexBuffer.get(), tileUVBuffer.get(), tileSet);
 	}
 
 	void TileMapDevelopment::constructUVsAndIndices(EWEDevice& device) {
@@ -252,6 +266,7 @@ namespace EWE {
 	}
 
 	void TileMapDevelopment::renderTiles(VkCommandBuffer cmdBuf, uint8_t frameIndex) {
+		uint32_t instanceCount = tileContainer->getInstanceCount();
 		if (instanceCount == 0) {
 			return;
 		}
@@ -259,7 +274,6 @@ namespace EWE {
 		auto pipe = PipelineSystem::at(Pipe_background);
 
 		pipe->bindPipeline();
-		//pipe->bindModel(tileSet.tileModel.get());
 
 		pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameIndex));
 		pipe->bindDescriptor(1, &descriptorSet);
@@ -271,7 +285,6 @@ namespace EWE {
 
 		pipe->push(&pushTile);
 
-		//pipe->drawInstanced(tileSet.tileModel.get());
 		vkCmdBindIndexBuffer(cmdBuf, modelIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		vkCmdDrawIndexed(cmdBuf, 6, instanceCount, 0, 0, 0);
 	}
@@ -376,8 +389,9 @@ namespace EWE {
 		saveFile.write(reinterpret_cast<char*>(&height), 2);
 
 		printf("saving map with width:height - %d:%d \n", width, height);
-
-		if (tileIndexingMap.size() == 0) {
+		saveFile.write(reinterpret_cast<char*>(tileContainer->getTileBuffer()), width * height * 4);
+		/*
+		if (tileContainer->getInstanceCount() == 0) {
 			saveFile.fill(0);
 			//printf("empty file, filling with 0s \n");
 			saveFile.close();
@@ -416,7 +430,7 @@ namespace EWE {
 
 		uint64_t filePosition = saveFile.tellp();
 		//printf("after saving file, instanceCount:filePosition:expectedSize - %lu:%lu:%lu", instanceCount, filePosition, fileSize);
-
+		*/
 		saveFile.close();
 	}
 
@@ -453,6 +467,8 @@ namespace EWE {
 			tileIndexBuffer.reset();
 			tileUVBuffer.reset();
 			constructUVsAndIndices(device);
+			delete tileContainer;
+			tileContainer = new TileContainer(width, height, tileIndexBuffer.get(), tileUVBuffer.get(), tileSet);
 			//printf("after destructing the buffers \n");
 		}
 		else {
@@ -471,11 +487,19 @@ namespace EWE {
 				tileIndexBuffer.reset();
 				tileUVBuffer.reset();
 				constructUVsAndIndices(device);
+				delete tileContainer;
+				tileContainer = new TileContainer(width, height, tileIndexBuffer.get(), tileUVBuffer.get(), tileSet);
 				//printf("after destructing the buffers \n");
 			}
 		}
 		//printf("width and height of loaded map : %d:%d \n", width, height);
 
+		char* readBuffer = new char[width * height * 4];
+		loadFile.read(readBuffer, width * height * 4);
+		tileContainer->interpretLoadData(reinterpret_cast<uint32_t*>(readBuffer));
+		delete[] readBuffer;
+
+		/*
 		char* indexBufferPtr = reinterpret_cast<char*>(tileIndexBuffer->getMappedMemory());
 		char* uvBufferPtr = reinterpret_cast<char*>(tileUVBuffer->getMappedMemory());
 		uint32_t indexBlockSize = sizeof(uint32_t) * 4;
@@ -517,6 +541,7 @@ namespace EWE {
 				tilePosition++;
 			}
 		}
+		*/
 
 		uint64_t filePosition = loadFile.tellg();
 		//printf("after loading, instanceCount:filePosition - %lu:%lu \n", instanceCount, filePosition);
@@ -532,7 +557,7 @@ namespace EWE {
 
 	void TileMapDevelopment::colorSelection(uint32_t selectPosition) {
 		int64_t selectedTile = -1;
-
+		/*
 		{
 			auto selectedPosIter = tileIndexingMap.find(selectPosition);
 			if (selectedPosIter != tileIndexingMap.end()) {
@@ -541,7 +566,8 @@ namespace EWE {
 			//scope to deconstruct selectedPosIter here
 
 		}
+		*/
 
-		std::queue<int64_t> selection{selectedTile};
+		//std::queue<int64_t> selection{selectedTile};
 	}
 }
