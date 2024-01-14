@@ -98,17 +98,38 @@ namespace EWE {
 		void flipTile(uint32_t selectedTile, TileReadFlag flipFlag);
 
 		void interpretLoadData(uint32_t* buffer);
+		void bucketFill(uint32_t selectedTilePos, TileID fillTile);
 
 	protected:
 		//internal use only
 		//checking should be done before entering to ensure the block being added does not currently exist
-		void addTile(uint32_t selectedTilePos);
+		void addTile(uint32_t selectedTilePos, bool flush = true);
 
 		//buffer functions
-		void addTileToBuffers(uint32_t tilePos, uint32_t memPosition);
-		void addTileToBuffersAtEnd(uint32_t tilePos, uint32_t memPosition);
+		void insertTileInBuffers(uint32_t tilePos, uint32_t memPosition, bool flush);
+		void addTileToBuffersAtEnd(uint32_t tilePos, uint32_t memPosition, bool flush);
 		void changeTileUVs(uint32_t tilePos, uint32_t memPosition);
+		void changeTileUVNoFlush(uint32_t tilePos, uint32_t memPosition);
 		void removeTileFromBuffers(uint32_t memPos);
 		int64_t findMemBlock(uint32_t selectedTilePos);
+
+		void selection(TileID* selectionData, int x, int y, TileID selectTile);
+		void floodFillScanlineStack(int x, int y, TileID newTile, TileID oldTile);
+
+		enum Borders : uint8_t {
+			//if it has bordering tilesi n all directions its 0
+			//if it only has tile to the right its 1, and so on
+			B_All = 0,
+			B_right = 1,
+			B_bottom = 2,
+			B_left = 4,
+			B_top = 8,
+
+			B_nLeft = 14,
+			B_nTop = 13,
+			B_nRight = 11,
+			B_nBottom = 7,
+			B_Full = 15,
+		};
 	};
 }

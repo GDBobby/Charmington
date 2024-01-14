@@ -40,7 +40,9 @@ namespace EWE {
 
 		void colorSelection(uint32_t selectPosition);
 		void selectNeighbor(uint32_t selectPosition, int64_t selID, std::queue<int64_t>& selection);
-		void bucketFill(uint32_t clickedTilePosition, uint32_t selectedTile) {}
+		void bucketFill(uint32_t clickedTilePosition, TileID selectedTile) {
+			tileContainer->bucketFill(clickedTilePosition, selectedTile);
+		}
 
 		bool refreshedMap = true;
 	protected:
@@ -79,12 +81,7 @@ namespace EWE {
 		std::unique_ptr<EWEBuffer> modelIndexBuffer;
 
 		uint32_t borders = 0;
-		enum Borders : uint8_t {
-			B_left = 1,
-			B_top = 2,
-			B_right = 4,
-			B_bottom = 8,
-		};
+
 
 		EWEDevice& device;
 

@@ -352,6 +352,7 @@ namespace EWE {
             break;
         }
         case LevelCreationIMGUI::Tool_bucketFill: {
+            printf("attempting bucket fill : %u \n", selectedTile);
             tileMapD->bucketFill(clickedTilePosition, selectedTile);
             break;
         }

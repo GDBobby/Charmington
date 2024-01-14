@@ -4,3 +4,5 @@
 *.log
 Debug/
 Release/
+*.vert
+*.frag
