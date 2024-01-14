@@ -1,5 +1,7 @@
 Charmington was the game my team submitted for the 3 day game jam, MelonJam Winter 2024 - https://itch.io/jam/winter-melonjam-2023
 
+Charmington was built on the engine that I've been making over the last 2ish years. https://github.com/GDBobby/Eight-Winds-Engine
+
 ### The Team Included :
 MaxBarken - https://github.com/maxbarken
 
