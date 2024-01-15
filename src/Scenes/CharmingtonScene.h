@@ -1,7 +1,7 @@
 #pragma once
 #include <EWEngine/EightWindsEngine.h>
 #include <EWEngine/Scene.h>
-#include "../systems/LevelManager.h"
+#include "../Systems/LevelManager.h"
 #include "../Characters/Charmer.h"
 #include "../Characters/Carrot.h"
 #include "../GUI/CharmerOverlay.h"

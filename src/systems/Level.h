@@ -1,10 +1,10 @@
 #pragma once
 
-#include <EWEngine/graphics/model/EWE_Model.h>
-#include <EWEngine/graphics/EWE_FrameInfo.h>
-#include <EWEngine/graphics/PushConstants.h>
-#include <EWEngine/graphics/model/EWE_Basic_Model.h>
-#include <EWEngine/graphics/EWE_Object.h>
+#include <EWEngine/Graphics/Model/Model.h>
+#include <EWEngine/Graphics/Frame_Info.h>
+#include <EWEngine/Graphics/PushConstants.h>
+#include <EWEngine/Graphics/Model/Basic_Model.h>
+#include <EWEngine/Graphics/EWE_Object.h>
 
 #include "TileMap.h"
 #include "SaveData.h"

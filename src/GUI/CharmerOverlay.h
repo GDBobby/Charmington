@@ -1,8 +1,8 @@
 #pragma once
 
 #include <EWEngine/GameObject2D.h>
-#include <EWEngine/graphics/TextOverlay.h>
-#include <EWEngine/graphics/model/EWE_Model.h>
+#include <EWEngine/Graphics/TextOverlay.h>
+#include <EWEngine/Graphics/Model/Model.h>
 #include <EWEngine/GUI/Overlay.h>
 
 

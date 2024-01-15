@@ -1,10 +1,10 @@
 #pragma once
 
-#include <EWEngine/systems/SkinRendering/SkinRenderSystem.h>
-#include <EWEngine/graphics/PushConstants.h>
+#include <EWEngine/Systems/Rendering/Skin/SkinRS.h>
+#include <EWEngine/Graphics/PushConstants.h>
 
 #include "ZeroSkeleton.h"
-#include "../systems/Level.h"
+#include "../Systems/Level.h"
 
 namespace EWE {
 	class Zero {

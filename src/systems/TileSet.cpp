@@ -1,7 +1,7 @@
 #include "TileSet.h"
 
-#include <EWEngine/graphics/model/EWE_Basic_Model.h>
-#include <EWEngine/graphics/EWE_Texture.h>
+#include <EWEngine/Graphics/Model/Basic_Model.h>
+#include <EWEngine/Graphics/Texture.h>
 
 
 namespace EWE {

@@ -1,7 +1,7 @@
 #pragma once
-#include <EWEngine/graphics/EWE_Object.h>
+#include <EWEngine/Graphics/EWE_Object.h>
 
-#include "../systems/Level.h"
+#include "../Systems/Level.h"
 #include "../Characters/Carrot.h"
 
 

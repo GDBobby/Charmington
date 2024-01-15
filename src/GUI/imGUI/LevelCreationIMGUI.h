@@ -3,9 +3,9 @@
 #include <EWEngine/Data/TransformInclude.h>
 #include <EWEngine/Data/EngineDataTypes.h>
 
-#include <EWEngine/graphics/EWE_Device.hpp>
+#include <EWEngine/Graphics/Device.hpp>
 
-#include "../../systems/TileMapDevelopment.h"
+#include "../../Systems/TileMapDevelopment.h"
 
 #include <queue>
 

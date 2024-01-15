@@ -1,19 +1,19 @@
 #pragma once
 
-#include <EWEngine/systems/SkinRendering/SkinRenderSystem.h>
-#include <EWEngine/graphics/PushConstants.h>
-#include <EWEngine/graphics/EWE_Camera.h>
+#include <EWEngine/Systems/Rendering/Skin/SkinRS.h>
+#include <EWEngine/Graphics/PushConstants.h>
+#include <EWEngine/Graphics/Camera.h>
 
 #define RENDER_TRANSLATION true
 #if RENDER_TRANSLATION
-#include <EWEngine/graphics/TextOverlay.h>
+#include <EWEngine/Graphics/TextOverlay.h>
 #include <format>
 #endif
 
 #include "CharmerSkeleton.h"
 #include "InputHandler.h"
 
-#include "../systems/Level.h"
+#include "../Systems/Level.h"
 #include "../Levels/StartArea.h"
 #include "../Levels/ForestLevel.h"
 #include "../Levels/ConnectorLevel.h"

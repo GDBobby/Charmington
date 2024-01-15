@@ -1,8 +1,8 @@
 #include "TileMap.h"
 
-#include <EWEngine/graphics/model/EWE_Vertex.h>
-#include <EWEngine/graphics/EWE_Texture.h>
-#include <EWEngine/systems/PipelineSystem.h>
+#include <EWEngine/Graphics/Model/Vertex.h>
+#include <EWEngine/Graphics/Texture.h>
+#include <EWEngine/Systems/PipelineSystem.h>
 
 #include "../pipelines/PipelineEnum.h"
 #include "../pipelines/BackgroundPipe.h"

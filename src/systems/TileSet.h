@@ -2,7 +2,7 @@
 
 #include <EWEngine/Data/EngineDataTypes.h>
 #include <EWEngine/Data/TransformInclude.h>
-#include <EWEngine/graphics/model/EWE_Model.h>
+#include <EWEngine/Graphics/Model/Model.h>
 
 #include <stdexcept>
 #include <string>

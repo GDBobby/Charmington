@@ -3,13 +3,13 @@
 #include "EWEngine/GUI/UIHandler.h"
 
 #include "EWEngine/EWE_GameObject.h"
-#include "EWEngine/SoundEngine.h"
+#include "EWEngine/Sound_Engine.h"
 //#include "VoidsGaze/GUI/EndlessOverlay.h"
 
-#include "EWEngine/systems/SkinRendering/SkinRenderSystem.h"
-#include "EWEngine/systems/RigidRendering/RigidRenderSystem.h"
+#include "EWEngine/Systems/Rendering/Skin/SkinRS.h"
+#include "EWEngine/Systems/Rendering/Rigid/RigidRS.h"
 #include <EWEngine/EightWindsEngine.h>
-#include "EWEngine/graphics/EWE_FrameInfo.h"
+#include "EWEngine/Graphics/Frame_Info.h"
 #include "../Characters/Charmer.h"
 
 #include "Level.h"

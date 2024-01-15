@@ -1,12 +1,12 @@
 #include "CharmerOverlay.h"
 
-#include <EWEngine/graphics/EWE_Texture.h>
-#include <EWEngine/graphics/EWE_FrameInfo.h>
+#include <EWEngine/Graphics/Texture.h>
+#include <EWEngine/Graphics/Frame_Info.h>
 
 //need to replace this include with local texture enum
 #include <EWEngine/GUI/MenuModule.h>
 
-#include "../systems/SaveData.h"
+#include "../Systems/SaveData.h"
 
 namespace EWE {
 

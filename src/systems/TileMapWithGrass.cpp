@@ -1,7 +1,7 @@
 #include "TileMapWithGrass.h"
 
-#include <EWEngine/graphics/EWE_Texture.h>
-#include <EWEngine/systems/PipelineSystem.h>
+#include <EWEngine/Graphics/Texture.h>
+#include <EWEngine/Systems/PipelineSystem.h>
 #include "../pipelines/PipelineEnum.h"
 
 

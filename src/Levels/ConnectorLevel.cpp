@@ -1,6 +1,6 @@
 #include "ConnectorLevel.h"
 
-#include <EWEngine/systems/PipelineSystem.h>
+#include <EWEngine/Systems/PipelineSystem.h>
 #include "../pipelines/BackgroundPipe.h"
 #include "../pipelines/PipelineEnum.h"
 

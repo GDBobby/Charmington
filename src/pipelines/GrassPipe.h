@@ -1,5 +1,5 @@
 #pragma once
-#include <EWEngine/systems/PipelineSystem.h>
+#include <EWEngine/Systems/PipelineSystem.h>
 
 namespace EWE {
 	class GrassPipe : public PipelineSystem {

@@ -1,7 +1,7 @@
 #pragma once
 
 //forget this, too much work. just wing it
-#include <EWEngine/systems/PipelineSystem.h>
+#include <EWEngine/Systems/PipelineSystem.h>
 namespace EWE {
 	class TreeInstancePipe : public PipelineSystem {
 	public:

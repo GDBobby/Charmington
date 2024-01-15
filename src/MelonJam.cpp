@@ -2,7 +2,7 @@
 
 #include "GUI/MainMenuMM.h"
 //#include "GUI/ControlsMM.h"
-#include <EWEngine/systems/StaticRendering/StaticRenderingSystem.h>
+#include <EWEngine/Systems/Rendering/Stationary/StatRS.h>
 
 #include "GUI/MenuEnums.h"
 

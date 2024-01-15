@@ -4,8 +4,8 @@
 #include <EWEngine/imgui/imGuiHandler.h>
 #include "../GUI/imGUI/LevelCreationIMGUI.h"
 
-#include "../systems/TileMap.h"
-#include "../systems/TileMapDevelopment.h"
+#include "../Systems/TileMap.h"
+#include "../Systems/TileMapDevelopment.h"
 
 namespace EWE {
 	class LevelCreationScene : public Scene {

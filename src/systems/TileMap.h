@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EWEngine/graphics/model/EWE_Model.h>
+#include <EWEngine/Graphics/Model/Model.h>
 
 #include "TileSet.h"
 #include <array>

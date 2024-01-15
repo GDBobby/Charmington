@@ -1,7 +1,7 @@
 #pragma once
 #include "TileMap.h"
 
-#include <EWEngine/graphics/EWE_FrameInfo.h>
+#include <EWEngine/Graphics/Frame_Info.h>
 
 namespace EWE {
 	class TileMapWithGrass : public TileMap {
