@@ -16,6 +16,14 @@ namespace EWE {
 				grassTiles.push_back(476);
 				break;
 			}
+			case TS_Selection: {
+				tileSize = 16;
+				width = 4;
+				height = 4;
+				tileScale = 0.5f;
+				tileSetTexture = EWETexture::addSceneTexture(device, "tileCreation/borders.png");
+				break;
+			}
 			default: {
 				printf("trying to get variables for a map that doesn't exist \n");
 				throw std::runtime_error("invalid map id");
@@ -31,19 +39,25 @@ namespace EWE {
 
 		std::array<glm::vec2, 4> offsets;
 
-		glm::vec2 baseOffset{ static_cast<float>(tileID % width) / static_cast<float>(width), std::floor(static_cast<float>(tileID) / static_cast<float>(width)) / static_cast<float>(height) };
+		uint32_t pixelWidth = tileSize * width;
+		uint32_t pixelHeight = tileSize * height;
+		uint32_t pixelLeft = tileSize * (tileID % width);
+		uint32_t pixelRight = pixelLeft + tileSize;
+		uint32_t pixelTop = tileSize * ((tileID - (tileID % width))) / width;
+		uint32_t pixelBottom = pixelTop + tileSize;
 
-		offsets[0] = baseOffset;
 
-		offsets[2] = baseOffset;
-		offsets[2].x += 1.f / static_cast<float>(width);
-		offsets[2].y += 1.f / static_cast<float>(height);
+		offsets[0].x = static_cast<float>(pixelLeft);
+		offsets[0].y = static_cast<float>(pixelTop);
 
-		offsets[1].x = offsets[2].x;
-		offsets[1].y = baseOffset.y;
+		offsets[2].x = static_cast<float>(pixelRight);
+		offsets[2].y = static_cast<float>(pixelBottom);
 
-		offsets[3].x = baseOffset.x;
-		offsets[3].y = offsets[2].y;
+		offsets[1].x = static_cast<float>(offsets[2].x);
+		offsets[1].y = static_cast<float>(offsets[0].y);
+
+		offsets[3].x = static_cast<float>(offsets[0].x);
+		offsets[3].y = static_cast<float>(offsets[2].y);
 
 
 		if (tileID & FLIPPED_HORIZONTALLY_FLAG) {
@@ -59,7 +73,7 @@ namespace EWE {
 			std::swap(offsets[1], offsets[2]);
 		}
 
-		printf("uv offsets : (%.5f:%.5f)(%.5f:%.5f)(%.5f:%.5f)(%.5f:%.5f) \n", offsets[0].x, offsets[0].y, offsets[1].x, offsets[1].y, offsets[2].x, offsets[2].y, offsets[3].x, offsets[3].y);
+		printf("uv offsets : (%d:%d)(%d:%d)(%d:%d)(%d:%d) \n", offsets[0].x, offsets[0].y, offsets[1].x, offsets[1].y, offsets[2].x, offsets[2].y, offsets[3].x, offsets[3].y);
 
 		return offsets;
 	}

@@ -104,7 +104,7 @@ namespace EWE {
 
 		TileMapDevelopment* tileMapD{ nullptr };
 
-		void toolLeft(uint32_t clickedTilePosition);
+		void toolLeft(uint32_t clickedTilePosition, bool shiftKey, bool ctrlKey);
 
 	};
 }

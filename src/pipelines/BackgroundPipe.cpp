@@ -53,6 +53,8 @@ namespace EWE {
 	void BackgroundPipe::createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
 		EWEPipeline::PipelineConfigInfo pipelineConfig{};
 		EWEPipeline::defaultPipelineConfigInfo(pipelineConfig);
+		EWEPipeline::enable2DConfig(pipelineConfig);
+		EWEPipeline::enableAlphaBlending(pipelineConfig);
 		pipelineConfig.pipelineRenderingInfo = pipeRenderInfo;
 
 		pipelineConfig.pipelineLayout = pipeLayout;

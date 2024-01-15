@@ -64,7 +64,7 @@ namespace EWE {
 		uint32_t getInstanceCount() const {
 			return instanceCount;
 		}
-		const void* getTileBuffer() const {
+		TileID* getTileBuffer() const {
 			return tileData;
 		}
 
@@ -78,7 +78,9 @@ namespace EWE {
 		void flipTile(uint32_t selectedTile, TileReadFlag flipFlag);
 
 		void interpretLoadData(uint32_t* buffer);
+		void reinterpretData();
 		void bucketFill(uint32_t selectedTilePos, TileID fillTile);
+		void selection(TileID* selectionData, uint32_t selTilePos);
 
 	protected:
 		//internal use only
@@ -93,13 +95,12 @@ namespace EWE {
 		void removeTileFromBuffers(uint32_t memPos);
 		//int64_t findMemBlock(uint32_t selectedTilePos);
 
-		void selection(TileID* selectionData, int x, int y, TileID selectTile);
 		void floodFillScanlineStack(int x, int y, TileID newTile, TileID oldTile);
 
-		enum Borders : uint8_t {
+		enum Borders : TileID {
 			//if it has bordering tilesi n all directions its 0
 			//if it only has tile to the right its 1, and so on
-			B_All = 0,
+			B_none = 0,
 			B_right = 1,
 			B_bottom = 2,
 			B_left = 4,

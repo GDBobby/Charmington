@@ -48,7 +48,11 @@ namespace EWE {
 		static void mouseCallback(GLFWwindow* window, int button, int action, int mods);
 		static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-		static void cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
+		static void rightClickDragCallback(GLFWwindow* window, double xpos, double ypos);
+		static void leftClickDragCallback(GLFWwindow* window, double xpos, double ypos);
+
+		int64_t lastTileDragPos;
+
 
 		GLFWmousebuttonfun mouseReturnFunction;
 		GLFWkeyfun keyReturnFunction;

@@ -31,8 +31,12 @@ namespace EWE {
 		}
 		if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 			if (action == GLFW_PRESS) {
+				if (lcPtr->levelCreationIMGUI.selectedTool == LevelCreationIMGUI::Tool_colorSelection) {
+					lcPtr->tileMapD->clearSelection();
+				}
+
 				glfwGetCursorPos(window, &lcPtr->currentMouseXPos, &lcPtr->currentMouseYPos);
-				glfwSetCursorPosCallback(lcPtr->ewEngine.mainWindow.getGLFWwindow(), LevelCreationScene::cursorPosCallback);
+				glfwSetCursorPosCallback(lcPtr->ewEngine.mainWindow.getGLFWwindow(), LevelCreationScene::rightClickDragCallback);
 			}
 			else if (action == GLFW_RELEASE) {
 				glfwSetCursorPosCallback(lcPtr->ewEngine.mainWindow.getGLFWwindow(), ImGui_ImplGlfw_CursorPosCallback);
@@ -43,12 +47,17 @@ namespace EWE {
 				if (lcPtr->tileMapD.get() != nullptr) {
 					glfwGetCursorPos(window, &lcPtr->currentMouseXPos, &lcPtr->currentMouseYPos);
 					printf("cursor pos : %d:%d \n", static_cast<int>(lcPtr->currentMouseXPos), static_cast<int>(lcPtr->currentMouseYPos));
-					lcPtr->tileMapD->getScreenCoordinates(lcPtr->menuManager.screenWidth, lcPtr->menuManager.screenHeight);
-					int64_t clickedTile = lcPtr->tileMapD->getClickedTile(static_cast<int>(lcPtr->currentMouseXPos), static_cast<int>(lcPtr->currentMouseYPos), lcPtr->menuManager.screenWidth, lcPtr->menuManager.screenHeight);
-					if (clickedTile >= 0) {
-						lcPtr->levelCreationIMGUI.toolLeft(static_cast<uint32_t>(clickedTile));
+					//lcPtr->tileMapD->getScreenCoordinates(lcPtr->menuManager.screenWidth, lcPtr->menuManager.screenHeight);
+					lcPtr->lastTileDragPos = lcPtr->tileMapD->getClickedTile(static_cast<int>(lcPtr->currentMouseXPos), static_cast<int>(lcPtr->currentMouseYPos), lcPtr->menuManager.screenWidth, lcPtr->menuManager.screenHeight);
+					if (lcPtr->lastTileDragPos >= 0) {
+						lcPtr->levelCreationIMGUI.toolLeft(static_cast<uint32_t>(lcPtr->lastTileDragPos), glfwGetKey(window, GLFW_KEY_LEFT_SHIFT), glfwGetKey(window, GLFW_KEY_LEFT_CONTROL));
+						
 					}
 				}
+				glfwSetCursorPosCallback(lcPtr->ewEngine.mainWindow.getGLFWwindow(), LevelCreationScene::leftClickDragCallback);
+			}
+			else if (action == GLFW_RELEASE) {
+				glfwSetCursorPosCallback(lcPtr->ewEngine.mainWindow.getGLFWwindow(), ImGui_ImplGlfw_CursorPosCallback);
 			}
 		}
 		if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
@@ -62,7 +71,15 @@ namespace EWE {
 			}
 		}
 	}
-	void LevelCreationScene::cursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
+	void LevelCreationScene::leftClickDragCallback(GLFWwindow* window, double xpos, double ypos) {
+		int64_t currentPos = lcPtr->tileMapD->getClickedTile(static_cast<int>(xpos), static_cast<int>(ypos), lcPtr->menuManager.screenWidth, lcPtr->menuManager.screenHeight);
+		if (currentPos >= 0 && currentPos != lcPtr->lastTileDragPos) {
+			lcPtr->lastTileDragPos = currentPos;
+			lcPtr->levelCreationIMGUI.toolLeft(static_cast<uint32_t>(lcPtr->lastTileDragPos), glfwGetKey(window, GLFW_KEY_LEFT_SHIFT), glfwGetKey(window, GLFW_KEY_LEFT_CONTROL));
+		}
+	}
+
+	void LevelCreationScene::rightClickDragCallback(GLFWwindow* window, double xpos, double ypos) {
 		ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.WantCaptureMouse) {

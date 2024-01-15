@@ -337,9 +337,10 @@ namespace EWE {
         tools[Tool_bucketFill].texID = EWETexture::addSceneTexture(device, "tileCreation/bucketFill.png");
     }
 
-    void LevelCreationIMGUI::toolLeft(uint32_t clickedTilePosition) {
+    void LevelCreationIMGUI::toolLeft(uint32_t clickedTilePosition, bool shiftKey, bool ctrlKey) {
         switch (selectedTool) {
         case LevelCreationIMGUI::Tool_pencil: {
+            if(tileMapD->)
             tileMapD->changeTile(clickedTilePosition, selectedTile);
             break;
         }
@@ -348,6 +349,9 @@ namespace EWE {
             break;
         }
         case LevelCreationIMGUI::Tool_colorSelection: {
+            if (!shiftKey) {
+                tileMapD->clearSelection();
+            }
             tileMapD->colorSelection(clickedTilePosition);
             break;
         }

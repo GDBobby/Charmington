@@ -162,24 +162,26 @@ namespace EWE {
 
 	}
 	void TileContainer::interpretLoadData(uint32_t* buffer) {
+		memcpy(tileData, buffer, size * 4);
+		reinterpretData();
+	}
+	void TileContainer::reinterpretData() {
 		uint32_t currentPos = 0;
 		uint32_t memPos = 0;
 		instanceCount = 0;
-		memcpy(tileData, buffer, size * 4);
 
 		while (currentPos < size) {
-			if ((buffer[currentPos] & TILE_VOID_FLAG) == 0) {
+			if ((tileData[currentPos] & TILE_VOID_FLAG) == 0) {
 				posData[memPos] = currentPos;
 				addTileToBuffers(memPos, false);
 				memPos++;
 			}
-			
+
 			currentPos++;
 		}
 		indexBuffer.flush();
 		uvBuffer.flush();
 	}
-
 
 
 	void TileContainer::bucketFill(uint32_t selectedTilePosition, TileID fillTile) {
@@ -205,17 +207,22 @@ namespace EWE {
 		}
 		else {
 
-			interpretLoadData(tileData);
+			reinterpretData();
 
 		}
 	}
-	void TileContainer::selection(TileID* selectionData, int x, int y, TileID selectTile) {
+	void TileContainer::selection(TileID* selectionData, uint32_t selTilePos) {
+		TileID selectTile = tileData[selTilePos];
+		int x = selTilePos % width;
+		int y = (selTilePos - (selTilePos % width)) / width;
+
+		selectionData[y * width + x] = B_none;
 		
-		selectionData[y * width + x] = B_Full;
+		
 		auto push = [](std::stack<int>& stack, int x, int y) {
 			stack.push(x);
 			stack.push(y);
-		};
+			};
 		auto pop = [](std::stack<int>& stack, int& x, int& y) {
 			if (stack.size() < 2) return false; // it's empty
 			y = stack.top();
@@ -223,7 +230,8 @@ namespace EWE {
 			x = stack.top();
 			stack.pop();
 			return true;
-		};
+			};
+
 		int x1;
 		bool spanAbove, spanBelow;
 
@@ -235,30 +243,58 @@ namespace EWE {
 				x1--;
 			}
 			x1++;
+
 			spanBelow = 0;
 			spanAbove = 0;
 			while ((x1 < width) && (tileData[y * width + x1] == selectTile)) {
-				
+				//tileData[y * width + x1] = fillTile;
+				TileID& currentSelectTile{ selectionData[y * width + x1] };
+				if (currentSelectTile == TILE_VOID_FLAG) {
+					currentSelectTile = B_none;
+				}
 
-				if (!spanAbove && y > 0) {
-					if (tileData[(y - 1) * width + x1] == selectTile) {
-						selectionData[(y - 1) * width + x1] = B_Full - B_bottom;
-						push(theStack, x1, y - 1);
-						spanAbove = true;
+				if (x1 >= 1 && tileData[y * width + x1 - 1] == selectTile) {
+					currentSelectTile |= B_left;
+					selectionData[y * width + x1 - 1] |= B_right;
+				}
+
+
+				if (y > 0) {
+					if ((selectionData[(y - 1) * width + x1] == TILE_VOID_FLAG)) {
+						if (tileData[(y - 1) * width + x1] == selectTile) {
+							if (!spanAbove) {
+								push(theStack, x1, y - 1);
+								spanAbove = true;
+							}
+							selectionData[(y - 1) * width + x1] = B_bottom;
+							currentSelectTile |= B_top;
+						}
+						else if (spanAbove && (tileData[(y - 1) * width + x1] != selectTile)) {
+							spanAbove = false;
+						}
 					}
 					else {
-
+						selectionData[(y - 1) * width + x1] |= B_bottom;
 					}
 				}
-				else if (spanAbove && y > 0 && tileData[(y - 1) * width + x1] != B_empty) {
-					spanAbove = false;
-				}
-				if (!spanBelow && (y < (height - 1)) && (tileData[(y + 1) * width + x1] == B_empty)) {
-					push(theStack, x1, y + 1);
-					spanBelow = true;
-				}
-				else if (spanBelow && (y < (height - 1)) && (tileData[(y + 1) * width + x1] != B_empty)) {
-					spanBelow = false;
+
+				if (y < (height - 1)){
+					if (selectionData[(y + 1) * width + x1] == TILE_VOID_FLAG) {
+						if (tileData[(y + 1) * width + x1] == selectTile) {
+							if (!spanBelow) {
+								push(theStack, x1, y + 1);
+								spanBelow = true;
+							}
+							selectionData[(y + 1) * width + x1] = B_top;
+							currentSelectTile |= B_bottom;
+						}
+						else if (spanBelow && (tileData[(y + 1) * width + x1] != selectTile)) {
+							spanBelow = false;
+						}
+					}
+					else {
+						selectionData[(y + 1) * width + x1] |= B_top;
+					}
 				}
 				x1++;
 			}
@@ -299,17 +335,17 @@ namespace EWE {
 
 				if (!spanAbove && y > 0 && tileData[(y - 1) * width + x1] == oldTile) {
 					push(theStack, x1, y - 1);
-					spanAbove = 1;
+					spanAbove = true;
 				}
 				else if (spanAbove && y > 0 && tileData[(y - 1) * width + x1] != oldTile) {
-					spanAbove = 0;
+					spanAbove = false;
 				}
 				if (!spanBelow && (y < (height - 1)) && (tileData[(y + 1) * width + x1] == oldTile)) {
 					push(theStack, x1, y + 1);
-					spanBelow = 1;
+					spanBelow = true;
 				}
 				else if (spanBelow && (y < (height - 1)) && (tileData[(y + 1) * width + x1] != oldTile)) {
-					spanBelow = 0;
+					spanBelow = false;
 				}
 				x1++;
 			}

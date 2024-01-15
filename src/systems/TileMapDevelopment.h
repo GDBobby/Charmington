@@ -38,8 +38,8 @@ namespace EWE {
 		bool saveMap(std::string saveLocation);
 		bool loadMap(std::string loadLocation);
 
+		void clearSelection();
 		void colorSelection(uint32_t selectPosition);
-		void selectNeighbor(uint32_t selectPosition, int64_t selID, std::queue<int64_t>& selection);
 		void bucketFill(uint32_t clickedTilePosition, TileID selectedTile) {
 			tileContainer->bucketFill(clickedTilePosition, selectedTile);
 		}
@@ -49,6 +49,7 @@ namespace EWE {
 		//std::vector<glm::vec4> vertices{}; //i dont think i need to store vertices, but ok
 
 		TileSet tileSet;
+		TileSet selectionTileSet;
 
 		struct TileInfo {
 			uint64_t memoryLocation;
@@ -57,6 +58,7 @@ namespace EWE {
 		};
 
 		TileContainer* tileContainer;
+		TileContainer* selectionContainer;
 		//std::map<uint32_t, TileInfo> tileIndexingMap{}; //tilePositionID, indices/uv memLocation
 
 		//uint64_t instanceCount = 0;
@@ -68,6 +70,10 @@ namespace EWE {
 		std::unique_ptr<EWEBuffer> tileIndexBuffer{ nullptr };
 		std::unique_ptr<EWEBuffer> tileUVBuffer{ nullptr };
 		VkDescriptorSet descriptorSet{ VK_NULL_HANDLE };
+
+		std::unique_ptr<EWEBuffer> selectionIndexBuffer{ nullptr };
+		std::unique_ptr<EWEBuffer> selectionUVBuffer{ nullptr };
+		VkDescriptorSet selectionDescSet{ VK_NULL_HANDLE };
 
 
 		void init(EWEDevice& device);

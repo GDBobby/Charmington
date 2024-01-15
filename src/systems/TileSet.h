@@ -36,6 +36,7 @@ namespace EWE {
 	struct TileSet {
 		enum TileSet_Enum {
 			TS_First,
+			TS_Selection,
 			//TS_Start,
 		};
 
