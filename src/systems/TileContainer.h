@@ -6,24 +6,6 @@
 //typedef uint32_t TileID;
 
 namespace EWE {
-	struct TileNode {
-		TileID tileID;
-	};
-	struct TileIterator {
-		uint32_t begin;
-		uint32_t end;
-
-		uint32_t size() {
-			return (end - begin) + 1;
-		}
-	};
-	struct TileFindReturn {
-		int64_t memBlock;
-		uint32_t memPos;
-		TileFindReturn() : memBlock{ -1 }, memPos{ 0 } {}
-		TileFindReturn(int64_t memBlock, uint32_t memPos) : memBlock{ memBlock }, memPos{ memPos } {}
-	};
-
 
 	class TileContainer {
 	public:
@@ -61,35 +43,33 @@ namespace EWE {
 		BufferInterface indexBuffer;
 		BufferInterface uvBuffer;
 
-		uint32_t memBlockCount{ 0 }; //this is the count of data blocks
+		//uint32_t memBlockCount{ 0 }; //this is the count of data blocks
 		uint32_t instanceCount{ 0 };
 		uint32_t size;
 		uint16_t width;
 		uint16_t height;
 
 		TileID* tileData;
-		TileIterator* iterData;
+		uint32_t* posData;
 
 		TileSet& tileSet;
 
 	public:
 		TileContainer(uint16_t width, uint16_t height, EWEBuffer* indexBufferPtr, EWEBuffer* uvBufferPtr, TileSet& tileSet);
 		~TileContainer();
-		uint32_t getMemoryBlockCount() {
-			return memBlockCount;
-		}
-		uint32_t getSize() {
+
+		uint32_t getSize() const {
 			return size;
 		}
-		uint32_t getInstanceCount() {
+		uint32_t getInstanceCount() const {
 			return instanceCount;
 		}
-		void* getTileBuffer() {
+		const void* getTileBuffer() const {
 			return tileData;
 		}
 
 		//returns data block index
-		TileFindReturn find(uint32_t selectedTilePos);
+		int64_t find(uint32_t selectedTilePos);
 		void removeTile(uint32_t selectedTilePos);
 		void changeTile(uint32_t selectedTilePos, TileID changeTile);
 		bool tryChangeTile(uint32_t selectedTilePos, TileID changeTile);
@@ -103,15 +83,15 @@ namespace EWE {
 	protected:
 		//internal use only
 		//checking should be done before entering to ensure the block being added does not currently exist
-		void addTile(uint32_t selectedTilePos, bool flush = true);
+		void addTile(uint32_t selectedTilePos, bool flush);
 
 		//buffer functions
-		void insertTileInBuffers(uint32_t tilePos, uint32_t memPosition, bool flush);
-		void addTileToBuffersAtEnd(uint32_t tilePos, uint32_t memPosition, bool flush);
+		void insertTileInBuffers(uint32_t memPosition, bool flush);
+		void addTileToBuffers(uint32_t memPosition, bool flush);
 		void changeTileUVs(uint32_t tilePos, uint32_t memPosition);
-		void changeTileUVNoFlush(uint32_t tilePos, uint32_t memPosition);
+		void changeTileUVNoFlush(uint32_t memPosition);
 		void removeTileFromBuffers(uint32_t memPos);
-		int64_t findMemBlock(uint32_t selectedTilePos);
+		//int64_t findMemBlock(uint32_t selectedTilePos);
 
 		void selection(TileID* selectionData, int x, int y, TileID selectTile);
 		void floodFillScanlineStack(int x, int y, TileID newTile, TileID oldTile);

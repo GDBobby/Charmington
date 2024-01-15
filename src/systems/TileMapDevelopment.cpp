@@ -389,7 +389,7 @@ namespace EWE {
 		saveFile.write(reinterpret_cast<char*>(&height), 2);
 
 		printf("saving map with width:height - %d:%d \n", width, height);
-		saveFile.write(reinterpret_cast<char*>(tileContainer->getTileBuffer()), width * height * sizeof(TileID));
+		saveFile.write(reinterpret_cast<const char*>(tileContainer->getTileBuffer()), width * height * sizeof(TileID));
 		/*
 		if (tileContainer->getInstanceCount() == 0) {
 			saveFile.fill(0);
