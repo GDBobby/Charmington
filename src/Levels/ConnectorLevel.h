@@ -11,7 +11,7 @@ namespace EWE {
 		ConnectorLevel(EWEDevice& device);
 		void enterLevel(EWEDevice& device) override;
 		void exitLevel() override;
-		void render(FrameInfo& frameInfo) override;
+		void render(FrameInfo const& frameInfo, float dt) override;
 		TileFlag tileAt(float x, float y) override;
 
 		bool dropPlank(float x, float y, glm::vec2 forwardDir);

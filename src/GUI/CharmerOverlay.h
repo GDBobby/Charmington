@@ -34,7 +34,7 @@ namespace EWE {
 
 		void drawText() override;
 
-		void drawObjects(std::pair<VkCommandBuffer, uint8_t> cmdIndexPair);
+		void drawObjects(FrameInfo frameInfo);
 
 		void updateFromSettings();
 

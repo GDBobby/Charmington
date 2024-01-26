@@ -1,6 +1,6 @@
 #include "TileMapWithGrass.h"
 
-#include <EWEngine/Graphics/Texture.h>
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
 #include <EWEngine/Systems/PipelineSystem.h>
 #include "../pipelines/PipelineEnum.h"
 
@@ -27,7 +27,6 @@ const glm::vec3 grassRotations[4] = {
 };
 
 namespace EWE {
-	TextureID TileMapWithGrass::grassTextureID{ TEXTURE_UNBINDED };
 
 	void TileMapWithGrass::buildTileSquare(uint32_t& tileID, TransformComponent& transform, glm::mat4& ret, glm::vec2& uvOffset) {
 		//TileMap::buildTileSquare(tileID, transform, ret, uvOffset);
@@ -45,10 +44,8 @@ namespace EWE {
 	}
 
 	TileMapWithGrass::TileMapWithGrass(EWEDevice& device, std::string fileLocation, TileSet::TileSet_Enum tileSetID) : TileMap{device, fileLocation, tileSetID} {
-		if (grassTextureID == TEXTURE_UNBINDED) {
-			grassTextureID = EWETexture::addSceneTexture(device, "noise.ppm", EWETexture::tType_simpleVert);
-			printf("redwind value - %d \n", grassTextureID);
-		}
+		grassTextureID = Texture_Builder::createSimpleTexture(device, "noise.ppm", false, false, VK_SHADER_STAGE_VERTEX_BIT);
+		
 	}
 
 	void TileMapWithGrass::buildTileMap(EWEDevice& device, std::string const& fileLocation,
@@ -73,13 +70,13 @@ namespace EWE {
 		delete grassCreation;
 	}
 
-	void TileMapWithGrass::renderGrass(FrameInfo& frameInfo) {
-		grassTime += frameInfo.time;	
+	void TileMapWithGrass::renderGrass(FrameInfo& frameInfo, float dt) {
+		grassTime += dt;	
 		auto pipe = PipelineSystem::at(Pipe_grass2);
 		pipe->bindPipeline();
 
-		pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
-		pipe->bindDescriptor(1, EWETexture::getDescriptorSets(grassTextureID, frameInfo.cmdIndexPair.second));
+		pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
+		pipe->bindTextureDescriptor(1, grassTextureID);
 		UVScrollingPushData push{ glm::vec2{glm::mod(grassTime / 6.f, 1.f), glm::mod(grassTime / 9.f, 1.f)} };
 		//printf("uv scroll : %.5f:%.5f \n", push.uvScroll.x, push.uvScroll.y);
 		pipe->push(&push);

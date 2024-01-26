@@ -1,17 +1,18 @@
 #include "BackgroundPipe.h"
 
 #include <EWEngine/Graphics/Model/Basic_Model.h>
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
 
 #include <functional>
 #include <typeinfo>
 #include <unordered_map>
 
 namespace EWE {
-	BackgroundPipe::BackgroundPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	BackgroundPipe::BackgroundPipe(EWEDevice& device) {
 		//createPipeline();
 
 		createPipeLayout(device);
-		createPipeline(device, pipeRenderInfo);
+		createPipeline(device);
 	}
 
 	void BackgroundPipe::createPipeLayout(EWEDevice& device) {
@@ -37,10 +38,13 @@ namespace EWE {
 			.addBinding(1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 			.addBinding(2, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 			.build();
-		std::vector<VkDescriptorSetLayout> tempDSL;// = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
-		tempDSL.push_back(DescriptorHandler::getDescSetLayout(LDSL_global, device));
-		tempDSL.push_back(vertexIndexBufferLayout->getDescriptorSetLayout());
-		tempDSL.push_back(EWETexture::getSimpleDescriptorSetLayout());
+
+
+		std::vector<VkDescriptorSetLayout> tempDSL = {
+			DescriptorHandler::getDescSetLayout(LDSL_global, device),
+			vertexIndexBufferLayout->getDescriptorSetLayout(),
+			TextureDSLInfo::getSimpleDSL(device, VK_SHADER_STAGE_FRAGMENT_BIT)->getDescriptorSetLayout()
+		};
 
 		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL.size());
 		pipelineLayoutInfo.pSetLayouts = tempDSL.data();
@@ -50,12 +54,11 @@ namespace EWE {
 			throw std::runtime_error("Failed to create pipe layout \n");
 		}
 	}
-	void BackgroundPipe::createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	void BackgroundPipe::createPipeline(EWEDevice& device) {
 		EWEPipeline::PipelineConfigInfo pipelineConfig{};
 		EWEPipeline::defaultPipelineConfigInfo(pipelineConfig);
 		EWEPipeline::enable2DConfig(pipelineConfig);
 		EWEPipeline::enableAlphaBlending(pipelineConfig);
-		pipelineConfig.pipelineRenderingInfo = pipeRenderInfo;
 
 		pipelineConfig.pipelineLayout = pipeLayout;
 		//pipelineConfig.bindingDescriptions = EffectVertex::getBindingDescriptions();

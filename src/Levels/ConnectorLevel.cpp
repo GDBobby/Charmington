@@ -56,7 +56,7 @@ namespace EWE {
 		};
 	}
 	void ConnectorLevel::exitLevel() {
-		//auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
+		//auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		//for (auto iter = rock->ownedTextureIDs.begin(); iter != rock->ownedTextureIDs.end(); iter++) {
 		//	materialHandler->removeByTransform(*iter, &rock->transform);
 		//}
@@ -80,7 +80,7 @@ namespace EWE {
 		//enterLevelP(device, textureLocation, tileMapLocation);
 		for (int i = 0; i < waterTextures.size(); i++) {
 			std::string waterTextureLocation{ "water" + std::to_string(i) + ".png" };
-			waterTextures[i] = EWETexture::addSceneTexture(device, waterTextureLocation);
+			waterTextures[i] = Texture_Builder::createSimpleTexture(device, waterTextureLocation, false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		waterTransform.scale.x = static_cast<float>(tileMap->width) / 2.f;
@@ -134,16 +134,15 @@ namespace EWE {
 		}
 		loadBackTrees(device);
 	}
-	void ConnectorLevel::render(FrameInfo& frameInfo) {
-		waterTime += frameInfo.time;
+	void ConnectorLevel::render(FrameInfo const& frameInfo, float dt) {
 		//printf("water time : %.2f \n", waterTime);
-		waterTime = glm::mod(waterTime, glm::half_pi<float>());
+		waterTime = glm::mod(waterTime + dt, glm::half_pi<float>());
 
 		uint32_t waterIndex = static_cast<uint8_t>(std::floor(waterTime / glm::quarter_pi<float>()));
 
-		Level::render(frameInfo);
-
-		PipelineSystem::at(Pipe_background)->bindDescriptor(1, EWETexture::getDescriptorSets(waterTextures[waterIndex], frameInfo.cmdIndexPair.second));
+		Level::render(frameInfo, dt);
+		
+		PipelineSystem::at(Pipe_background)->bindDescriptor(1, Texture_Manager::getDescriptorSet(waterTextures[waterIndex]));
 		
 		PipelineSystem::at(Pipe_background)->bindModel(waterModel.get());
 
@@ -155,7 +154,7 @@ namespace EWE {
 		PipelineSystem::at(Pipe_background)->bindModel(extensionModel.get());
 		push.modelMatrix = extensionTransform.mat4();
 
-		PipelineSystem::at(Pipe_background)->bindDescriptor(1, EWETexture::getDescriptorSets(extensionTexture, frameInfo.cmdIndexPair.second));
+		PipelineSystem::at(Pipe_background)->bindDescriptor(1, Texture_Manager::getDescriptorSet(extensionTexture));
 		PipelineSystem::at(Pipe_background)->pushAndDraw(&push);
 		if (sheet.get() != nullptr) {
 			sheet->renderUpdate();
@@ -166,7 +165,7 @@ namespace EWE {
 		std::string textureLocation{ "connectorExtension.png" };
 		std::string tileMapLocation{ "models/connectorExtension.tmx" };
 
-		extensionTexture = EWETexture::addSceneTexture(device, textureLocation);
+		extensionTexture = Texture_Builder::createSimpleTexture(device, textureLocation, false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		std::ifstream inStream{ tileMapLocation };
 		if (!inStream.is_open()) {

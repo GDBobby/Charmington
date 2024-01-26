@@ -4,7 +4,7 @@
 namespace EWE {
 	class BackgroundPipe : public PipelineSystem {
 	public:
-		BackgroundPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo);
+		BackgroundPipe(EWEDevice& device);
 
 		EWEDescriptorSetLayout& getVertexIndexBufferLayout() {
 			return *vertexIndexBufferLayout;
@@ -13,7 +13,7 @@ namespace EWE {
 		void drawInstanced(EWEModel* model) override;
 	private:
 		void createPipeLayout(EWEDevice& device) override;
-		void createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) override;
+		void createPipeline(EWEDevice& device) override;
 
 		std::unique_ptr<EWEDescriptorSetLayout> vertexIndexBufferLayout{ nullptr };
 

@@ -4,9 +4,9 @@
 namespace EWE {
 	class GrassPipe : public PipelineSystem {
 	public:
-		GrassPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo);
+		GrassPipe(EWEDevice& device);
 	private:
 		void createPipeLayout(EWEDevice& device) override;
-		void createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) override;
+		void createPipeline(EWEDevice& device) override;
 	};
 }

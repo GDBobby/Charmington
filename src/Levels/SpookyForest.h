@@ -13,7 +13,7 @@ namespace EWE {
 		void enterLevel(EWEDevice& device) override;
 		void exitLevel() override;
 
-		void render(FrameInfo& frameInfo) override;
+		void render(FrameInfo const& frameInfo, float dt) override;
 
 		bool chopTree(glm::vec2 position, glm::vec2 direction);
 		TileFlag tileAt(float x, float y);

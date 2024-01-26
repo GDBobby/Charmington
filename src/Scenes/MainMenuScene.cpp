@@ -16,7 +16,7 @@ namespace EWE {
 
 		
 
-		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines();
 		printf("after updating pipelines load menu objects, returning \n");
 	}
 	void MainMenuScene::entry() {
@@ -46,15 +46,12 @@ namespace EWE {
 		//printf("render main menu scene \n");
 
 		
-		auto cmdBufFrameIndex = ewEngine.beginRender();
-		if (cmdBufFrameIndex.first != VK_NULL_HANDLE) {
+		FrameInfo frameInfo{ ewEngine.beginRender() };
+		if (frameInfo.cmdBuf != VK_NULL_HANDLE) {
 			//printf("drawing \n");
-			ewEngine.drawObjects(cmdBufFrameIndex, dt);
-			FrameInfo frameInfo;
-			frameInfo.cmdIndexPair = cmdBufFrameIndex;
-			frameInfo.time = static_cast<float>(dt);
+			ewEngine.drawObjects(frameInfo, dt);
 			//printf("after displaying render info \n");
-			ewEngine.endRender(cmdBufFrameIndex);
+			ewEngine.endRender(frameInfo);
 			//std::cout << "after ending render \n";
 			return false;
 		}

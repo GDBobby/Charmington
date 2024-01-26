@@ -1,7 +1,7 @@
 #include "TileMap.h"
 
 #include <EWEngine/Graphics/Model/Vertex.h>
-#include <EWEngine/Graphics/Texture.h>
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
 #include <EWEngine/Systems/PipelineSystem.h>
 
 #include "../pipelines/PipelineEnum.h"
@@ -50,15 +50,15 @@ namespace EWE {
 
 	}
 
-	void TileMap::renderTiles(VkCommandBuffer cmdBuf, uint8_t frameIndex) {
+	void TileMap::renderTiles(FrameInfo const& frameInfo) {
 		auto pipe = PipelineSystem::at(Pipe_background);
 
 		pipe->bindPipeline();
 		//pipe->bindModel(tileSet.tileModel.get());
 
-		pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameIndex));
+		pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
 		pipe->bindDescriptor(1, &descriptorSet);
-		pipe->bindDescriptor(2, EWETexture::getDescriptorSets(tileSet.tileSetTexture, frameIndex));
+		pipe->bindTextureDescriptor(2, tileSet.tileSetTexture);
 
 		//ModelPushData push;
 		//push.modelMatrix = floorTransform.mat4();
@@ -71,7 +71,7 @@ namespace EWE {
 		pipe->push(&push);
 
 		pipe->drawInstanced(tileSet.tileModel.get()); 
-		vkCmdDraw(cmdBuf, 6, width * height, 0, 0);
+		vkCmdDraw(frameInfo.cmdBuf, 6, width * height, 0, 0);
 	}
 	void TileMap::buildTileMap(EWEDevice& device, std::string const& fileLocation,
 		std::vector<glm::vec4>& outVertices, std::vector<uint32_t>& indices) {
@@ -226,7 +226,6 @@ namespace EWE {
 
 		tileIndexBuffer->writeToBuffer(indices.data(), indices.size() * sizeof(indices[0]));
 		tileVertexBuffer->flush();
-		//bufferMap[Buff_loading][frameIndex]->writeToBuffer(leafSystem->getLeafTransformBuffer(), LEAF_COUNT * sizeof(glm::mat4));
 		//just need to create the storage buffer for the index and vertices now
 
 		if (!
@@ -255,7 +254,6 @@ namespace EWE {
 		//tileSet.tileModel->AddInstancing(tileUVOffset.size(), sizeof(glm::vec2), tileUVOffset.data());
 
 		tileIndexBuffer.reset(EWEBuffer::createAndInitBuffer(device, indices.data(), sizeof(indices[0]), indices.size(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
-		//bufferMap[Buff_loading][frameIndex]->writeToBuffer(leafSystem->getLeafTransformBuffer(), LEAF_COUNT * sizeof(glm::mat4));
 		//just need to create the storage buffer for the index and vertices now
 
 		tileUVBuffer.reset(EWEBuffer::createAndInitBuffer(device, tileUVs.data(), sizeof(tileUVs[0]), tileUVs.size(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));

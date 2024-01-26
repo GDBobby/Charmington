@@ -83,7 +83,7 @@ namespace EWE {
 	}
 	void FirstLevel::exitLevel() {
 		carrot.reset(nullptr);
-		auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
+		auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		for (auto apple : apples) {
 			for (auto appleTexIter = apple.ownedTextureIDs.begin(); appleTexIter != apple.ownedTextureIDs.end(); appleTexIter++) {
 				materialHandler->removeByTransform(*appleTexIter, &apple.transform);
@@ -102,8 +102,8 @@ namespace EWE {
 		apples.clear();
 		Level::exitLevel();
 	}
-	void FirstLevel::render(FrameInfo& frameInfo) {
-		Level::render(frameInfo);
+	void FirstLevel::render(FrameInfo const& frameInfo, float dt) {
+		Level::render(frameInfo, dt);
 		if (carrot.get() != nullptr) {
 			carrot->renderUpdate();
 		}

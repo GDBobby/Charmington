@@ -6,10 +6,9 @@
 #include "EWEngine/Sound_Engine.h"
 //#include "VoidsGaze/GUI/EndlessOverlay.h"
 
-#include "EWEngine/Systems/Rendering/Skin/SkinRS.h"
-#include "EWEngine/Systems/Rendering/Rigid/RigidRS.h"
+#include <EWEngine/Systems/Rendering/Skin/SkinRS.h>
+#include <EWEngine/Systems/Rendering/Rigid/RigidRS.h>
 #include <EWEngine/EightWindsEngine.h>
-#include "EWEngine/Graphics/Frame_Info.h"
 #include "../Characters/Charmer.h"
 
 #include "Level.h"
@@ -43,7 +42,7 @@ namespace EWE {
 		//void writeToBuffer(std::vector<std::unique_ptr<EWEBuffer>>* bufferVector, uint8_t frameIndex);
 		void destroyStage(bool returningToMain);
 
-		void renderLevel(FrameInfo& frameInfo);
+		void renderLevel(FrameInfo const& frameInfo, float dt);
 
 		//LevelValues levelValues;
 		EWEGameObject background;

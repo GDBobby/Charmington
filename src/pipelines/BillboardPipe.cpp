@@ -1,11 +1,14 @@
 #include "BillboardPipe.h"
 
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
+
+
 namespace EWE {
-	BillboardPipe::BillboardPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	BillboardPipe::BillboardPipe(EWEDevice& device) {
 		//createPipeline();
 
 		createPipeLayout(device);
-		createPipeline(device, pipeRenderInfo);
+		createPipeline(device);
 	}
 
 	void BillboardPipe::createPipeLayout(EWEDevice& device) {
@@ -24,20 +27,26 @@ namespace EWE {
 		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
 
-		std::vector<VkDescriptorSetLayout>* tempDSL = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
-		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL->size());
-		pipelineLayoutInfo.pSetLayouts = tempDSL->data();
+		std::vector<VkDescriptorSetLayout> tempDSL{};// = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
+
+		tempDSL.push_back(DescriptorHandler::getDescSetLayout(LDSL_global, device));
+
+		TextureDSLInfo dslInfo{};
+		dslInfo.setStageTextureCount(VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+		tempDSL.push_back(dslInfo.getDescSetLayout(device)->getDescriptorSetLayout());
+
+		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL.size());
+		pipelineLayoutInfo.pSetLayouts = tempDSL.data();
 
 		if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipeLayout) != VK_SUCCESS) {
 			printf("failed to create background pipe layout \n");
 			throw std::runtime_error("Failed to create pipe layout \n");
 		}
 	}
-	void BillboardPipe::createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	void BillboardPipe::createPipeline(EWEDevice& device) {
 		EWEPipeline::PipelineConfigInfo pipelineConfig{};
 		EWEPipeline::defaultPipelineConfigInfo(pipelineConfig);
 		EWEPipeline::enableAlphaBlending(pipelineConfig);
-		pipelineConfig.pipelineRenderingInfo = pipeRenderInfo;
 
 		pipelineConfig.pipelineLayout = pipeLayout;
 		//pipelineConfig.bindingDescriptions = EffectVertex::getBindingDescriptions();

@@ -17,7 +17,7 @@ namespace EWE {
 	}
 
 	void SpookyForest::exitLevel() {
-		auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
+		auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		for (auto tree : trees) {
 			for (auto treeTexIter = tree.ownedTextureIDs.begin(); treeTexIter != tree.ownedTextureIDs.end(); treeTexIter++) {
 				materialHandler->removeByTransform(*treeTexIter, &tree.transform);
@@ -65,8 +65,8 @@ namespace EWE {
 		}
 	}
 
-	void SpookyForest::render(FrameInfo& frameInfo) {
-		Level::render(frameInfo);
+	void SpookyForest::render(FrameInfo const& frameInfo, float dt) {
+		Level::render(frameInfo, dt);
 		sheet->renderUpdate();
 	}
 	bool SpookyForest::chopTree(glm::vec2 position, glm::vec2 direction) {

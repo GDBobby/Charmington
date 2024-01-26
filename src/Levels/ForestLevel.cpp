@@ -74,7 +74,7 @@ namespace EWE {
 	}
 
 	void ForestLevel::exitLevel() {
-		auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
+		auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		for (auto tree : trees) {
 			for (auto treeTexIter = tree.ownedTextureIDs.begin(); treeTexIter != tree.ownedTextureIDs.end(); treeTexIter++) {
 				materialHandler->removeByTransform(*treeTexIter, &tree.transform);
@@ -109,9 +109,9 @@ namespace EWE {
 		}
 
 		trees.reserve(treeData.size());
-
-		logTextureID = EWETexture::addSceneTexture(device, "woodLog.png");
-		stickTextureID = EWETexture::addSceneTexture(device, "stick.png");
+		
+		logTextureID = Texture_Builder::createSimpleTexture(device, "woodLog.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		stickTextureID = Texture_Builder::createSimpleTexture(device, "stick.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		glm::vec3 logTranslation{};
 		for (int i = 0; i < treeData.size(); i++) {
@@ -132,8 +132,8 @@ namespace EWE {
 		loadBackTrees(device);
 	}
 
-	void ForestLevel::render(FrameInfo& frameInfo) {
-		Level::render(frameInfo);
+	void ForestLevel::render(FrameInfo const& frameInfo, float dt) {
+		Level::render(frameInfo, dt);
 		if (zero.get() != nullptr) {
 			zero->renderUpdate();
 		}
@@ -146,8 +146,8 @@ namespace EWE {
 				if (!pipeBinded) {
 					//bind pipe
 					pipe->bindPipeline();
-					pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
-					pipe->bindDescriptor(1, EWETexture::getDescriptorSets(logTextureID, frameInfo.cmdIndexPair.second));
+					pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
+					pipe->bindDescriptor(1, Texture_Manager::getDescriptorSet(logTextureID));
 					pipeBinded = true;
 					push.radius = 1.f;
 				}
@@ -156,21 +156,19 @@ namespace EWE {
 			}
 		}
 
-		if (pipeBinded && sticks.size() > 0) {
-			pipe->bindDescriptor(1, EWETexture::getDescriptorSets(stickTextureID, frameInfo.cmdIndexPair.second));
+		if(sticks.size() > 0){
+			if (!pipeBinded) {
+				pipe->bindPipeline();
+				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
+				pipeBinded = true;
+				push.radius = 1.f;
+			}
+			pipe->bindDescriptor(1, Texture_Manager::getDescriptorSet(stickTextureID));
 		}
 
 		for (auto stick : sticks) {
 			if (!stick.drawable) {
 				continue;
-			}
-
-			if (!pipeBinded) {
-				pipe->bindPipeline();
-				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.cmdIndexPair.second));
-				pipe->bindDescriptor(1, EWETexture::getDescriptorSets(stickTextureID, frameInfo.cmdIndexPair.second));
-				pipeBinded = true;
-				push.radius = 1.f;
 			}
 			push.position = glm::vec4(stick.translation, 1.f);
 			pipe->pushAndDraw(&push);

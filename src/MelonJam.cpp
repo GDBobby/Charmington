@@ -3,6 +3,7 @@
 #include "GUI/MainMenuMM.h"
 //#include "GUI/ControlsMM.h"
 #include <EWEngine/Systems/Rendering/Stationary/StatRS.h>
+#include <EWEngine/Graphics/Textures/Cube_Texture.h>
 
 #include "GUI/MenuEnums.h"
 
@@ -73,8 +74,8 @@ namespace EWE {
 				//loading entry?
 				vkDeviceWaitIdle(ewEngine.eweDevice.device());
 				currentScenePtr->exit();
-				ewEngine.objectManager.clearSceneObjects();
-				EWETexture::clearSceneTextures();
+				ewEngine.objectManager.clearSceneObjects(ewEngine.eweDevice);
+				Texture_Manager::getTextureManagerPtr()->clearSceneTextures(ewEngine.eweDevice);
 				//loading entry?
 				if (currentScene != scene_exitting) {
 
@@ -117,12 +118,10 @@ namespace EWE {
 				mainThreadTimeTracker = 0.0;
 			}
 		}
-		
-
 	}
 
 	void MelonJam::loadGlobalObjects() {
-		TextureID skyboxID = EWETexture::addGlobalTexture(ewEngine.eweDevice, "nasa/", EWETexture::tType_cube);
+		TextureID skyboxID = Cube_Texture::createCubeTexture(ewEngine.eweDevice, "nasa/");
 
 		//i dont even know if the engine will work if this isnt constructed
 		ewEngine.objectManager.skybox = { Basic_Model::createSkyBox(ewEngine.eweDevice, 100.f), skyboxID };
@@ -152,7 +151,7 @@ namespace EWE {
 			ewEngine.objectManager.pointLights[i].transform.translation.z *= 5.f;
 			ewEngine.objectManager.pointLights[i].transform.translation.y += 1.f;
 		}
-		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines();
 	}
 	void MelonJam::addModulesToMenuManager(float screenWidth, float screenHeight) {
 		menuManager.menuModules.emplace(menu_main, std::make_unique<MainMenuMM>(ewEngine.eweDevice, screenWidth, screenHeight));
@@ -289,10 +288,10 @@ namespace EWE {
 	}
 
 	void MelonJam::addPipelinesToSystem() {
-		PipelineSystem::emplace(Pipe_background, new BackgroundPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
-		PipelineSystem::emplace(Pipe_grass2, new GrassPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
-		PipelineSystem::emplace(Pipe_billboard, new BillboardPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
-		PipelineSystem::emplace(Pipe_Grid2d, new GridPipe(ewEngine.eweDevice, ewEngine.eweRenderer.getPipelineInfo()));
+		PipelineSystem::emplace(Pipe_background, new BackgroundPipe(ewEngine.eweDevice));
+		PipelineSystem::emplace(Pipe_grass2, new GrassPipe(ewEngine.eweDevice));
+		PipelineSystem::emplace(Pipe_billboard, new BillboardPipe(ewEngine.eweDevice));
+		PipelineSystem::emplace(Pipe_Grid2d, new GridPipe(ewEngine.eweDevice));
 	}
 	void MelonJam::addSound() {
 

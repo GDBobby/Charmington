@@ -1,7 +1,7 @@
 #include "TileSet.h"
 
 #include <EWEngine/Graphics/Model/Basic_Model.h>
-#include <EWEngine/Graphics/Texture.h>
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
 
 
 namespace EWE {
@@ -12,7 +12,7 @@ namespace EWE {
 				width = 64;
 				height = 19;
 				tileScale = 0.5f;
-				tileSetTexture = EWETexture::addSceneTexture(device, "tileSet.png");
+				tileSetTexture = Texture_Builder::createSimpleTexture(device, "tileSet.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 				grassTiles.push_back(476);
 				break;
 			}
@@ -21,7 +21,7 @@ namespace EWE {
 				width = 4;
 				height = 4;
 				tileScale = 0.5f;
-				tileSetTexture = EWETexture::addSceneTexture(device, "tileCreation/borders.png");
+				tileSetTexture = Texture_Builder::createSimpleTexture(device, "tileCreation/borders.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 				break;
 			}
 			default: {

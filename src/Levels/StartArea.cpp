@@ -42,7 +42,7 @@ namespace EWE {
 		};
 	}
 	void StartLevel::exitLevel() {
-		//auto materialHandler = MaterialHandler::getMaterialHandlerInstance();
+		//auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		//for (auto iter = rock->ownedTextureIDs.begin(); iter != rock->ownedTextureIDs.end(); iter++) {
 		//	materialHandler->removeByTransform(*iter, &rock->transform);
 		//}

@@ -17,7 +17,7 @@ namespace EWE {
 		void dropApple(EWEDevice& device, uint8_t treeID);
 		void eatApple(uint8_t treeID);
 
-		void render(FrameInfo& frameInfo) override;
+		void render(FrameInfo const& frameInfo, float dt) override;
 		TileFlag tileAt(float x, float y) override;
 
 		std::unique_ptr<Carrot> carrot{nullptr};

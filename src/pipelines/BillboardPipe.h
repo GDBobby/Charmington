@@ -4,11 +4,11 @@
 namespace EWE {
 	class BillboardPipe : public PipelineSystem {
 	public:
-		BillboardPipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo);
+		BillboardPipe(EWEDevice& device);
 
 		void pushAndDraw(void* push) override;
 	private:
 		void createPipeLayout(EWEDevice& device) override;
-		void createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) override;
+		void createPipeline(EWEDevice& device) override;
 	};
 }

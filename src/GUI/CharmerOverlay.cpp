@@ -1,7 +1,6 @@
 #include "CharmerOverlay.h"
 
-#include <EWEngine/Graphics/Texture.h>
-#include <EWEngine/Graphics/Frame_Info.h>
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
 
 //need to replace this include with local texture enum
 #include <EWEngine/GUI/MenuModule.h>
@@ -40,12 +39,13 @@ namespace EWE {
 		tamedZero = (SaveJSON::saveData.petFlags & SaveJSON::PF_Zero) == SaveJSON::PF_Zero;
 		gameObjects.at(2).drawable = tamedZero;
 
-		overlayBackID = EWETexture::addGlobalTexture(device, "OverlayBack.png");
+
+		overlayBackID = Texture_Builder::createSimpleTexture(device, "OverlayBack.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 		objectTextures.reserve(gameObjects.size());
-		objectTextures.emplace_back(EWETexture::addGlobalTexture(device, "woodPlank.png"));
+		objectTextures.emplace_back(Texture_Builder::createSimpleTexture(device, "woodPlank.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
 		//printf("wood log tex ID : %d \n", objectTextures.back());
-		objectTextures.emplace_back(EWETexture::addGlobalTexture(device, "carrotFace.png"));
-		objectTextures.emplace_back(EWETexture::addGlobalTexture(device, "zeroFace.png"));
+		objectTextures.emplace_back(Texture_Builder::createSimpleTexture(device, "carrotFace.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
+		objectTextures.emplace_back(Texture_Builder::createSimpleTexture(device, "zeroFace.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
 		//printf("carrot face tex ID : %d \n", objectTextures.back());
 
 
@@ -82,7 +82,7 @@ namespace EWE {
 
 	}
 
-	void CharmerOverlay::drawObjects(std::pair<VkCommandBuffer, uint8_t> cmdIndexPair) {
+	void CharmerOverlay::drawObjects(FrameInfo frameInfo) {
 		//std::cout << "DRAWING BATTLE OVERLAY \n";
 		if (isActive) {
 			//printf("game ui is active \n");

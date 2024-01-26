@@ -1,7 +1,6 @@
 #pragma once
 
 #include <EWEngine/Graphics/Model/Model.h>
-#include <EWEngine/Graphics/Frame_Info.h>
 #include <EWEngine/Graphics/PushConstants.h>
 #include <EWEngine/Graphics/Model/Basic_Model.h>
 #include <EWEngine/Graphics/EWE_Object.h>
@@ -74,7 +73,7 @@ namespace EWE {
 
 		//TileFlag tileFlagAt(float x, float y);
 
-		virtual void render(FrameInfo& frameInfo);
+		virtual void render(FrameInfo const& frameInfo, float dt);
 
 		//void loadGrass(EWEDevice& device);
 

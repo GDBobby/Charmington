@@ -1,11 +1,12 @@
 #include "TreeInstancePipe.h"
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
 
 namespace EWE {
-	TreeInstancePipe::TreeInstancePipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	TreeInstancePipe::TreeInstancePipe(EWEDevice& device) {
 		//createPipeline();
 
 		createPipeLayout(device);
-		createPipeline(device, pipeRenderInfo);
+		createPipeline(device);
 	}
 
 	void TreeInstancePipe::createPipeLayout(EWEDevice& device) {
@@ -23,20 +24,21 @@ namespace EWE {
 		pipelineLayoutInfo.pushConstantRangeCount = 1;
 		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-
-		std::vector<VkDescriptorSetLayout>* tempDSL = DescriptorHandler::getPipeDescSetLayout(PDSL_visualEffect, device);
-		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL->size());
-		pipelineLayoutInfo.pSetLayouts = tempDSL->data();
+		std::vector<VkDescriptorSetLayout> tempDSL = {
+			DescriptorHandler::getDescSetLayout(LDSL_global, device),
+			TextureDSLInfo::getSimpleDSL(device, VK_SHADER_STAGE_FRAGMENT_BIT)->getDescriptorSetLayout()
+		};
+		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(tempDSL.size());
+		pipelineLayoutInfo.pSetLayouts = tempDSL.data();
 
 		if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipeLayout) != VK_SUCCESS) {
 			printf("failed to create background pipe layout \n");
 			throw std::runtime_error("Failed to create pipe layout \n");
 		}
 	}
-	void TreeInstancePipe::createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) {
+	void TreeInstancePipe::createPipeline(EWEDevice& device) {
 		EWEPipeline::PipelineConfigInfo pipelineConfig{};
 		EWEPipeline::defaultPipelineConfigInfo(pipelineConfig);
-		pipelineConfig.pipelineRenderingInfo = pipeRenderInfo;
 
 		pipelineConfig.pipelineLayout = pipeLayout;
 		//pipelineConfig.bindingDescriptions = EffectVertex::getBindingDescriptions();

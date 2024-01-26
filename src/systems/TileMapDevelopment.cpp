@@ -3,6 +3,7 @@
 #include <EWEngine/GUI/UICompFunctions.h>
 
 #include <queue>
+#include <EWEngine/Graphics/Textures/Texture_Manager.h>
 
 const std::vector<uint32_t> modelIndices = {
 	0,1,3,1,2,3
@@ -237,7 +238,7 @@ namespace EWE {
 
 	}
 
-	void TileMapDevelopment::renderTiles(VkCommandBuffer cmdBuf, uint8_t frameIndex) {
+	void TileMapDevelopment::renderTiles(FrameInfo const& frameInfo) {
 		
 
 		PipelineSystem* pipe = nullptr;
@@ -253,10 +254,10 @@ namespace EWE {
 				pipe = PipelineSystem::at(Pipe_background);
 				pipe->bindPipeline();
 
-				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameIndex));
+				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
 			}
 			pipe->bindDescriptor(1, &descriptorSet);
-			pipe->bindDescriptor(2, EWETexture::getDescriptorSets(tileSet.tileSetTexture, frameIndex));
+			pipe->bindDescriptor(2, Texture_Manager::getDescriptorSet(tileSet.tileSetTexture));
 
 			//ModelPushData push;
 			//push.modelMatrix = floorTransform.mat4();
@@ -264,8 +265,8 @@ namespace EWE {
 
 			pipe->push(&pushTile);
 
-			vkCmdBindIndexBuffer(cmdBuf, modelIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-			vkCmdDrawIndexed(cmdBuf, 6, instanceCount, 0, 0, 0);
+			vkCmdBindIndexBuffer(frameInfo.cmdBuf, modelIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+			vkCmdDrawIndexed(frameInfo.cmdBuf, 6, instanceCount, 0, 0, 0);
 		}
 		instanceCount = selectionContainer->getInstanceCount();
 		if (instanceCount != 0) {
@@ -274,15 +275,15 @@ namespace EWE {
 				pipe = PipelineSystem::at(Pipe_background);
 				pipe->bindPipeline();
 
-				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameIndex));
+				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
 			}
 			pipe->bindDescriptor(1, &selectionDescSet);
-			pipe->bindDescriptor(2, EWETexture::getDescriptorSets(selectionTileSet.tileSetTexture, frameIndex));
+			pipe->bindDescriptor(2, Texture_Manager::getDescriptorSet(selectionTileSet.tileSetTexture));
 
 			pipe->push(&pushTile);
 
-			vkCmdBindIndexBuffer(cmdBuf, modelIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-			vkCmdDrawIndexed(cmdBuf, 6, instanceCount, 0, 0, 0);
+			vkCmdBindIndexBuffer(frameInfo.cmdBuf, modelIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+			vkCmdDrawIndexed(frameInfo.cmdBuf, 6, instanceCount, 0, 0, 0);
 		}
 	}
 

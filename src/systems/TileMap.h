@@ -23,7 +23,7 @@ namespace EWE {
 			std::vector<glm::vec4>& outVertices, std::vector<uint32_t>& indices);
 		virtual void buildTileMapByVertex(EWEDevice& device, std::vector<glm::vec4>& outVertices, std::vector<uint32_t>& indices, std::vector<glm::vec2>& tileUVs);
 
-		void renderTiles(VkCommandBuffer cmdBuf, uint8_t frameIndex);
+		void renderTiles(FrameInfo const& frameInfo);
 	protected:
 		std::unique_ptr<EWEBuffer> tileVertexBuffer{ nullptr };
 		std::unique_ptr<EWEBuffer> tileIndexBuffer{ nullptr };

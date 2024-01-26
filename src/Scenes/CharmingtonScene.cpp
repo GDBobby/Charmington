@@ -26,7 +26,7 @@ namespace EWE {
 
 
 
-		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines();
 		printf("after updating pipelines load menu objects, returning \n");
 	}
 	void CharmingtonScene::entry() {
@@ -106,34 +106,31 @@ namespace EWE {
 			}
 		}
 
-		auto cmdBufFrameIndex = ewEngine.beginRender();
-		if (cmdBufFrameIndex.first != VK_NULL_HANDLE) {
+		FrameInfo frameInfo{ ewEngine.beginRender() };
+		if (frameInfo.cmdBuf != VK_NULL_HANDLE) {
 			//printf("charmington render? \n");
 			//printf("drawing \n");
 			//ewEngine.drawObjects(cmdBufFrameIndex, dt);
-			PipelineSystem::setCmdIndexPair(cmdBufFrameIndex);
-			ewEngine.draw3DObjects(cmdBufFrameIndex, dt);
-			FrameInfo frameInfo;
-			frameInfo.cmdIndexPair = cmdBufFrameIndex;
-			frameInfo.time = static_cast<float>(dt);
+			PipelineSystem::setFrameInfo(frameInfo);
+			ewEngine.draw3DObjects(frameInfo, dt);
 			charmer.renderUpdate();
-			levelManager.renderLevel(frameInfo);
+			levelManager.renderLevel(frameInfo, dt);
 #if RENDER_TRANSLATION
 			ewEngine.uiHandler.beginTextRender();
 			if (ewEngine.displayingRenderInfo) {
 				charmer.drawTranslation();
 				ewEngine.uiHandler.Benchmarking(dt, ewEngine.peakRenderTime, ewEngine.averageRenderTime, ewEngine.highestRenderTime, ewEngine.averageLogicTime, BENCHMARKING_GPU, ewEngine.elapsedGPUMS, ewEngine.averageElapsedGPUMS);
 			}
-			ewEngine.draw2DObjects(cmdBufFrameIndex);
-			ewEngine.uiHandler.drawOverlayText(cmdBufFrameIndex.first, ewEngine.displayingRenderInfo);
+			ewEngine.draw2DObjects(frameInfo);
+			ewEngine.uiHandler.drawOverlayText(frameInfo.cmdBuf, ewEngine.displayingRenderInfo);
 			menuManager.drawText();
-			ewEngine.uiHandler.endTextRender(cmdBufFrameIndex.first);
+			ewEngine.uiHandler.endTextRender(frameInfo.cmdBuf);
 #else
 
 			ewEngine.drawText(cmdBufFrameIndex, dt);
 #endif
 			//printf("after displaying render info \n");
-			ewEngine.endRender(cmdBufFrameIndex);
+			ewEngine.endRender(frameInfo);
 			//std::cout << "after ending render \n";
 			return false;
 		}

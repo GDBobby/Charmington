@@ -15,7 +15,7 @@ namespace EWE {
 	void LevelManager::initLevel(EWEDevice& device) {
 
 		currentLevel->enterLevel(device);
-		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines();
 		charmer.currentLevel = currentLevel;
 		if (currentLevelID == Level::Level_First) {
 			if (((FirstLevel*)currentLevel)->carrot.get() != nullptr) {
@@ -161,8 +161,8 @@ namespace EWE {
 		}
 	}
 
-	void LevelManager::renderLevel(FrameInfo& frameInfo) {
-		currentLevel->render(frameInfo);
+	void LevelManager::renderLevel(FrameInfo const& frameInfo, float dt) {
+		currentLevel->render(frameInfo, dt);
 
 	}
 	void LevelManager::swapNextStage(LevelID levelID) {
@@ -184,7 +184,7 @@ namespace EWE {
 		charmer.setTransform(currentLevel->getEntryTransform(currentLevelID));
 		currentLevelID = levelID;
 		charmer.currentLevel = currentLevel;
-		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines();
 		if (currentLevelID == Level::Level_First) {
 			if (((FirstLevel*)currentLevel)->carrot.get() != nullptr) {
 				((FirstLevel*)currentLevel)->carrot->charmerTranslation = charmer.getTranslationPtr();

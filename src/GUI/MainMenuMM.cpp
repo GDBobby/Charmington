@@ -1,5 +1,7 @@
 #include "MainMenuMM.h"
 
+#include "EWEngine/Graphics/Textures/Texture_Manager.h"
+
 namespace EWE {
 	MainMenuMM::MainMenuMM(EWEDevice& device, float screenWidth, float screenHeight) {
 		float widthRescaling = screenWidth / DEFAULT_WIDTH;
@@ -20,7 +22,8 @@ namespace EWE {
 
 		Transform2dComponent transform{};
 		transform.scale = { 2.f, 2.f };
-		images.emplace_back(EWETexture::addUITexture(device, "title.png"), transform);
+		//images.emplace_back(EWETexture::addUITexture(device, "title.png"), transform);
+		images.emplace_back(Texture_Builder::createSimpleTexture(device, "title.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT), transform);
 		
 	}
 

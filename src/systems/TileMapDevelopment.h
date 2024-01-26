@@ -12,7 +12,7 @@ namespace EWE {
 		~TileMapDevelopment();
 
 		void refreshMap(uint16_t width, uint16_t height);
-		void renderTiles(VkCommandBuffer cmdBuf, uint8_t frameIndex);
+		void renderTiles(FrameInfo const& frameInfo);
 
 		std::array<float, 6> const& getScreenCoordinates(float screenWidth, float screenHeight) {
 			if (refreshedMap) {

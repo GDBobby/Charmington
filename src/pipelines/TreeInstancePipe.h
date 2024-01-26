@@ -5,9 +5,9 @@
 namespace EWE {
 	class TreeInstancePipe : public PipelineSystem {
 	public:
-		TreeInstancePipe(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo);
+		TreeInstancePipe(EWEDevice& device);
 	private:
 		void createPipeLayout(EWEDevice& device) override;
-		void createPipeline(EWEDevice& device, VkPipelineRenderingCreateInfo const& pipeRenderInfo) override;
+		void createPipeline(EWEDevice& device) override;
 	};
 }

@@ -125,7 +125,7 @@ namespace EWE {
 
 
 
-		ewEngine.advancedRS.updatePipelines(ewEngine.eweRenderer.getPipelineInfo());
+		ewEngine.advancedRS.updatePipelines();
 		printf("after updating pipelines load menu objects, returning \n");
 	}
 	void LevelCreationScene::entry() {
@@ -185,30 +185,27 @@ namespace EWE {
 		//printf("render main menu scene \n");
 
 
-		auto cmdBufFrameIndex = ewEngine.beginRender();
+		FrameInfo frameInfo{ ewEngine.beginRender() };
 
-		if (cmdBufFrameIndex.first != VK_NULL_HANDLE) {
+		if (frameInfo.cmdBuf != VK_NULL_HANDLE) {
 
 			imguiHandler->beginRender();
 			levelCreationIMGUI.render();
 			//printf("drawing \n");
-			PipelineSystem::setCmdIndexPair(cmdBufFrameIndex);
+			PipelineSystem::setFrameInfo(frameInfo);
 
 			tileMapD->pushTile.translation.x = 2.f * pushTrans.x;
 			tileMapD->pushTile.translation.y = 2.f * pushTrans.y;
 
-			tileMapD->renderTiles(cmdBufFrameIndex.first, cmdBufFrameIndex.second);
+			tileMapD->renderTiles(frameInfo);
 			renderBackgroundGrid();
 			//ewEngine.drawObjects(cmdBufFrameIndex, dt);
-			ewEngine.drawText(cmdBufFrameIndex, dt);
-			FrameInfo frameInfo;
-			frameInfo.cmdIndexPair = cmdBufFrameIndex;
-			frameInfo.time = static_cast<float>(dt);
+			ewEngine.drawText(frameInfo, dt);
 			//printf("after displaying render info \n");
 			ImGui::ShowDemoWindow(&show_demo_window);
 
-			imguiHandler->endRender(cmdBufFrameIndex.first);
-			ewEngine.endRender(cmdBufFrameIndex);
+			imguiHandler->endRender(frameInfo.cmdBuf);
+			ewEngine.endRender(frameInfo);
 			//std::cout << "after ending render \n";
 			return false;
 		}

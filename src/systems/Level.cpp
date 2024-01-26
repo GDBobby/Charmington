@@ -7,15 +7,15 @@ namespace EWE {
 		TextureID currentlyBinded = TEXTURE_UNBINDED;
 		SimplePushConstantData push;
 
-		model->bind(frameInfo.cmdIndexPair.first);
+		model->bind(frameInfo.cmdBuf);
 		for (auto& objectType : objectTypes) {
 			/*
 			if (objectType.first != currentlyBinded) {
-				vkCmdBindDescriptorSets(frameInfo.cmdIndexPair.first,
+				vkCmdBindDescriptorSets(frameInfo.frameInfo.cmdBuf,
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					pipeLayout,
 					1, 1,
-					EWETexture::getDescriptorSets(objectType.first, frameInfo.cmdIndexPair.second),
+					EWETexture::getDescriptorSets(objectType.first, frameInfo.frameInfo.index),
 					0, nullptr
 				);
 				currentlyBinded = objectType.first;
@@ -25,8 +25,8 @@ namespace EWE {
 				if (object.active) {
 					push.modelMatrix = object.transform.mat4();
 					push.normalMatrix = object.transform.normalMatrix();
-					vkCmdPushConstants(frameInfo.cmdIndexPair.first, pipeLayout, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, sizeof(SimplePushConstantData), &push);
-					model->draw(frameInfo.cmdIndexPair.first);
+					vkCmdPushConstants(frameInfo.frameInfo.cmdBuf, pipeLayout, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, sizeof(SimplePushConstantData), &push);
+					model->draw(frameInfo.frameInfo.cmdBuf);
 				}
 			}
 			*/
@@ -35,12 +35,8 @@ namespace EWE {
 
 	}
 
-	void Level::render(FrameInfo& frameInfo) {
-
-		{
-			tileMap->renderTiles(frameInfo.cmdIndexPair.first, frameInfo.cmdIndexPair.second);
-
-		}
+	void Level::render(FrameInfo const& frameInfo, float dt) {
+			tileMap->renderTiles(frameInfo);
 
 		return;
 	}

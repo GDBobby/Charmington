@@ -1,8 +1,6 @@
 #pragma once
 #include "TileMap.h"
 
-#include <EWEngine/Graphics/Frame_Info.h>
-
 namespace EWE {
 	class TileMapWithGrass : public TileMap {
 	public:
@@ -13,10 +11,10 @@ namespace EWE {
 		void buildTileMap(EWEDevice& device, std::string const& fileLocation,
 			std::vector<glm::vec4>& outVertices, std::vector<uint32_t>& indices) override;
 	protected:
-		static TextureID grassTextureID;
+		TextureID grassTextureID;
 		void buildTileSquare(uint32_t& tileID, TransformComponent& transform, glm::mat4& ret, glm::vec2& uvOffset);
 
-		void renderGrass(FrameInfo& frameInfo);
+		void renderGrass(FrameInfo& frameInfo, float dt);
 		float grassTime = 0.f;
 
 		struct GrassCreation {
