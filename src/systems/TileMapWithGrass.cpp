@@ -44,7 +44,7 @@ namespace EWE {
 	}
 
 	TileMapWithGrass::TileMapWithGrass(EWEDevice& device, std::string fileLocation, TileSet::TileSet_Enum tileSetID) : TileMap{device, fileLocation, tileSetID} {
-		grassTextureID = Texture_Builder::createSimpleTexture(device, "noise.ppm", false, false, VK_SHADER_STAGE_VERTEX_BIT);
+		grassTextureID = Texture_Builder::createSimpleTexture( "noise.ppm", false, false, VK_SHADER_STAGE_VERTEX_BIT);
 		
 	}
 

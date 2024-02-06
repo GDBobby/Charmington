@@ -34,7 +34,7 @@ namespace EWE {
 
 		void drawText() override;
 
-		void drawObjects(FrameInfo frameInfo);
+		void drawObjects(FrameInfo const& frameInfo);
 
 		void updateFromSettings();
 

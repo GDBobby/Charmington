@@ -110,8 +110,8 @@ namespace EWE {
 
 		trees.reserve(treeData.size());
 		
-		logTextureID = Texture_Builder::createSimpleTexture(device, "woodLog.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-		stickTextureID = Texture_Builder::createSimpleTexture(device, "stick.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		logTextureID = Texture_Builder::createSimpleTexture( "woodLog.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		stickTextureID = Texture_Builder::createSimpleTexture( "stick.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		glm::vec3 logTranslation{};
 		for (int i = 0; i < treeData.size(); i++) {

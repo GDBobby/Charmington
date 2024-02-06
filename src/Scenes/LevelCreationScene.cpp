@@ -145,7 +145,7 @@ namespace EWE {
 		for (uint8_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			ewEngine.camera.updateViewData({ 40.f, 0.f, 40.0f }, { 0.f, 0.f, 0.f }, glm::vec3(0.f, 1.f, 0.f));
 		}
-		imguiHandler = std::make_unique<ImGUIHandler>(ewEngine.mainWindow.getGLFWwindow(), ewEngine.eweDevice, MAX_FRAMES_IN_FLIGHT, ewEngine.eweRenderer.getPipelineInfo());
+		imguiHandler = std::make_unique<ImGUIHandler>(ewEngine.mainWindow.getGLFWwindow(), ewEngine.eweDevice, MAX_FRAMES_IN_FLIGHT);
 		//handle threads in this scene, or a game specific class
 		ewEngine.advancedRS.drawSkybox = false;
 		levelCreationIMGUI.gridZoom = &pushScale;

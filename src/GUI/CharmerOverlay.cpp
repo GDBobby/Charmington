@@ -40,12 +40,12 @@ namespace EWE {
 		gameObjects.at(2).drawable = tamedZero;
 
 
-		overlayBackID = Texture_Builder::createSimpleTexture(device, "OverlayBack.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		overlayBackID = Texture_Builder::createSimpleTexture( "OverlayBack.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 		objectTextures.reserve(gameObjects.size());
-		objectTextures.emplace_back(Texture_Builder::createSimpleTexture(device, "woodPlank.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
+		objectTextures.emplace_back(Texture_Builder::createSimpleTexture( "woodPlank.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
 		//printf("wood log tex ID : %d \n", objectTextures.back());
-		objectTextures.emplace_back(Texture_Builder::createSimpleTexture(device, "carrotFace.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
-		objectTextures.emplace_back(Texture_Builder::createSimpleTexture(device, "zeroFace.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
+		objectTextures.emplace_back(Texture_Builder::createSimpleTexture( "carrotFace.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
+		objectTextures.emplace_back(Texture_Builder::createSimpleTexture( "zeroFace.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
 		//printf("carrot face tex ID : %d \n", objectTextures.back());
 
 
@@ -82,7 +82,7 @@ namespace EWE {
 
 	}
 
-	void CharmerOverlay::drawObjects(FrameInfo frameInfo) {
+	void CharmerOverlay::drawObjects(FrameInfo const& frameInfo) {
 		//std::cout << "DRAWING BATTLE OVERLAY \n";
 		if (isActive) {
 			//printf("game ui is active \n");

@@ -331,13 +331,13 @@ namespace EWE {
     }
 
     void LevelCreationIMGUI::loadTextures(EWEDevice& device) {
-        tileSetID = Texture_Builder::createSimpleTexture(device, "tileSet.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tileSetID = Texture_Builder::createSimpleTexture( "tileSet.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 
-        tools[Tool_pencil].texID = Texture_Builder::createSimpleTexture(device, "tileCreation/pencil.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-        tools[Tool_eraser].texID = Texture_Builder::createSimpleTexture(device, "tileCreation/eraser.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-        tools[Tool_colorSelection].texID = Texture_Builder::createSimpleTexture(device, "tileCreation/colorSelection.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-        tools[Tool_bucketFill].texID = Texture_Builder::createSimpleTexture(device, "tileCreation/bucketFill.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_pencil].texID = Texture_Builder::createSimpleTexture( "tileCreation/pencil.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_eraser].texID = Texture_Builder::createSimpleTexture( "tileCreation/eraser.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_colorSelection].texID = Texture_Builder::createSimpleTexture( "tileCreation/colorSelection.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_bucketFill].texID = Texture_Builder::createSimpleTexture( "tileCreation/bucketFill.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
     }
 
     void LevelCreationIMGUI::toolLeft(uint32_t clickedTilePosition, bool shiftKey, bool ctrlKey) {

@@ -80,7 +80,7 @@ namespace EWE {
 		//enterLevelP(device, textureLocation, tileMapLocation);
 		for (int i = 0; i < waterTextures.size(); i++) {
 			std::string waterTextureLocation{ "water" + std::to_string(i) + ".png" };
-			waterTextures[i] = Texture_Builder::createSimpleTexture(device, waterTextureLocation, false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+			waterTextures[i] = Texture_Builder::createSimpleTexture( waterTextureLocation, false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 
 		waterTransform.scale.x = static_cast<float>(tileMap->width) / 2.f;
@@ -165,7 +165,7 @@ namespace EWE {
 		std::string textureLocation{ "connectorExtension.png" };
 		std::string tileMapLocation{ "models/connectorExtension.tmx" };
 
-		extensionTexture = Texture_Builder::createSimpleTexture(device, textureLocation, false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		extensionTexture = Texture_Builder::createSimpleTexture( textureLocation, false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		std::ifstream inStream{ tileMapLocation };
 		if (!inStream.is_open()) {

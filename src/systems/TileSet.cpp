@@ -12,7 +12,7 @@ namespace EWE {
 				width = 64;
 				height = 19;
 				tileScale = 0.5f;
-				tileSetTexture = Texture_Builder::createSimpleTexture(device, "tileSet.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+				tileSetTexture = Texture_Builder::createSimpleTexture( "tileSet.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 				grassTiles.push_back(476);
 				break;
 			}
@@ -21,7 +21,7 @@ namespace EWE {
 				width = 4;
 				height = 4;
 				tileScale = 0.5f;
-				tileSetTexture = Texture_Builder::createSimpleTexture(device, "tileCreation/borders.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+				tileSetTexture = Texture_Builder::createSimpleTexture( "tileCreation/borders.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 				break;
 			}
 			default: {
