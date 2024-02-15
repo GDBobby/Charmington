@@ -3,7 +3,7 @@
 #include "GUI/MainMenuMM.h"
 //#include "GUI/ControlsMM.h"
 #include <EWEngine/Systems/Rendering/Stationary/StatRS.h>
-#include <EWEngine/Graphics/Textures/Cube_Texture.h>
+#include <EWEngine/Graphics/Texture/Cube_Texture.h>
 
 #include "GUI/MenuEnums.h"
 

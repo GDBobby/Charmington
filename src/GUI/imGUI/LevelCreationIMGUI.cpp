@@ -2,7 +2,7 @@
 
 #include "../MenuEnums.h"
 #include <EWEngine/imgui/imgui.h>
-#include "EWEngine/Graphics/Textures/Texture_Manager.h"
+#include "EWEngine/Graphics/Texture/Texture_Manager.h"
 
 namespace EWE {
     LevelCreationIMGUI::LevelCreationIMGUI(std::queue<uint16_t>& clickReturns, float screenWidth, float screenHeight) : clickReturns{ clickReturns }, screenWidth{ screenWidth }, screenHeight{ screenHeight } {

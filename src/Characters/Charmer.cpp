@@ -15,9 +15,14 @@ namespace EWE {
 	}
 
 	Charmer::Charmer(EWEDevice& device, GLFWwindow* wnd, EWECamera& camera) : inputHandler{ wnd }, camera{ camera } {
+		bool glslangProcessStarted = false;
+
 		if (skeleton.get() == nullptr) {
 			printf("current directory? : %s \n", std::filesystem::current_path().string().c_str());
+			glslang::InitializeProcess();
 			skeleton = std::make_unique<CharmerSkeleton>(device);
+			printf("after loading charmer skeleton \n");
+			glslangProcessStarted = true;
 		}
 		SkinRenderSystem::setPushData(skeleton->getSkeletonID(), &pushData, static_cast<uint8_t>(sizeof(pushData)));
 		bufferPointer = SkinRenderSystem::getSkinBuffer(skeleton->getSkeletonID());
@@ -26,10 +31,18 @@ namespace EWE {
 		transform.rotation.y = -glm::half_pi<float>();
 
 		if (SaveJSON::saveData.petFlags & SaveJSON::PetFlags::PF_Carrot) {
+			if (!glslangProcessStarted) {
+				glslang::InitializeProcess();
+				glslangProcessStarted = true;
+			}
 			carrotPet = std::make_unique<CarrotPet>(device);
 		}
 		if ((SaveJSON::saveData.petFlags & SaveJSON::PF_Zero) == SaveJSON::PF_Zero) {
 			printf("loading zero into charmer \n");
+			if (!glslangProcessStarted) {
+				glslang::InitializeProcess();
+				glslangProcessStarted = true;
+			}
 			zeroPet = std::make_unique<ZeroPet>(device);
 
 			setZeroHistory();
@@ -38,6 +51,9 @@ namespace EWE {
 		logCount = SaveJSON::saveData.logCount;
 		if (logCount > 9) {
 			logCount = 9;
+		}
+		if (glslangProcessStarted) {
+			glslang::FinalizeProcess();
 		}
 	}
 	Charmer::~Charmer() {

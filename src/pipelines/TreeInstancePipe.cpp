@@ -1,5 +1,5 @@
 #include "TreeInstancePipe.h"
-#include <EWEngine/Graphics/Textures/Texture_Manager.h>
+#include <EWEngine/Graphics/Texture/Texture_Manager.h>
 
 namespace EWE {
 	TreeInstancePipe::TreeInstancePipe(EWEDevice& device) {

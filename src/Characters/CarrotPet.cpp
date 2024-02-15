@@ -3,6 +3,7 @@
 namespace EWE {
 
 	CarrotPet::CarrotPet(EWEDevice& device) {
+
 		skeleton = std::make_shared<CarrotSkeleton>(device);
 
 		SkinRenderSystem::setPushData(skeleton->getSkeletonID(), &pushData, static_cast<uint8_t>(sizeof(pushData)));

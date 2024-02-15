@@ -1,7 +1,7 @@
 #include "TileMap.h"
 
 #include <EWEngine/Graphics/Model/Vertex.h>
-#include <EWEngine/Graphics/Textures/Texture_Manager.h>
+#include <EWEngine/Graphics/Texture/Texture_Manager.h>
 #include <EWEngine/Systems/PipelineSystem.h>
 
 #include "../pipelines/PipelineEnum.h"
@@ -227,16 +227,10 @@ namespace EWE {
 		tileIndexBuffer->writeToBuffer(indices.data(), indices.size() * sizeof(indices[0]));
 		tileVertexBuffer->flush();
 		//just need to create the storage buffer for the index and vertices now
-
-		if (!
-			EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
+		descriptorSet = EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
 			.writeBuffer(0, tileVertexBuffer->descriptorInfo())
 			.writeBuffer(1, tileIndexBuffer->descriptorInfo())
-			.build(descriptorSet)
-			) {
-			printf("tile desc failure \n");
-			throw std::runtime_error("failed to build tile map descriptor set");
-		}
+			.build();
 	}
 
 	void TileMap::buildTileMapByVertex(EWEDevice& device, std::vector<glm::vec4>& outVertices, std::vector<uint32_t>& indices, std::vector<glm::vec2>& tileUVs) {
@@ -258,17 +252,11 @@ namespace EWE {
 
 		tileUVBuffer.reset(EWEBuffer::createAndInitBuffer(device, tileUVs.data(), sizeof(tileUVs[0]), tileUVs.size(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
 
-
-		if (!
-			EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
+		descriptorSet = EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
 			.writeBuffer(0, tileVertexBuffer->descriptorInfo())
 			.writeBuffer(1, tileIndexBuffer->descriptorInfo())
 			.writeBuffer(2, tileUVBuffer->descriptorInfo())
-			.build(descriptorSet)
-			) {
-			printf("tile desc failure \n");
-			throw std::runtime_error("failed to build tile map descriptor set");
-		}
+			.build();
 	}
 
 	void TileMap::createTileVertices(std::vector<glm::vec4>& outVertices, int width, int height, float tileScale) {

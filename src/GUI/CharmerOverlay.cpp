@@ -1,6 +1,6 @@
 #include "CharmerOverlay.h"
 
-#include <EWEngine/Graphics/Textures/Texture_Manager.h>
+#include <EWEngine/Graphics/Texture/Texture_Manager.h>
 
 //need to replace this include with local texture enum
 #include <EWEngine/GUI/MenuModule.h>

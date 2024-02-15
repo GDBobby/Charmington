@@ -3,7 +3,7 @@
 #include <EWEngine/GUI/UICompFunctions.h>
 
 #include <queue>
-#include <EWEngine/Graphics/Textures/Texture_Manager.h>
+#include <EWEngine/Graphics/Texture/Texture_Manager.h>
 
 const std::vector<uint32_t> modelIndices = {
 	0,1,3,1,2,3
@@ -350,27 +350,16 @@ namespace EWE {
 			descriptorSet = VK_NULL_HANDLE;
 			selectionDescSet = VK_NULL_HANDLE;
 		}
-
-		if (!
-			EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
+		descriptorSet = EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
 			.writeBuffer(0, tileVertexBuffer->descriptorInfo())
 			.writeBuffer(1, tileIndexBuffer->descriptorInfo())
 			.writeBuffer(2, tileUVBuffer->descriptorInfo())
-			.build(descriptorSet)
-			) {
-			printf("tile desc failure \n");
-			throw std::runtime_error("failed to build tile map descriptor set");
-		}
-		if (!
-			EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
+			.build();
+		selectionDescSet = EWEDescriptorWriter(((BackgroundPipe*)PipelineSystem::at(Pipe_background))->getVertexIndexBufferLayout(), DescriptorPool_Global)
 			.writeBuffer(0, tileVertexBuffer->descriptorInfo())
 			.writeBuffer(1, selectionIndexBuffer->descriptorInfo())
 			.writeBuffer(2, selectionUVBuffer->descriptorInfo())
-			.build(selectionDescSet)
-			) {
-			printf("selection tile desc failure \n");
-			throw std::runtime_error("failed to build selection tile map descriptor set");
-		}
+			.build();
 	}
 
 	bool TileMapDevelopment::saveMap(std::string saveLocation) {

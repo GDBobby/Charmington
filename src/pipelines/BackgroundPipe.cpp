@@ -1,7 +1,7 @@
 #include "BackgroundPipe.h"
 
 #include <EWEngine/Graphics/Model/Basic_Model.h>
-#include <EWEngine/Graphics/Textures/Texture_Manager.h>
+#include <EWEngine/Graphics/Texture/Texture_Manager.h>
 
 #include <functional>
 #include <typeinfo>
