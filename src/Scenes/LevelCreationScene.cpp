@@ -180,6 +180,7 @@ namespace EWE {
 		glfwSetMouseButtonCallback(ewEngine.mainWindow.getGLFWwindow(), mouseReturnFunction);
 		glfwSetKeyCallback(ewEngine.mainWindow.getGLFWwindow(), keyReturnFunction);
 		gridModel.reset();
+		//i need to give callback control back to whatever needs it after exiting the scene, something is missing
 	}
 	bool LevelCreationScene::render(double dt) {
 		//printf("render main menu scene \n");
@@ -190,6 +191,7 @@ namespace EWE {
 		if (frameInfo.cmdBuf != VK_NULL_HANDLE) {
 
 			imguiHandler->beginRender();
+
 			levelCreationIMGUI.render();
 			//printf("drawing \n");
 			PipelineSystem::setFrameInfo(frameInfo);
@@ -202,6 +204,7 @@ namespace EWE {
 			//ewEngine.drawObjects(cmdBufFrameIndex, dt);
 			ewEngine.drawText(frameInfo, dt);
 			//printf("after displaying render info \n");
+
 			ImGui::ShowDemoWindow(&show_demo_window);
 
 			imguiHandler->endRender(frameInfo.cmdBuf);

@@ -42,9 +42,9 @@ namespace EWE {
 		uint16_t beginRoundFrames = 0;
 	private:
 
-		std::vector<TextureID> objectTextures{};
+		std::vector<TextureDesc> objectTextures{};
 		std::vector<Transform2dComponent> overlayBackground{};
-		TextureID overlayBackID;
+		TextureDesc overlayBackTexture;
 
 		uint8_t& logCount;
 		char carrotKeybind;
@@ -52,6 +52,6 @@ namespace EWE {
 		bool tamedZero = false;
 		bool tamedSheet = false;
 
-		TextureID hpContainer;
+		TextureDesc hpContainer;
 	};
 }

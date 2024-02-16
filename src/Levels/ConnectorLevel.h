@@ -47,8 +47,8 @@ namespace EWE {
 		uint32_t extensionWidth;
 		uint32_t extensionHeight;
 
-		TextureID extensionTexture{ TEXTURE_UNBINDED };
-		std::array<TextureID, 2> waterTextures{TEXTURE_UNBINDED, TEXTURE_UNBINDED};
+		TextureDesc extensionTexture{ TEXTURE_UNBINDED_DESC };
+		std::array<TextureDesc, 2> waterTextures{TEXTURE_UNBINDED_DESC, TEXTURE_UNBINDED_DESC};
 		//std::unique_ptr<EweObject> rock;
 	};
 }

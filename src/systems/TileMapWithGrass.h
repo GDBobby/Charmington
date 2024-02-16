@@ -11,7 +11,7 @@ namespace EWE {
 		void buildTileMap(EWEDevice& device, std::string const& fileLocation,
 			std::vector<glm::vec4>& outVertices, std::vector<uint32_t>& indices) override;
 	protected:
-		TextureID grassTextureID;
+		TextureDesc grassTextureID;
 		void buildTileSquare(uint32_t& tileID, TransformComponent& transform, glm::mat4& ret, glm::vec2& uvOffset);
 
 		void renderGrass(FrameInfo& frameInfo, float dt);

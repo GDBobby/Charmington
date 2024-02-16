@@ -111,6 +111,7 @@ namespace EWE {
 			//printf("charmington render? \n");
 			//printf("drawing \n");
 			//ewEngine.drawObjects(cmdBufFrameIndex, dt);
+
 			PipelineSystem::setFrameInfo(frameInfo);
 			ewEngine.draw3DObjects(frameInfo, dt);
 			charmer.renderUpdate();

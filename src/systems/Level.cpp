@@ -4,7 +4,7 @@ namespace EWE {
 	
 
 	void Terrain_Object::render(FrameInfo& frameInfo) {
-		TextureID currentlyBinded = TEXTURE_UNBINDED;
+		TextureDesc currentlyBinded = TEXTURE_UNBINDED_DESC;
 		SimplePushConstantData push;
 
 		model->bind(frameInfo.cmdBuf);

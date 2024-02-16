@@ -76,12 +76,12 @@ namespace EWE {
 		uint32_t toolSelectedTile = 0;
 
 		struct ToolStruct {
-			TextureID texID;
+			TextureDesc texture;
 			ImVec4 bgColor{ 0.f,0.f,0.f,1.f };
 		};
 		std::array<ToolStruct, Tool_count> tools;
 
-		TextureID tileSetID;
+		TextureDesc tileSetID;
 		ImVec4 selectedColor{ 1.f,1.f,1.f,1.f };
 		ImVec4 idleColor{ 0.f,0.f,0.f,1.f };
 

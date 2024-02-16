@@ -121,7 +121,7 @@ namespace EWE {
 	}
 
 	void MelonJam::loadGlobalObjects() {
-		TextureID skyboxID = Cube_Texture::createCubeTexture(ewEngine.eweDevice, "nasa/");
+		TextureDesc skyboxID = Cube_Texture::createCubeTexture(ewEngine.eweDevice, "nasa/");
 
 		//i dont even know if the engine will work if this isnt constructed
 		ewEngine.objectManager.skybox = { Basic_Model::createSkyBox(ewEngine.eweDevice, 100.f), skyboxID };

@@ -58,6 +58,6 @@ namespace EWE {
 		std::vector<uint32_t> exitTiles{};
 
 		std::unique_ptr<EWEModel> tileModel{ nullptr };
-		TextureID tileSetTexture = TEXTURE_UNBINDED;
+		TextureDesc tileSetTexture = TEXTURE_UNBINDED_DESC;
 	};
 }

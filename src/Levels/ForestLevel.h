@@ -34,7 +34,7 @@ namespace EWE {
 
 		std::vector<std::pair<bool, glm::vec3>> treeData{};
 
-		TextureID logTextureID;
-		TextureID stickTextureID;
+		TextureDesc logTexture;
+		TextureDesc stickTexture;
 	};
 }

@@ -76,7 +76,7 @@ namespace EWE {
 	void ForestLevel::exitLevel() {
 		auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		for (auto tree : trees) {
-			for (auto treeTexIter = tree.ownedTextureIDs.begin(); treeTexIter != tree.ownedTextureIDs.end(); treeTexIter++) {
+			for (auto treeTexIter = tree.ownedTextures.begin(); treeTexIter != tree.ownedTextures.end(); treeTexIter++) {
 				materialHandler->removeByTransform(*treeTexIter, &tree.transform);
 			}
 			materialHandler->checkAndClearTextures();
@@ -110,8 +110,8 @@ namespace EWE {
 
 		trees.reserve(treeData.size());
 		
-		logTextureID = Texture_Builder::createSimpleTexture( "woodLog.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-		stickTextureID = Texture_Builder::createSimpleTexture( "stick.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		logTexture = Texture_Builder::createSimpleTexture( "woodLog.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		stickTexture = Texture_Builder::createSimpleTexture( "stick.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		glm::vec3 logTranslation{};
 		for (int i = 0; i < treeData.size(); i++) {
@@ -147,7 +147,7 @@ namespace EWE {
 					//bind pipe
 					pipe->bindPipeline();
 					pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
-					pipe->bindDescriptor(1, Texture_Manager::getDescriptorSet(logTextureID));
+					pipe->bindDescriptor(1, &logTexture);
 					pipeBinded = true;
 					push.radius = 1.f;
 				}
@@ -163,7 +163,7 @@ namespace EWE {
 				pipeBinded = true;
 				push.radius = 1.f;
 			}
-			pipe->bindDescriptor(1, Texture_Manager::getDescriptorSet(stickTextureID));
+			pipe->bindDescriptor(1, &stickTexture);
 		}
 
 		for (auto stick : sticks) {

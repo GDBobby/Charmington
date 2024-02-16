@@ -19,7 +19,7 @@ namespace EWE {
 	void SpookyForest::exitLevel() {
 		auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		for (auto tree : trees) {
-			for (auto treeTexIter = tree.ownedTextureIDs.begin(); treeTexIter != tree.ownedTextureIDs.end(); treeTexIter++) {
+			for (auto treeTexIter = tree.ownedTextures.begin(); treeTexIter != tree.ownedTextures.end(); treeTexIter++) {
 				materialHandler->removeByTransform(*treeTexIter, &tree.transform);
 			}
 			materialHandler->checkAndClearTextures();

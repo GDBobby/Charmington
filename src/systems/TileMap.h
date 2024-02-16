@@ -12,7 +12,7 @@ namespace EWE {
 		uint16_t width;
 		uint16_t height;
 		TileSet tileSet;
-		TextureID textureID;
+		TextureDesc texture;
 		std::vector<TileFlag> tileFlags;
 
 		TileMap(EWEDevice& device, std::string fileLocation, TileSet::TileSet_Enum tileSetID);

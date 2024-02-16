@@ -10,6 +10,7 @@ namespace EWE {
     }
 
     void LevelCreationIMGUI::render() {
+
         ShowMainMenuBar();
         ShowGridControl();
         ShowTileSet();
@@ -158,8 +159,7 @@ namespace EWE {
         ImGui::SliderScalar("tileSet ratio", ImGuiDataType_Float, &tileSetRatio, &scaleLow, &scaleHigh);
 
         ImGui::Text("Selected Tile %u", selectedTile);
-
-        ImGui::Image(Texture_Manager::getDescriptorSet(tileSetID), ImVec2(64, 64), selectedTileUVTL, selectedTileUVBR);
+        ImGui::Image(tileSetID, ImVec2(64, 64), selectedTileUVTL, selectedTileUVBR);
 
         ImGui::SameLine();
         ShowToolControls();
@@ -172,7 +172,7 @@ namespace EWE {
 
         ImVec2 pos = ImGui::GetCursorScreenPos();
         ImGuiIO& io = ImGui::GetIO();
-            ImGui::Image(Texture_Manager::getDescriptorSet(tileSetID), ImVec2(texW, texH));
+            ImGui::Image(tileSetID, ImVec2(texW, texH));
             if (ImGui::BeginItemTooltip()) {
                 hoveringTileSet = true;
 
@@ -200,7 +200,7 @@ namespace EWE {
                 ImGui::Text("Selected Tile tool: (%d)", toolSelectedTile);
                 ImVec2 uv0 = ImVec2((region_x) / texW, (region_y) / texH);
                 ImVec2 uv1 = ImVec2((region_x + region_sz) / texW, (region_y + region_sz) / texH);
-                ImGui::Image(Texture_Manager::getDescriptorSet(tileSetID), ImVec2(64.f, 64.f), toolUV, toolUVBR);
+                ImGui::Image(tileSetID, ImVec2(64.f, 64.f), toolUV, toolUVBR);
                 ImGui::EndTooltip();
             }
             else {
@@ -311,7 +311,7 @@ namespace EWE {
 
             
 
-            if (ImGui::ImageButton("", Texture_Manager::getDescriptorSet(tools[i].texID), size, uv0, uv1, tools[i].bgColor, tint_col)) {
+            if (ImGui::ImageButton("", tools[i].texture, size, uv0, uv1, tools[i].bgColor, tint_col)) {
                 tools[i].bgColor = selectedColor;
                 for (int j = 0; j < tools.size(); j++) {
                     if (i == j) {
@@ -331,13 +331,14 @@ namespace EWE {
     }
 
     void LevelCreationIMGUI::loadTextures(EWEDevice& device) {
+
         tileSetID = Texture_Builder::createSimpleTexture( "tileSet.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 
-        tools[Tool_pencil].texID = Texture_Builder::createSimpleTexture( "tileCreation/pencil.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-        tools[Tool_eraser].texID = Texture_Builder::createSimpleTexture( "tileCreation/eraser.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-        tools[Tool_colorSelection].texID = Texture_Builder::createSimpleTexture( "tileCreation/colorSelection.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
-        tools[Tool_bucketFill].texID = Texture_Builder::createSimpleTexture( "tileCreation/bucketFill.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_pencil].texture = Texture_Builder::createSimpleTexture( "tileCreation/pencil.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_eraser].texture = Texture_Builder::createSimpleTexture( "tileCreation/eraser.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_colorSelection].texture = Texture_Builder::createSimpleTexture( "tileCreation/colorSelection.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+        tools[Tool_bucketFill].texture = Texture_Builder::createSimpleTexture( "tileCreation/bucketFill.png", false, false, VK_SHADER_STAGE_FRAGMENT_BIT);
     }
 
     void LevelCreationIMGUI::toolLeft(uint32_t clickedTilePosition, bool shiftKey, bool ctrlKey) {

@@ -257,7 +257,7 @@ namespace EWE {
 				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
 			}
 			pipe->bindDescriptor(1, &descriptorSet);
-			pipe->bindDescriptor(2, Texture_Manager::getDescriptorSet(tileSet.tileSetTexture));
+			pipe->bindDescriptor(2, &tileSet.tileSetTexture);
 
 			//ModelPushData push;
 			//push.modelMatrix = floorTransform.mat4();
@@ -278,7 +278,7 @@ namespace EWE {
 				pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
 			}
 			pipe->bindDescriptor(1, &selectionDescSet);
-			pipe->bindDescriptor(2, Texture_Manager::getDescriptorSet(selectionTileSet.tileSetTexture));
+			pipe->bindDescriptor(2, &selectionTileSet.tileSetTexture);
 
 			pipe->push(&pushTile);
 

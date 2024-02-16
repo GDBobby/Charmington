@@ -142,7 +142,7 @@ namespace EWE {
 
 		Level::render(frameInfo, dt);
 		
-		PipelineSystem::at(Pipe_background)->bindDescriptor(1, Texture_Manager::getDescriptorSet(waterTextures[waterIndex]));
+		PipelineSystem::at(Pipe_background)->bindDescriptor(1, &waterTextures[waterIndex]);
 		
 		PipelineSystem::at(Pipe_background)->bindModel(waterModel.get());
 
@@ -154,7 +154,7 @@ namespace EWE {
 		PipelineSystem::at(Pipe_background)->bindModel(extensionModel.get());
 		push.modelMatrix = extensionTransform.mat4();
 
-		PipelineSystem::at(Pipe_background)->bindDescriptor(1, Texture_Manager::getDescriptorSet(extensionTexture));
+		PipelineSystem::at(Pipe_background)->bindDescriptor(1, &extensionTexture);
 		PipelineSystem::at(Pipe_background)->pushAndDraw(&push);
 		if (sheet.get() != nullptr) {
 			sheet->renderUpdate();

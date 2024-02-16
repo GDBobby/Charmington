@@ -36,7 +36,7 @@ namespace EWE {
 			bool active{true};
 		};
 
-		std::unordered_map<TextureID, std::vector<Object_Instance>> objectTypes; //object types, keyed by texture
+		std::unordered_map<TextureDesc, std::vector<Object_Instance>> objectTypes; //object types, keyed by texture
 
 		void render(FrameInfo& frameInfo);
 	};

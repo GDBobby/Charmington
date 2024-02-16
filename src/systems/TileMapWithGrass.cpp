@@ -76,7 +76,7 @@ namespace EWE {
 		pipe->bindPipeline();
 
 		pipe->bindDescriptor(0, DescriptorHandler::getDescSet(DS_global, frameInfo.index));
-		pipe->bindTextureDescriptor(1, grassTextureID);
+		pipe->bindDescriptor(1, &grassTextureID);
 		UVScrollingPushData push{ glm::vec2{glm::mod(grassTime / 6.f, 1.f), glm::mod(grassTime / 9.f, 1.f)} };
 		//printf("uv scroll : %.5f:%.5f \n", push.uvScroll.x, push.uvScroll.y);
 		pipe->push(&push);

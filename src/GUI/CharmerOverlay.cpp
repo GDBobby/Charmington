@@ -40,7 +40,7 @@ namespace EWE {
 		gameObjects.at(2).drawable = tamedZero;
 
 
-		overlayBackID = Texture_Builder::createSimpleTexture( "OverlayBack.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT);
+		overlayBackTexture = Texture_Builder::createSimpleTexture( "OverlayBack.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT);
 		objectTextures.reserve(gameObjects.size());
 		objectTextures.emplace_back(Texture_Builder::createSimpleTexture( "woodPlank.png", true, false, VK_SHADER_STAGE_FRAGMENT_BIT));
 		//printf("wood log tex ID : %d \n", objectTextures.back());
@@ -104,7 +104,7 @@ namespace EWE {
 				push.scaleOffset = glm::vec4(gameObjects[i].transform2d.scale, gameObjects[i].transform2d.translation);
 				Dimension2::pushAndDraw(push);
 			}
-			Dimension2::bindTexture2D(overlayBackID);
+			Dimension2::bindTexture2D(overlayBackTexture);
 			for (int i = 0; i < gameObjects.size(); i++) {
 				if (!gameObjects[i].drawable) {
 					continue;

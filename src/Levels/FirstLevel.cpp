@@ -85,14 +85,14 @@ namespace EWE {
 		carrot.reset(nullptr);
 		auto materialHandler = RigidRenderingSystem::getRigidRSInstance();
 		for (auto apple : apples) {
-			for (auto appleTexIter = apple.ownedTextureIDs.begin(); appleTexIter != apple.ownedTextureIDs.end(); appleTexIter++) {
+			for (auto appleTexIter = apple.ownedTextures.begin(); appleTexIter != apple.ownedTextures.end(); appleTexIter++) {
 				materialHandler->removeByTransform(*appleTexIter, &apple.transform);
 			}
 			materialHandler->checkAndClearTextures();
 			printf("removing apple pls \n");
 		}
 		for (auto tree : trees) {
-			for (auto treeTexIter = tree.ownedTextureIDs.begin(); treeTexIter != tree.ownedTextureIDs.end(); treeTexIter++) {
+			for (auto treeTexIter = tree.ownedTextures.begin(); treeTexIter != tree.ownedTextures.end(); treeTexIter++) {
 				materialHandler->removeByTransform(*treeTexIter, &tree.transform);
 			}
 			materialHandler->checkAndClearTextures();
